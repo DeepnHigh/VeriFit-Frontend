@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #d1ecf1 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,7 +25,7 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #333;
             margin-bottom: 30px;
         }
 
@@ -68,7 +68,7 @@
         }
 
         .company-card {
-            background: #f8f9fa;
+            background: #f3f6f8;
             border-radius: 15px;
             padding: 25px;
             text-align: center;
@@ -111,6 +111,7 @@
         .stat-item {
             background: white;
             border-radius: 8px;
+            border: 1px solid #e0e0e0;
             padding: 10px;
         }
 
@@ -148,6 +149,7 @@
             background: #f8f9fa;
             border-radius: 15px;
             padding: 25px;
+            border: 4px solid #727272;
         }
 
         .job-posting-section h3 {
@@ -202,7 +204,7 @@
             background: white;
         }
 
-        /* 면접AI 설정 섹션 */
+        /* 면접관AI 설정 섹션 */
         .interview-ai-section {
             background: linear-gradient(135deg, #fff3e0, #ffe0b2);
             border-radius: 15px;
@@ -273,6 +275,149 @@
             background: #f57c00;
             border-radius: 50%;
             cursor: pointer;
+        }
+
+        /* 새로운 평가 기준 스타일 */
+        .criteria-category {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .criteria-category h4 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.1rem;
+        }
+
+        .criteria-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .criteria-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .criteria-option:hover {
+            background: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .criteria-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #f57c00;
+        }
+
+        .criteria-option span {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .criteria-option input[type="checkbox"]:checked + span {
+            color: #f57c00;
+            font-weight: 600;
+        }
+
+        /* 태그 스타일 토글 버튼 */
+        .criteria-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .criteria-tag {
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            background: white;
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .criteria-tag:hover {
+            border-color: #f57c00;
+            color: #f57c00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(245, 124, 0, 0.2);
+        }
+
+        .criteria-tag.active {
+            background: #f57c00;
+            color: white;
+            border-color: #f57c00;
+            box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+        }
+
+        .criteria-tag.active:hover {
+            background: #e65100;
+            border-color: #e65100;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
+        }
+
+        /* 구분선 스타일 */
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .divider hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            margin: 0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 20px;
+            color: #666;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            top: -12px;
+        }
+
+        /* 새 공고 작성 폼 */
+        .new-job-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        /* 공고 올리기 버튼 섹션 */
+        .publish-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
         }
 
         /* 질문 템플릿 섹션 */
@@ -402,6 +547,153 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
+        /* 진행중인 공고 리스트 스타일 */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+        }
+
+        .job-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #727272;
+        }
+
+        .job-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .job-item:last-child {
+            border-bottom: none;
+        }
+
+        .job-item:hover {
+            background: #fcfcfc;
+        }
+
+        .job-info {
+            flex: 1;
+        }
+
+        .job-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .job-details {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .job-type, .job-experience, .job-salary {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .job-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-badge.closed {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .applicants {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .job-actions {
+            margin-left: 20px;
+        }
+
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
         /* 반응형 디자인 */
         @media (max-width: 768px) {
             .company-section {
@@ -419,6 +711,26 @@
             .action-buttons {
                 flex-direction: column;
             }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .job-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .job-actions {
+                margin-left: 0;
+            }
+
+            .job-details {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -426,7 +738,7 @@
     <div class="container">
         <div class="header">
             <h1>🏢 기업 채용 관리</h1>
-            <p>면접AI를 통한 효율적인 채용 프로세스</p>
+            <p>면접관AI를 통한 효율적인 채용 프로세스</p>
         </div>
 
         <!-- 기업 채용 관리 페이지 -->
@@ -442,198 +754,347 @@
                         
                         <div class="company-stats">
                             <div class="stat-item">
-                                <div class="stat-value">5</div>
+                                <div class="stat-value">1</div>
                                 <div class="stat-label">진행중 공고</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value">156</div>
-                                <div class="stat-label">총 지원자</div>
-                            </div>
-                        </div>
-
-                        <div class="ai-status">
-                            <h4>🤖 면접AI 상태</h4>
-                            <p>활성 면접AI: <strong>3개</strong></p>
-                            <p>평가 완료: <strong>89%</strong></p>
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">마감된 공고</div>
+                            </div>                            
                         </div>
                     </div>
 
-                    <!-- 채용 공고 작성 -->
+                    <!-- 진행중인 공고 리스트 -->
                     <div class="job-posting-section">
-                        <h3>📝 새로운 채용 공고 작성</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">포지션명</label>
-                                <input type="text" class="form-input" value="커머스플랫폼 프론트엔드 개발자" placeholder="예: 커머스플랫폼 프론트엔드 개발자">
+                        <div class="section-header">
+                            <h3>📋 우리 기업의 공고</h3>
+                        </div>
+                        <div class="job-list">
+                            <div class="job-item">
+                                <div class="job-info">
+                                    <div class="job-title">커머스플랫폼 프론트엔드 개발자</div>
+                                    <div class="job-details">
+                                        <span class="job-type">계약직</span>
+                                        <span class="job-experience">5년 이상</span>
+                                        <span class="job-salary">3,500만원 ~ 5,000만원</span>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge active">진행중</span>
+                                        <span class="applicants">156명 지원</span>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-secondary" onclick="viewJobDetails()">공고보기</button>
+                                    <button class="btn btn-primary" onclick="viewAllCandidates()">채용현황</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">경력 요구사항</label>
-                                <select class="form-input form-select">
-                                    <option>신입</option>
-                                    <option>1-3년</option>
-                                    <option>3-5년</option>
-                                    <option selected>5년 이상</option>
-                                </select>
+                            <div class="job-item">
+                                <div class="job-info">
+                                    <div class="job-title">백엔드 개발자 (Node.js)</div>
+                                    <div class="job-details">
+                                        <span class="job-type">정규직</span>
+                                        <span class="job-experience">3-5년</span>
+                                        <span class="job-salary">4,000만원 ~ 6,000만원</span>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge closed">마감됨</span>
+                                        <span class="applicants">89명 지원</span>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-secondary" onclick="viewClosedJobDetails()">공고보기</button>
+                                    <button class="btn btn-primary" onclick="viewAllCandidates()">채용현황</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">근무 형태</label>
-                                <select class="form-input form-select">
-                                    <option>정규직</option>
-                                    <option selected>계약직</option>
-                                    <option>인턴</option>
-                                    <option>프리랜서</option>
-                                </select>
+                            <div class="job-item">
+                                <div class="job-info">
+                                    <div class="job-title">UI/UX 디자이너</div>
+                                    <div class="job-details">
+                                        <span class="job-type">정규직</span>
+                                        <span class="job-experience">1-3년</span>
+                                        <span class="job-salary">2,800만원 ~ 4,200만원</span>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge closed">마감됨</span>
+                                        <span class="applicants">67명 지원</span>
+                                    </div>
+                                </div>
+                                <div class="job-actions">
+                                    <button class="btn btn-secondary" onclick="viewClosedJobDetails()">공고보기</button>
+                                    <button class="btn btn-primary" onclick="viewAllCandidates()">채용현황</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">급여 범위</label>
-                                <input type="text" class="form-input" value="3,500만원 ~ 5,000만원" placeholder="예: 3,500만원 ~ 5,000만원">
-                            </div>
-                            <div class="form-group full-width">
-                                <label class="form-label">주요 업무</label>
-                                <textarea class="form-input form-textarea" placeholder="주요 업무 내용을 입력하세요">• 고객에게 최고의 사용성을 제공하는 온라인몰의 다양한 화면 개발 (상품 목록, 상세 페이지, 검색 결과, 프로모션 페이지 등)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 구분선 -->
+                <div class="divider">
+                    <hr>
+                    <span>새 공고 작성</span>
+                </div>
+
+                <!-- 새 공고 작성 폼 -->
+                <div class="new-job-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">포지션명</label>
+                            <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">경력 요구사항</label>
+                            <select class="form-input form-select">
+                                <option>신입</option>
+                                <option>1-3년</option>
+                                <option>3-5년</option>
+                                <option>5년 이상</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">근무 형태</label>
+                            <select class="form-input form-select">
+                                <option>정규직</option>
+                                <option>계약직</option>
+                                <option>인턴</option>
+                                <option>프리랜서</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">급여 범위</label>
+                            <input type="text" class="form-input" placeholder="예: 3,500만원 ~ 5,000만원">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">주요 업무</label>
+                            <textarea class="form-input form-textarea" placeholder="주요 업무 내용을 입력하세요"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">자격 요건</label>
+                            <textarea class="form-input form-textarea" placeholder="자격 요건을 입력하세요"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">우대사항</label>
+                            <textarea class="form-input form-textarea" placeholder="우대사항을 입력하세요"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 면접관AI 설정 -->
+                <div class="interview-ai-section">
+                    <h3>🤖 면접관AI 평가 기준 설정</h3>
+                    <div class="ai-criteria">
+                        <div class="criteria-tags">
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">React/TypeScript 숙련도</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">성능 최적화 능력</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">아키텍처 설계 능력</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">테스트 코드 작성</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">의사소통 능력</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">팀워크 및 협업</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">리더십</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">갈등 해결 능력</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">메타인지 능력</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">학습 의지</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">새로운 기술 적응력</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">자기 성찰 능력</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">꼼꼼한 성격</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">정확성 중시</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">품질 관리 의식</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">세부사항 주의</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">장기적 성장 가능성</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">혁신적 사고</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">도전 정신</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">목표 지향성</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">프로세스 준수</button>
+                            <button class="criteria-tag active" onclick="toggleCriteria(this)">존대어 사용</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">실패 허용 문화</button>
+                            <button class="criteria-tag" onclick="toggleCriteria(this)">기업 가치 공감</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 공고 올리기 버튼 -->
+                <div class="publish-section">
+                    <button class="btn btn-primary btn-large" onclick="publishNewJob()">📢 공고 올리기</button>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+ 
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공고 상세보기 모달 -->
+    <div id="jobDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 커머스플랫폼 프론트엔드 개발자</h2>
+                <span class="close" onclick="closeJobModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">포지션명</label>
+                        <input type="text" class="form-input" value="커머스플랫폼 프론트엔드 개발자" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력 요구사항</label>
+                        <input type="text" class="form-input" value="5년 이상" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">근무 형태</label>
+                        <input type="text" class="form-input" value="계약직" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">급여 범위</label>
+                        <input type="text" class="form-input" value="3,500만원 ~ 5,000만원" readonly>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">주요 업무</label>
+                        <textarea class="form-input form-textarea" readonly>• 고객에게 최고의 사용성을 제공하는 온라인몰의 다양한 화면 개발 (상품 목록, 상세 페이지, 검색 결과, 프로모션 페이지 등)
 • 사용자 중심의 인터랙티브한 웹 애플리케이션 개발
 • 최신 웹 기술 및 트렌드를 적극적으로 활용하여 사용자 경험 및 인터페이스 개선
 • 백엔드 팀과의 긴밀한 협업을 통해 API 연동 및 데이터 흐름 구축
 • 웹 성능 최적화 및 안정적인 서비스 운영을 위한 기술적 개선
 • 다양한 기기 및 브라우저 환경에서의 호환성 확보 및 반응형 웹 개발</textarea>
-                            </div>
-                            <div class="form-group full-width">
-                                <label class="form-label">자격 요건</label>
-                                <textarea class="form-input form-textarea" placeholder="자격 요건을 입력하세요">• 5년 이상의 Front-end 개발 경력이나 그에 준하는 역량이 있으신 분
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">자격 요건</label>
+                        <textarea class="form-input form-textarea" readonly>• 5년 이상의 Front-end 개발 경력이나 그에 준하는 역량이 있으신 분
 • JavaScript와 React 같은 Front-end Framework 개발 경험이 있으신 분
 • WEB 환경에 대한 기본적인 이해 및 지식이 있으신 분
 • 잠재적인 문제를 해결을 위해 가설을 수립하고 수행한 경험이 있으신 분
 • 학습과 성장에 관심이 많고, 자기 개발을 위해 노력하시는 분
 • 콜린웨이브의 성장과 함께 성공 경험을 만들어 가고 싶으신 분</textarea>
-                            </div>
-                            <div class="form-group full-width">
-                                <label class="form-label">우대사항</label>
-                                <textarea class="form-input form-textarea" placeholder="우대사항을 입력하세요">• Typescript/React.js/Node.js 를 활용한 프로젝트 경험이 있으신 분
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">우대사항</label>
+                        <textarea class="form-input form-textarea" readonly>• Typescript/React.js/Node.js 를 활용한 프로젝트 경험이 있으신 분
 • 모바일 웹 및 Single Page Application에 대한 이해가 높으신 분
 • 대규모 서비스 개발 프로젝트에서 Front-end 성능 최적화 경험이 있으신 분
 • 하이브리드 앱 환경에서 개발 경험이 있으신분
 • 기술 부채를 보면 잠 못 이루시는 분</textarea>
-                            </div>
-                        </div>
                     </div>
                 </div>
-
-                <!-- 면접AI 설정 -->
-                <div class="interview-ai-section">
-                    <h3>🤖 면접AI 평가 기준 설정</h3>
-                    <div class="ai-criteria">
-                        <div class="criteria-item">
-                            <div class="criteria-header">
-                                <span class="criteria-label">💻 기술 역량 (Hard Skills)</span>
-                                <span class="criteria-weight">35%</span>
-                            </div>
-                            <div class="criteria-description">
-                                React, TypeScript, JavaScript, 커머스 플랫폼 개발 경험, 성능 최적화 능력을 평가합니다.
-                            </div>
-                            <input type="range" class="weight-slider" min="0" max="100" value="35" oninput="updateWeight(this)">
-                        </div>
-                        <div class="criteria-item">
-                            <div class="criteria-header">
-                                <span class="criteria-label">🎭 소프트 스킬 (Soft Skills)</span>
-                                <span class="criteria-weight">35%</span>
-                            </div>
-                            <div class="criteria-description">
-                                의사소통 능력, 팀워크, 문제 해결력, 적응력, 프로세스 준수 능력을 평가합니다.
-                            </div>
-                            <input type="range" class="weight-slider" min="0" max="100" value="35" oninput="updateWeight(this)">
-                        </div>
-                        <div class="criteria-item">
-                            <div class="criteria-header">
-                                <span class="criteria-label">🚀 성장 잠재력</span>
-                                <span class="criteria-weight">20%</span>
-                            </div>
-                            <div class="criteria-description">
-                                학습 의지, 새로운 기술에 대한 관심, 장기적 성장 가능성을 평가합니다.
-                            </div>
-                            <input type="range" class="weight-slider" min="0" max="100" value="20" oninput="updateWeight(this)">
-                        </div>
-                        <div class="criteria-item">
-                            <div class="criteria-header">
-                                <span class="criteria-label">🎯 문화 적합성</span>
-                                <span class="criteria-weight">20%</span>
-                            </div>
-                            <div class="criteria-description">
-                                콜린웨이브의 기업문화(프로세스 준수, 협업, 존대어 사용, 실패 허용)와의 적합성을 평가합니다.
-                            </div>
-                            <input type="range" class="weight-slider" min="0" max="100" value="20" oninput="updateWeight(this)">
-                        </div>
-                    </div>
-
-                    <!-- 질문 템플릿 -->
-                    <div class="question-templates">
-                        <h4>❓ 면접 질문 템플릿 선택</h4>
-                        <div class="template-category">
-                            <h4>기술 관련 질문</h4>
-                            <div class="template-question selected" onclick="toggleSelection(this)">
-                                커머스 플랫폼에서 성능 최적화가 중요한 이유와 어떤 방법들을 사용하시나요?
-                            </div>
-                            <div class="template-question selected" onclick="toggleSelection(this)">
-                                기술 부채를 보면 잠 못 이루신다고 하셨는데, 가장 심각했던 기술 부채는 무엇이었나요?
-                            </div>
-                            <div class="template-question" onclick="toggleSelection(this)">
-                                대규모 커머스 서비스에서 사용자 경험을 개선한 경험이 있다면 구체적으로 설명해주세요.
-                            </div>
-                        </div>
-                        <div class="template-category">
-                            <h4>경험 관련 질문</h4>
-                            <div class="template-question selected" onclick="toggleSelection(this)">
-                                디자이너 브랜드 커머스 '아뜰리에' 프로젝트에서 가장 도전적이었던 부분은 무엇인가요?
-                            </div>
-                            <div class="template-question selected" onclick="toggleSelection(this)">
-                                팀의 코딩 컨벤션이 본인의 스타일보다 비효율적이라고 생각될 때 어떻게 대처하시나요?
-                            </div>
-                            <div class="template-question" onclick="toggleSelection(this)">
-                                빠른 결과물과 장기적인 코드 품질 중 무엇을 우선시하시나요?
-                            </div>
-                        </div>
-                        <div class="template-category">
-                            <h4>상황 대응 질문</h4>
-                            <div class="template-question" onclick="toggleSelection(this)">
-                                마감일이 임박한 상황에서 예상치 못한 버그가 발생했다면 어떻게 대응하시나요?
-                            </div>
-                            <div class="template-question selected" onclick="toggleSelection(this)">
-                                사용자로부터 급한 요청이 들어왔을 때 어떻게 우선순위를 정하시나요?
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 채용 현황 대시보드 -->
-                <div class="recruitment-dashboard">
-                    <div class="dashboard-header">
-                        <h3>📊 현재 채용 현황</h3>
-                    </div>
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stat">
-                            <div class="dashboard-value">156</div>
-                            <div class="dashboard-label">총 지원자</div>
-                        </div>
-                        <div class="dashboard-stat">
-                            <div class="dashboard-value">89</div>
-                            <div class="dashboard-label">AI 평가 완료</div>
-                        </div>
-                        <div class="dashboard-stat">
-                            <div class="dashboard-value">23</div>
-                            <div class="dashboard-label">1차 통과</div>
-                        </div>
-                        <div class="dashboard-stat">
-                            <div class="dashboard-value">5</div>
-                            <div class="dashboard-label">최종 면접</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 액션 버튼 -->
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="publishJob()">📢 채용 공고 등록</button>
-                    <button class="btn btn-secondary" onclick="configureAI()">🤖 면접AI 설정</button>
-                    <button class="btn btn-warning" onclick="window.open('all_candidates_page.html', '_blank')">👥 지원자 관리</button>
-                    <button class="btn btn-outline" onclick="generateReport()">📋 채용 리포트</button>
+                    <button class="btn btn-warning" onclick="closeJob()">🚫 공고 마감</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 마감된 공고 상세보기 모달 -->
+    <div id="closedJobDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 마감된 공고 상세</h2>
+                <span class="close" onclick="closeClosedJobModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">포지션명</label>
+                        <input type="text" class="form-input" value="백엔드 개발자 (Node.js)" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력 요구사항</label>
+                        <input type="text" class="form-input" value="3-5년" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">근무 형태</label>
+                        <input type="text" class="form-input" value="정규직" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">급여 범위</label>
+                        <input type="text" class="form-input" value="4,000만원 ~ 6,000만원" readonly>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">주요 업무</label>
+                        <textarea class="form-input form-textarea" readonly>• Node.js 기반의 서버 애플리케이션 개발 및 유지보수
+• RESTful API 설계 및 구현
+• 데이터베이스 설계 및 최적화 (MySQL, MongoDB)
+• 마이크로서비스 아키텍처 구현
+• 클라우드 인프라 관리 (AWS, GCP)
+• 보안 및 성능 최적화</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">자격 요건</label>
+                        <textarea class="form-input form-textarea" readonly>• Node.js 3년 이상 개발 경험
+• JavaScript/TypeScript 숙련자
+• RESTful API 설계 경험
+• 데이터베이스 설계 및 최적화 경험
+• Git을 활용한 협업 경험
+• 문제 해결 능력 및 학습 의지</textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">우대사항</label>
+                        <textarea class="form-input form-textarea" readonly>• 마이크로서비스 아키텍처 경험
+• Docker, Kubernetes 경험
+• AWS, GCP 등 클라우드 서비스 경험
+• 테스트 주도 개발(TDD) 경험
+• 오픈소스 기여 경험</textarea>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="reopenJob()">🔄 공고 재개</button>
+                    <button class="btn btn-outline" onclick="viewApplicants()">👥 지원자 목록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 새 공고 작성 모달 -->
+    <div id="newJobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📝 새로운 채용 공고 작성</h2>
+                <span class="close" onclick="closeNewJobModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">포지션명</label>
+                        <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력 요구사항</label>
+                        <select class="form-input form-select">
+                            <option>신입</option>
+                            <option>1-3년</option>
+                            <option>3-5년</option>
+                            <option>5년 이상</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">근무 형태</label>
+                        <select class="form-input form-select">
+                            <option>정규직</option>
+                            <option>계약직</option>
+                            <option>인턴</option>
+                            <option>프리랜서</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">급여 범위</label>
+                        <input type="text" class="form-input" placeholder="예: 3,500만원 ~ 5,000만원">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">주요 업무</label>
+                        <textarea class="form-input form-textarea" placeholder="주요 업무 내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">자격 요건</label>
+                        <textarea class="form-input form-textarea" placeholder="자격 요건을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">우대사항</label>
+                        <textarea class="form-input form-textarea" placeholder="우대사항을 입력하세요"></textarea>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="createNewJob()">📢 공고 등록</button>
+                    <button class="btn btn-outline" onclick="closeNewJobModal()">취소</button>
                 </div>
             </div>
         </div>
@@ -651,15 +1112,105 @@
         }
 
         function publishJob() {
-            alert('채용 공고가 성공적으로 등록되었습니다! 면접AI가 지원자들을 평가하기 시작합니다.');
+            alert('채용 공고가 성공적으로 등록되었습니다! 면접관AI가 지원자들을 평가하기 시작합니다.');
+        }
+
+        function toggleCriteria(element) {
+            element.classList.toggle('active');
         }
 
         function configureAI() {
-            alert('면접AI 설정이 완료되었습니다. 선택된 질문과 평가 기준으로 면접을 진행합니다.');
+            const selectedCriteria = document.querySelectorAll('.criteria-tag.active');
+            const totalCriteria = document.querySelectorAll('.criteria-tag');
+            
+            if (selectedCriteria.length === 0) {
+                alert('최소 하나 이상의 평가 기준을 선택해주세요.');
+                return;
+            }
+            
+            alert(`면접관AI 설정이 완료되었습니다!\n선택된 평가 기준: ${selectedCriteria.length}개\n총 평가 기준: ${totalCriteria.length}개`);
         }
 
         function generateReport() {
             alert('채용 현황 리포트가 생성되었습니다!');
+        }
+
+        // 모달 관련 함수들
+        function viewJobDetails() {
+            document.getElementById('jobDetailModal').style.display = 'block';
+        }
+
+        function closeJobModal() {
+            document.getElementById('jobDetailModal').style.display = 'none';
+        }
+
+        function openNewJobModal() {
+            document.getElementById('newJobModal').style.display = 'block';
+        }
+
+        function closeNewJobModal() {
+            document.getElementById('newJobModal').style.display = 'none';
+        }
+
+        function editJob() {
+            alert('공고 수정 기능이 실행됩니다.');
+        }
+
+        function closeJob() {
+            if (confirm('정말로 이 공고를 마감하시겠습니까?')) {
+                alert('공고가 마감되었습니다.');
+                closeJobModal();
+            }
+        }
+
+        function createNewJob() {
+            alert('새로운 채용 공고가 등록되었습니다!');
+            closeNewJobModal();
+        }
+
+        function publishNewJob() {
+            alert('새로운 채용 공고가 성공적으로 등록되었습니다! 면접관AI가 지원자들을 평가하기 시작합니다.');
+        }
+
+        // 마감된 공고 관련 함수들
+        function viewClosedJobDetails() {
+            document.getElementById('closedJobDetailModal').style.display = 'block';
+        }
+
+        function closeClosedJobModal() {
+            document.getElementById('closedJobDetailModal').style.display = 'none';
+        }
+
+        function reopenJob() {
+            if (confirm('정말로 이 공고를 다시 개시하시겠습니까?')) {
+                alert('공고가 다시 개시되었습니다.');
+                closeClosedJobModal();
+            }
+        }
+
+        function viewApplicants() {
+            alert('지원자 목록 페이지로 이동합니다.');
+            closeClosedJobModal();
+        }
+
+        function viewAllCandidates() {
+            window.open('all_candidates_page.html', '_blank');
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const jobModal = document.getElementById('jobDetailModal');
+            const newJobModal = document.getElementById('newJobModal');
+            const closedJobModal = document.getElementById('closedJobDetailModal');
+            if (event.target === jobModal) {
+                jobModal.style.display = 'none';
+            }
+            if (event.target === newJobModal) {
+                newJobModal.style.display = 'none';
+            }
+            if (event.target === closedJobModal) {
+                closedJobModal.style.display = 'none';
+            }
         }
 
         // 버튼 클릭 효과

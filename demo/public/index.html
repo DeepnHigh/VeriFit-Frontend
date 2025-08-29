@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI 기반 채용 플랫폼 - 구직자AI vs 면접AI</title>
+    <title>🤖 AI 기반 채용 플랫폼 - 지원자AI vs 면접관AI</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fffdf0 50%, #fff8dc 70%, #fff3bf 100%);
             min-height: 100vh;
             line-height: 1.6;
         }
@@ -27,7 +27,7 @@
         /* 헤더 */
         .header {
             text-align: center;
-            color: white;
+            color: black;
             padding: 60px 0 40px;
         }
 
@@ -46,7 +46,7 @@
         .header-subtitle {
             font-size: 1.1rem;
             opacity: 0.8;
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
@@ -54,7 +54,7 @@
         .main-content {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
             margin-bottom: 40px;
             overflow: hidden;
         }
@@ -74,7 +74,7 @@
         .intro-text {
             font-size: 1.2rem;
             color: #666;
-            max-width: 800px;
+            max-width: 840px;
             margin: 0 auto 40px;
             line-height: 1.8;
         }
@@ -200,7 +200,7 @@
         .feature-card {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: 27px;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
@@ -321,8 +321,8 @@
         .cta-section {
             padding: 60px 40px;
             text-align: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(135deg, #fff5dc, #ffecb9);
+            color: #000000;
         }
 
         .cta-section h2 {
@@ -357,13 +357,14 @@
 
         .btn-primary {
             background: white;
-            color: #4CAF50;
+            border: 2px solid gray;
+            color: black;
         }
 
         .btn-secondary {
-            background: transparent;
-            color: white;
-            border: 2px solid white;
+            background: rgb(240, 240, 240);
+            color: black;
+            border: 2px solid gray;
         }
 
         .btn:hover {
@@ -405,7 +406,7 @@
         <!-- 헤더 -->
         <div class="header">
             <h1>🤖 AI 기반 채용 플랫폼</h1>
-            <p>구직자AI vs 면접AI의 혁신적인 채용 솔루션</p>
+            <p>지원자AI vs 면접관AI의 혁신적인 채용 솔루션</p>
             <div class="header-subtitle">
                 기업마다 다른 자기소개서를 작성할 필요 없이, 한 번의 프로필 설정으로 모든 기업에 지원하세요.
                 AI가 당신을 대신해서 면접에 응답하고, 기업은 AI 면접관을 통해 효율적으로 인재를 선발합니다.
@@ -418,8 +419,8 @@
             <div class="intro-section">
                 <h2>🎯 어떻게 작동하나요?</h2>
                 <div class="intro-text">
-                    구직자는 자신의 프로필과 포트폴리오를 한 번만 설정하면, 구직자AI가 모든 기업의 면접에 자동으로 응답합니다.
-                    기업은 면접AI를 설정하여 원하는 질문과 평가 기준을 정하면, AI가 지원자들을 자동으로 평가하고 랭킹합니다.
+                    지원자는 자신의 프로필과 포트폴리오를 한 번만 설정하면, 지원자AI가 모든 기업의 면접에 자동으로 응답합니다.
+                    기업은 면접관AI를 설정하여 원하는 질문과 평가 기준을 정하면, AI가 지원자들을 자동으로 평가하고 랭킹합니다.
                     결과적으로 서류 검토와 1차 면접을 대체하여 시간과 비용을 크게 절약할 수 있습니다.
                 </div>
             </div>
@@ -435,7 +436,7 @@
                         <div class="ai-header">
                             <div class="ai-avatar interviewer">🤖</div>
                             <div class="ai-info">
-                                <h4>면접AI</h4>
+                                <h4>면접관AI</h4>
                                 <p>기업 요구사항 기반</p>
                             </div>
                         </div>
@@ -450,8 +451,8 @@
                         <div class="ai-header">
                             <div class="ai-avatar candidate">👤</div>
                             <div class="ai-info">
-                                <h4>구직자AI</h4>
-                                <p>김개발님 프로필 기반</p>
+                                <h4>지원자AI</h4>
+                                <p>김지원님 프로필 기반</p>
                             </div>
                         </div>
                         <div class="conversation-bubble answer">
@@ -476,7 +477,7 @@
                     <div class="feature-card">
                         <div class="feature-icon">🤖</div>
                         <h3>AI 면접 자동화</h3>
-                        <p>구직자AI가 기업의 모든 질문에 자동으로 응답하고, 면접AI가 객관적으로 평가합니다.</p>
+                        <p>지원자AI가 기업의 모든 질문에 자동으로 응답하고, 면접관AI가 객관적으로 평가합니다.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
@@ -501,32 +502,9 @@
                 </div>
             </div>
 
-            <!-- 데모 페이지 링크 -->
-            <div class="demo-section">
-                <h2>🎮 데모 체험하기</h2>
-                <div class="demo-grid">
-                    <a href="candidate_profile_management.html" class="demo-card">
-                        <h3>👤 구직자 프로필 관리</h3>
-                        <p>나를 대변하는 AI를 위한 프로필 설정과 포트폴리오 업로드</p>
-                    </a>
-                    <a href="company_recruitment_management.html" class="demo-card secondary">
-                        <h3>🏢 기업 채용 관리</h3>
-                        <p>채용 공고 작성과 면접AI 설정</p>
-                    </a>
-                    <a href="ai_interview_simulation.html" class="demo-card warning">
-                        <h3>🤖 AI 면접 시뮬레이션</h3>
-                        <p>구직자AI와 면접AI의 실시간 면접 대화</p>
-                    </a>
-                    <a href="all_candidates_page.html" class="demo-card">
-                        <h3>📋 전체 지원자 관리</h3>
-                        <p>AI 평가 결과와 지원자 랭킹 확인</p>
-                    </a>
-                </div>
-            </div>
-
             <!-- 통계 -->
             <div class="stats-section">
-                <h2>📈 플랫폼 성과</h2>
+                <h2>📈 플랫폼 사용 성과 사례</h2>
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-value">95%</div>
@@ -553,7 +531,7 @@
             <h2>🚀 지금 시작하세요</h2>
             <p>AI 기반 채용 플랫폼으로 더 효율적이고 공정한 채용을 경험해보세요</p>
             <div class="cta-buttons">
-                <a href="candidate_profile_management.html" class="btn btn-primary">구직자로 시작하기</a>
+                <a href="candidate_profile_management.html" class="btn btn-primary">지원자로 시작하기</a>
                 <a href="company_recruitment_management.html" class="btn btn-secondary">기업으로 시작하기</a>
             </div>
         </div>

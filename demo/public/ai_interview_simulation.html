@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI 면접 시뮬레이션 - 구직자AI vs 면접AI</title>
+    <title>🤖 AI 면접 시뮬레이션 - 지원자AI vs 면접관AI</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fff7ef 0%, #ffeedb 50%, #ffe8cc 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,7 +25,7 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #000000;
             margin-bottom: 30px;
         }
 
@@ -48,7 +48,7 @@
         }
 
         .screen-title {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #ad714e, #a36847);
             color: white;
             padding: 20px;
             font-size: 1.5rem;
@@ -69,8 +69,8 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
+            background: linear-gradient(135deg, rgb(231, 220, 202), #e9d9c2);
+            color: black;
             padding: 20px;
             text-align: center;
         }
@@ -230,10 +230,9 @@
         .chat-messages::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-
         /* 평가 결과 섹션 */
         .evaluation-section {
-            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            background: linear-gradient(135deg, #f5f0e8, #e6dac8);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
@@ -247,7 +246,7 @@
         }
 
         .evaluation-header h3 {
-            color: #2e7d32;
+            color: #a36847;
             font-size: 1.5rem;
         }
 
@@ -263,13 +262,13 @@
             border-radius: 10px;
             padding: 15px;
             text-align: center;
-            border-left: 4px solid #4CAF50;
+            border-left: 4px solid #af704c;
         }
 
         .evaluation-score {
             font-size: 2rem;
             font-weight: bold;
-            color: #4CAF50;
+            color: #a36847;
             margin-bottom: 5px;
         }
 
@@ -286,7 +285,7 @@
         }
 
         .ai-analysis h4 {
-            color: #2e7d32;
+            color: #a36847;
             margin-bottom: 15px;
         }
 
@@ -373,7 +372,7 @@
     <div class="container">
         <div class="header">
             <h1>🤖 AI 면접 시뮬레이션</h1>
-            <p>구직자AI vs 면접AI의 실시간 면접 대화</p>
+            <p>면접관AI vs 지원자AI의 실시간 면접 대화</p>
         </div>
 
         <!-- AI 면접 시뮬레이션 -->
@@ -385,11 +384,11 @@
                     <div class="chat-header">
                         <div class="chat-title">
                             <h3>💬 AI 면접 대화</h3>
-                            <p>면접AI 🤖 vs 구직자AI 👤</p>
+                            <p>면접관AI 🤖 vs 지원자AI 👤</p>
                         </div>
                     </div>
                     <div class="chat-messages" id="chat-messages">
-                        <!-- 면접AI 메시지 (좌측) -->
+                        <!-- 면접관AI 메시지 (좌측) -->
                         <div class="message-container interviewer">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
@@ -397,13 +396,13 @@
                                     안녕하세요! 콜린웨이브 커머스플랫폼 프론트엔드 개발자 포지션에 지원해주셔서 감사합니다. 먼저 자기소개를 부탁드립니다.
                                 </div>
                                 <div class="message-info">
-                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-sender">면접관AI</span>
                                     <span class="message-time">14:30:15</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 구직자AI 메시지 (우측) -->
+                        <!-- 지원자AI 메시지 (우측) -->
                         <div class="message-container candidate">
                             <div class="message-content">
                                 <div class="message-bubble answer">
@@ -411,13 +410,13 @@
                                 </div>
                                 <div class="message-info">
                                     <span class="message-time">14:30:18</span>
-                                    <span class="message-sender">이지은</span>
+                                    <span class="message-sender">지원자AI</span>
                                 </div>
                             </div>
                             <div class="message-avatar">👤</div>
                         </div>
 
-                        <!-- 면접AI 메시지 (좌측) -->
+                        <!-- 면접관AI 메시지 (좌측) -->
                         <div class="message-container interviewer">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
@@ -425,13 +424,13 @@
                                     제출하신 직무 적성검사 결과를 보면, '예술형' 점수가 96점으로 매우 높은 반면, 정해진 절차나 구조를 따르는 '관습형' 점수는 21점으로 매우 낮게 나타났습니다. 일반적으로 기술 부채를 해결하는 과정은 매우 체계적이고 관습적인 규칙(코딩 컨벤션, 문서화 등)을 따라야 하는데, 이지은 님의 성향과는 다소 상충하는 면이 있어 보입니다. 이 부분에 대해 어떻게 생각하십니까?
                                 </div>
                                 <div class="message-info">
-                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-sender">면접관AI</span>
                                     <span class="message-time">14:31:22</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 구직자AI 메시지 (우측) -->
+                        <!-- 지원자AI 메시지 (우측) -->
                         <div class="message-container candidate">
                             <div class="message-content">
                                 <div class="message-bubble answer">
@@ -439,13 +438,13 @@
                                 </div>
                                 <div class="message-info">
                                     <span class="message-time">14:31:35</span>
-                                    <span class="message-sender">이지은</span>
+                                    <span class="message-sender">지원자AI</span>
                                 </div>
                             </div>
                             <div class="message-avatar">👤</div>
                         </div>
 
-                        <!-- 면접AI 메시지 (좌측) -->
+                        <!-- 면접관AI 메시지 (좌측) -->
                         <div class="message-container interviewer">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
@@ -453,13 +452,13 @@
                                     창작을 위한 기반이라는 관점은 신선하군요. 하지만 저희 '코드 리뷰' 가상 시뮬레이션에서는, 팀의 코딩 컨벤션과 약간 다른 창의적인 컴포넌트 구조를 제안하시고, 새 기능 개발 시간을 확보하기 위해 두 차례 문서화를 생략한 기록이 있습니다. 방금 말씀하신 신념과 이 행동 사이의 간극은 어떻게 설명하시겠습니까?
                                 </div>
                                 <div class="message-info">
-                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-sender">면접관AI</span>
                                     <span class="message-time">14:32:45</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 구직자AI 메시지 (우측) -->
+                        <!-- 지원자AI 메시지 (우측) -->
                         <div class="message-container candidate">
                             <div class="message-content">
                                 <div class="message-bubble answer">
@@ -467,13 +466,13 @@
                                 </div>
                                 <div class="message-info">
                                     <span class="message-time">14:32:50</span>
-                                    <span class="message-sender">이지은</span>
+                                    <span class="message-sender">지원자AI</span>
                                 </div>
                             </div>
                             <div class="message-avatar">👤</div>
                         </div>
 
-                        <!-- 면접AI 메시지 (좌측) -->
+                        <!-- 면접관AI 메시지 (좌측) -->
                         <div class="message-container interviewer">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
@@ -481,13 +480,13 @@
                                     팀의 코딩 컨벤션이 본인의 스타일보다 비효율적이라고 생각될 때 어떻게 대처하시나요?
                                 </div>
                                 <div class="message-info">
-                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-sender">면접관AI</span>
                                     <span class="message-time">14:33:15</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 구직자AI 메시지 (우측) -->
+                        <!-- 지원자AI 메시지 (우측) -->
                         <div class="message-container candidate">
                             <div class="message-content">
                                 <div class="message-bubble answer">
@@ -495,13 +494,13 @@
                                 </div>
                                 <div class="message-info">
                                     <span class="message-time">14:33:20</span>
-                                    <span class="message-sender">이지은</span>
+                                    <span class="message-sender">지원자AI</span>
                                 </div>
                             </div>
                             <div class="message-avatar">👤</div>
                         </div>
 
-                        <!-- 면접AI 메시지 (좌측) -->
+                        <!-- 면접관AI 메시지 (좌측) -->
                         <div class="message-container interviewer">
                             <div class="message-avatar">🤖</div>
                             <div class="message-content">
@@ -509,13 +508,13 @@
                                     빠른 결과물과 장기적인 코드 품질 중 무엇을 우선시하시나요?
                                 </div>
                                 <div class="message-info">
-                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-sender">면접관AI</span>
                                     <span class="message-time">14:34:30</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 구직자AI 메시지 (우측) -->
+                        <!-- 지원자AI 메시지 (우측) -->
                         <div class="message-container candidate">
                             <div class="message-content">
                                 <div class="message-bubble answer">
@@ -523,7 +522,7 @@
                                 </div>
                                 <div class="message-info">
                                     <span class="message-time">14:34:35</span>
-                                    <span class="message-sender">이지은</span>
+                                    <span class="message-sender">지원자AI</span>
                                 </div>
                             </div>
                             <div class="message-avatar">👤</div>
@@ -574,7 +573,7 @@
                         </div>
                     </div>
                     <div class="ai-analysis">
-                        <h4>🤖 면접AI 분석 리포트</h4>
+                        <h4>🤖 면접관AI 분석 리포트</h4>
                         <p>
                             이 대화는 지원자의 가장 큰 장점과 가장 명확한 단점을 동시에 보여주는 핵심적인 순간이었습니다.<br><br>
                             
@@ -627,10 +626,10 @@
             messageContainer.className = `message-container ${isQuestion ? 'interviewer' : 'candidate'}`;
             
             const avatar = isQuestion ? '🤖' : '👤';
-            const sender = isQuestion ? '면접AI' : '이지은';
+            const sender = isQuestion ? '면접관AI' : '지원자AI';
             
             if (isQuestion) {
-                // 면접AI 메시지 (좌측)
+                // 면접관AI 메시지 (좌측)
                 messageContainer.innerHTML = `
                     <div class="message-avatar">${avatar}</div>
                     <div class="message-content">
@@ -644,7 +643,7 @@
                     </div>
                 `;
             } else {
-                // 구직자AI 메시지 (우측)
+                // 지원자AI 메시지 (우측)
                 messageContainer.innerHTML = `
                     <div class="message-content">
                         <div class="message-bubble answer">
@@ -664,7 +663,7 @@
         }
 
         function startInterview() {
-            alert('면접이 시작되었습니다! 구직자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
+            alert('면접이 시작되었습니다! 지원자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
         }
 
         function nextQuestion() {
@@ -675,7 +674,7 @@
                 // 면접관 질문 추가
                 addMessage(questions[interviewStep], true, timeStr);
                 
-                // 잠시 후 구직자 답변 추가
+                // 잠시 후 지원자자 답변 추가
                 setTimeout(() => {
                     const answerTime = new Date().toTimeString().split(' ')[0];
                     addMessage(answers[interviewStep], false, answerTime);
