@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fffafc 0%, #fff2f7 50%, #ffeef6 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,7 +25,7 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #000000;
             margin-bottom: 30px;
         }
 
@@ -48,7 +48,7 @@
         }
 
         .screen-title {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #bd6464, #c05c5c);
             color: white;
             padding: 20px;
             font-size: 1.5rem;
@@ -99,7 +99,7 @@
         }
 
         .score-badge {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #c45b5b, #d45a5a);
             color: white;
             padding: 10px 20px;
             border-radius: 25px;
@@ -115,22 +115,32 @@
         }
 
         .score-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 4px solid #4CAF50;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .score-card.hard-skill {
-            border-left-color: #2196F3;
+            border-color: #2196F3;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3f8ff 100%);
         }
 
         .score-card.soft-skill {
-            border-left-color: #FF9800;
+            border-color: #FF9800;
+            background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%);
         }
 
         .score-card.overall {
-            border-left-color: #9C27B0;
+            border-color: #9C27B0;
+            background: linear-gradient(135deg, #f3e5f5 0%, #f8f0ff 100%);
         }
 
         .score-card h4 {
@@ -200,6 +210,11 @@
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .ai-interview-section h4 {
+            margin-bottom: 16px;
         }
 
         .interview-item {
@@ -345,14 +360,16 @@
             position: relative;
             width: 400px;
             height: 400px;
+            overflow: visible;
         }
 
         .hexagon-labels {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 140%;
             height: 100%;
+            pointer-events: none;
         }
 
         .hex-label {
@@ -374,6 +391,12 @@
             font-weight: normal;
             margin-top: 2px;
         }
+        /* 신뢰도 퍼센트별 색상 클래스 (candidate와 동일) */
+        .reliability.excellent .percent { color: #25bb25; }
+        .reliability.good .percent { color: #6aa6eb; }
+        .reliability.average .percent { color: #FFD700; }
+        .reliability.poor .percent { color: #FFA500; }
+        .reliability.very-poor .percent { color: #FF0000; }
 
         /* 적성검사 테이블 스타일 */
         .personality-table-section {
@@ -417,7 +440,7 @@
         }
 
         .personality-table .highlight-row {
-            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            background: linear-gradient(135deg, #e2eeff, #b2cff5);
         }
 
         .personality-table .low-row {
@@ -470,6 +493,67 @@
             border-radius: 8px;
             border-left: 3px solid #1976d2;
             line-height: 1.5;
+        }
+
+        /* 실제 대화 로그 스타일 */
+        .chat-log {
+            background: white;
+            border: 1px solid #eeeeee;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .chat-turn {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .chat-turn:last-child {
+            margin-bottom: 0;
+        }
+
+        .speaker {
+            min-width: 74px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .speaker.ai {
+            color: #7b1fa2;
+        }
+
+        .qa-badge {
+            display: inline-block;
+            min-width: 20px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-right: 8px;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .qa-badge.q {
+            background: #7b1fa2;
+        }
+
+        .qa-badge.a {
+            background: #1976d2;
+        }
+
+        .utterance {
+            color: #333;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .chat-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
         }
 
         /* 종합 리포트 테이블 스타일 */
@@ -540,7 +624,8 @@
         }
 
         .recommendations {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 30px;
@@ -742,12 +827,12 @@
                         <div class="hexagon-chart">
                             <canvas id="hexagonChart" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 10%; left: 50%;">현실형<br><span class="reliability">신뢰도: 85%</span></div>
-                                <div class="hex-label" style="top: 25%; right: 10%;">탐구형<br><span class="reliability">신뢰도: 72%</span></div>
-                                <div class="hex-label" style="bottom: 25%; right: 10%;">관습형<br><span class="reliability">신뢰도: 91%</span></div>
-                                <div class="hex-label" style="bottom: 10%; left: 50%;">사회형<br><span class="reliability">신뢰도: 78%</span></div>
-                                <div class="hex-label" style="bottom: 25%; left: 10%;">진취형<br><span class="reliability">신뢰도: 83%</span></div>
-                                <div class="hex-label" style="top: 25%; left: 10%;">예술형<br><span class="reliability">신뢰도: 89%</span></div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="85">신뢰도: <span class="percent">85%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="72">신뢰도: <span class="percent">72%</span></span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="91">신뢰도: <span class="percent">91%</span></span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="78">신뢰도: <span class="percent">78%</span></span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="83">신뢰도: <span class="percent">83%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="89">신뢰도: <span class="percent">89%</span></span></div>
                             </div>
                         </div>
                     </div>
@@ -818,62 +903,78 @@
                 </div>
 
                 <div class="ai-interview-section">
-                    <h4>🤖 AI 면접 대화 하이라이트</h4>
-                    
-                    <!-- Turn 3 요약 -->
+                    <h4>🤖 AI 면접 대화 로그</h4>
+
+                    <!-- 실제 대화 Turn 3~6 예시 -->
                     <div class="interview-highlight">
                         <div class="highlight-header">
                             <span class="highlight-turn">Turn 3</span>
-                            <span class="highlight-topic">적성검사 결과와 기술 부채 해결 관점</span>
+                            <span class="highlight-topic">적성검사 결과와 기술 부채</span>
                         </div>
-                        <div class="highlight-summary">
-                            <strong>대화 요약:</strong> 면접관이 예술형 96점과 관습형 21점의 상충점을 지적하자, 지원자는 기술 부채 해결을 '창작을 위한 기반 다지기'로 재해석하며 창의성과 체계성의 조화를 강조했습니다.
-                        </div>
-                        <div class="ai-evaluation">
-                            <strong>AI면접관 평가:</strong> 지원자의 자기 인식과 창의적 사고가 뛰어나며, 기술 부채에 대한 독특한 관점을 보여줍니다. 다만 프로세스 준수 측면에서는 개선이 필요합니다.
+                        <div class="chat-log">
+                            <div class="chat-turn">
+                                <div class="speaker ai"><span class="qa-badge q">Q</span>AI</div>
+                                <div class="utterance">예술형이 96점으로 매우 높은 반면 관습형은 21점입니다. 프로세스 준수와 창의성의 균형을 어떻게 맞추셨나요?</div>
+                            </div>
+                            <div class="chat-turn">
+                                <div class="speaker"><span class="qa-badge a">A</span>지원자</div>
+                                <div class="utterance">기술 부채를 창작을 위한 기반 다지기로 보고 우선 해결합니다. 이후에 실험과 개선을 반복하며 균형을 맞춥니다.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Turn 4 요약 -->
                     <div class="interview-highlight">
                         <div class="highlight-header">
                             <span class="highlight-turn">Turn 4</span>
-                            <span class="highlight-topic">신념과 행동의 간극 분석</span>
+                            <span class="highlight-topic">신념과 행동의 간극</span>
                         </div>
-                        <div class="highlight-summary">
-                            <strong>대화 요약:</strong> 시뮬레이션에서 코딩 컨벤션 위반과 문서화 생략 기록을 지적받자, 지원자는 자신의 장단점을 솔직히 인정하고 후속 조치를 설명했습니다.
-                        </div>
-                        <div class="ai-evaluation">
-                            <strong>AI면접관 평가:</strong> 높은 자기 객관화 능력과 협업 의지를 보여주었으나, 의욕이 앞서 절차를 간과하는 경향이 있어 팀 프로세스 준수 측면에서 관리가 필요합니다.
+                        <div class="chat-log">
+                            <div class="chat-turn">
+                                <div class="speaker ai"><span class="qa-badge q">Q</span>AI</div>
+                                <div class="utterance">시뮬레이션에서 컨벤션 위반과 문서화 미흡 사례가 있었습니다. 어떻게 개선하셨나요?</div>
+                            </div>
+                            <div class="chat-turn">
+                                <div class="speaker"><span class="qa-badge a">A</span>지원자</div>
+                                <div class="utterance">스스로의 성향을 인정하고 체크리스트와 PR 템플릿을 도입했습니다. 리뷰 규칙도 팀과 합의했습니다.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Turn 5 요약 -->
                     <div class="interview-highlight">
                         <div class="highlight-header">
                             <span class="highlight-turn">Turn 5</span>
-                            <span class="highlight-topic">팀 컨벤션과 개인 스타일 충돌 대처</span>
+                            <span class="highlight-topic">팀 컨벤션 vs 개인 스타일</span>
                         </div>
-                        <div class="highlight-summary">
-                            <strong>대화 요약:</strong> 팀의 코딩 컨벤션이 비효율적일 때의 대처법을 묻자, 지원자는 팀원들과의 논의를 통한 합의와 후속 보완 조치를 강조했습니다.
-                        </div>
-                        <div class="ai-evaluation">
-                            <strong>AI면접관 평가:</strong> 협업 의지와 책임감 있는 태도를 보여주었으나, 여전히 프로세스 준수보다는 개인적 판단을 우선시할 가능성이 있습니다.
+                        <div class="chat-log">
+                            <div class="chat-turn">
+                                <div class="speaker ai"><span class="qa-badge q">Q</span>AI</div>
+                                <div class="utterance">팀 컨벤션이 비효율적일 때는 어떤 접근을 하시나요?</div>
+                            </div>
+                            <div class="chat-turn">
+                                <div class="speaker"><span class="qa-badge a">A</span>지원자</div>
+                                <div class="utterance">근거를 정리해 대안을 제안하고, 합의되면 점진적으로 반영합니다. 합의 전에는 팀 규칙을 우선합니다.</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Turn 6 요약 -->
                     <div class="interview-highlight">
                         <div class="highlight-header">
                             <span class="highlight-turn">Turn 6</span>
-                            <span class="highlight-topic">속도 vs 품질 우선순위</span>
+                            <span class="highlight-topic">속도 vs 품질</span>
                         </div>
-                        <div class="highlight-summary">
-                            <strong>대화 요약:</strong> 빠른 결과물과 장기적 코드 품질 중 우선순위를 묻자, 지원자는 장기적 품질을 우선시하며 점진적 개선 방식을 선호한다고 답했습니다.
+                        <div class="chat-log">
+                            <div class="chat-turn">
+                                <div class="speaker ai"><span class="qa-badge q">Q</span>AI</div>
+                                <div class="utterance">납기와 품질이 충돌할 때의 우선순위는 무엇인가요?</div>
+                            </div>
+                            <div class="chat-turn">
+                                <div class="speaker"><span class="qa-badge a">A</span>지원자</div>
+                                <div class="utterance">장기적 품질을 우선합니다. 다만 마일스톤을 쪼개 핵심 기능부터 안정적으로 제공하도록 설계합니다.</div>
+                            </div>
                         </div>
-                        <div class="ai-evaluation">
-                            <strong>AI면접관 평가:</strong> 장기적 사고와 품질 의식이 우수하며, 커머스 플랫폼의 특성을 고려한 현실적 판단을 보여줍니다. 이는 지원자의 성숙한 개발 철학을 반영합니다.
-                        </div>
+                    </div>
+                    <div class="chat-footer">
+                        <a href="ai_interview_simulation.html" class="btn btn-secondary" style="text-decoration: none;">전체 보기</a>
                     </div>
                 </div>
 
@@ -1027,8 +1128,30 @@
             ctx.fill();
         }
         
-        // 페이지 로드 시 육각형 그래프 그리기
-        window.addEventListener('load', drawHexagonChart);
+        // 신뢰도 색상 적용 함수 (candidate와 동일)
+        function applyReliabilityColors() {
+            const reliabilityElements = document.querySelectorAll('.reliability');
+            reliabilityElements.forEach(element => {
+                const text = element.textContent;
+                const percentMatch = text.match(/(\d+)%/);
+                if (percentMatch) {
+                    const percent = parseInt(percentMatch[1]);
+                    let colorClass = '';
+                    if (percent >= 80) colorClass = 'excellent';
+                    else if (percent >= 60) colorClass = 'good';
+                    else if (percent >= 40) colorClass = 'average';
+                    else if (percent >= 20) colorClass = 'poor';
+                    else colorClass = 'very-poor';
+                    element.classList.add(colorClass);
+                }
+            });
+        }
+
+        // 페이지 로드 시 육각형 그래프와 신뢰도 색상 적용
+        window.addEventListener('load', () => {
+            drawHexagonChart();
+            applyReliabilityColors();
+        });
     </script>
 </body>
 </html>

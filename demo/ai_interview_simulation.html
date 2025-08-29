@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI 면접 시뮬레이션 - 구직자AI vs 면접AI</title>
+    <title>🤖 AI 면접 시뮬레이션 - 지원자AI vs 면접관AI</title>
     <style>
         * {
             margin: 0;
@@ -324,7 +324,7 @@
     <div class="container">
         <div class="header">
             <h1>🤖 AI 면접 시뮬레이션</h1>
-            <p>구직자AI vs 면접AI의 실시간 면접 대화</p>
+            <p>지원자AI vs 면접관AI의 실시간 면접 대화</p>
         </div>
 
         <!-- AI 면접 시뮬레이션 -->
@@ -337,7 +337,7 @@
                         <div class="ai-header">
                             <div class="ai-avatar interviewer">🤖</div>
                             <div class="ai-info">
-                                <h3>면접AI (Interviewer AI)</h3>
+                                <h3>면접관AI (Interviewer AI)</h3>
                                 <p>기업 요구사항 기반 질문 생성</p>
                             </div>
                         </div>
@@ -365,12 +365,12 @@
                         </div>
                     </div>
 
-                    <!-- 구직자 AI 패널 -->
+                    <!-- 지원자 AI 패널 -->
                     <div class="ai-panel candidate">
                         <div class="ai-header">
                             <div class="ai-avatar candidate">👤</div>
                             <div class="ai-info">
-                                <h3>구직자AI (Candidate AI)</h3>
+                                <h3>지원자AI (Candidate AI)</h3>
                                 <p>이지은님의 프로필 기반 답변 생성</p>
                             </div>
                         </div>
@@ -415,7 +415,7 @@
                         </div>
                     </div>
                     <div class="ai-analysis">
-                        <h4>🤖 면접AI 분석 리포트</h4>
+                        <h4>🤖 면접관AI 분석 리포트</h4>
                         <p>
                             이지은 지원자는 독창적인 UI/UX 구현 능력과 기술 부채 해결 능력이 매우 우수합니다. 
                             고객에게 '매력적인 고객 경험'을 제공해야 하는 콜린웨이브의 프론트엔드 개발자로서 높은 잠재력을 보유하고 있습니다. 
@@ -472,7 +472,7 @@
         }
 
         function startInterview() {
-            alert('면접이 시작되었습니다! 구직자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
+            alert('면접이 시작되었습니다! 지원자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
         }
 
         function nextQuestion() {
@@ -483,7 +483,7 @@
                 // 면접관 질문 추가
                 addMessage('interviewer-area', questions[interviewStep], true, timeStr);
                 
-                // 잠시 후 구직자 답변 추가
+                // 잠시 후 지원자 답변 추가
                 setTimeout(() => {
                     const answerTime = new Date().toTimeString().split(' ')[0];
                     addMessage('candidate-area', answers[interviewStep], false, answerTime);

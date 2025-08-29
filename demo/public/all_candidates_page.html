@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgb(239, 252, 249) 0%, rgb(228, 253, 250) 50%, #dffaf6 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,7 +25,7 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #000000;
             margin-bottom: 30px;
         }
 
@@ -98,6 +98,9 @@
         /* 지원자 테이블 */
         .candidate-ranking-section {
             margin-bottom: 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
         }
 
         .candidate-ranking-section h3 {
@@ -318,6 +321,23 @@
             border-left: 4px solid #2196F3;
         }
 
+        /* 하드/소프트 섹션별 강조 색상 */
+        .evaluation-section.hard .evaluation-item {
+            border-left-color: #2196F3;
+        }
+
+        .evaluation-section.hard .evaluation-item h4 {
+            color: #1976d2;
+        }
+
+        .evaluation-section.soft .evaluation-item {
+            border-left-color: #FF9800;
+        }
+
+        .evaluation-section.soft .evaluation-item h4 {
+            color: #f57c00;
+        }
+
         .evaluation-item h4 {
             color: #1976d2;
             margin-bottom: 10px;
@@ -331,13 +351,7 @@
             font-size: 0.9rem;
         }
 
-        .evaluation-section:nth-child(odd) .evaluation-item {
-            border-left-color: #FF9800;
-        }
-
-        .evaluation-section:nth-child(odd) .evaluation-item h4 {
-            color: #f57c00;
-        }
+        
 
         /* AI 총평 섹션 */
         .ai-overview-section {
@@ -512,7 +526,7 @@
                                         <div class="candidate-cell">
                                             <div class="candidate-avatar">박</div>
                                             <div class="candidate-info">
-                                                <div class="candidate-name">박개발 (Park Developer)</div>
+                                                <div class="candidate-name">박상영 (Park Developer)</div>
                                                 <div class="candidate-detail">React/TypeScript • 5년 경력</div>
                                             </div>
                                         </div>
@@ -546,7 +560,7 @@
                                         <div class="candidate-cell">
                                             <div class="candidate-avatar">김</div>
                                             <div class="candidate-info">
-                                                <div class="candidate-name">김개발 (Kim Developer)</div>
+                                                <div class="candidate-name">김지원 (Kim Developer)</div>
                                                 <div class="candidate-detail">React/TypeScript • 3년 경력</div>
                                             </div>
                                         </div>
@@ -580,7 +594,7 @@
                                         <div class="candidate-cell">
                                             <div class="candidate-avatar">최</div>
                                             <div class="candidate-info">
-                                                <div class="candidate-name">최개발 (Choi Developer)</div>
+                                                <div class="candidate-name">최주희 (Choi Developer)</div>
                                                 <div class="candidate-detail">Angular/TypeScript • 6년 경력</div>
                                             </div>
                                         </div>
@@ -614,7 +628,7 @@
                                         <div class="candidate-cell">
                                             <div class="candidate-avatar">정</div>
                                             <div class="candidate-info">
-                                                <div class="candidate-name">정개발 (Jung Developer)</div>
+                                                <div class="candidate-name">정민수 (Jung Developer)</div>
                                                 <div class="candidate-detail">React/Next.js • 2년 경력</div>
                                             </div>
                                         </div>
@@ -645,16 +659,15 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="pagination">
-                    <button class="btn-page">← 이전</button>
-                    <span class="page-info">1-5 / 156명</span>
-                    <button class="btn-page">다음 →</button>
+                    <div class="pagination">
+                        <button class="btn-page">← 이전</button>
+                        <span class="page-info">1-5 / 156명</span>
+                        <button class="btn-page">다음 →</button>
+                    </div>
                 </div>
 
                 <!-- 하드 스킬 평가 항목 -->
-                <div class="evaluation-section">
+                <div class="evaluation-section hard">
                     <h3>💻 하드 스킬 평가 항목</h3>
                     <div class="evaluation-grid">
                         <div class="evaluation-item">
@@ -685,7 +698,7 @@
                 </div>
 
                 <!-- 소프트 스킬 평가 항목 -->
-                <div class="evaluation-section">
+                <div class="evaluation-section soft">
                     <h3>🎭 소프트 스킬 평가 항목</h3>
                     <div class="evaluation-grid">
                         <div class="evaluation-item">
