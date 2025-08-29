@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI 면접 시뮬레이션 - 구직자AI vs 면접AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .screen-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .screen-title {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .screen-content {
+            padding: 30px;
+        }
+
+        /* 통합 채팅창 스타일 */
+        .chat-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-title h3 {
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+
+        .chat-title p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .message-container.interviewer {
+            justify-content: flex-start;
+        }
+
+        .message-container.candidate {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message-container.interviewer .message-avatar {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+            color: white;
+        }
+
+        .message-container.candidate .message-avatar {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .message-content {
+            flex: 1;
+            max-width: 70%;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .message-bubble.question {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1976d2;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-bubble.answer {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            color: #2e7d32;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 0.75rem;
+        }
+
+        .message-container.interviewer .message-info {
+            justify-content: flex-start;
+        }
+
+        .message-container.candidate .message-info {
+            justify-content: flex-end;
+        }
+
+        .message-sender {
+            font-weight: bold;
+            color: #666;
+        }
+
+        .message-time {
+            color: #999;
+        }
+
+        .typing-indicator {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 12px 16px;
+            border: 1px dashed #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* 스크롤바 스타일링 */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* 평가 결과 섹션 */
+        .evaluation-section {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .evaluation-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .evaluation-header h3 {
+            color: #2e7d32;
+            font-size: 1.5rem;
+        }
+
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .evaluation-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .evaluation-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+
+        .evaluation-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .ai-analysis {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .ai-analysis h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .ai-analysis p {
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* 컨트롤 패널 */
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .control-header {
+            margin-bottom: 20px;
+        }
+
+        .control-header h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800, #f57c00);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .chat-messages {
+                height: 400px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .evaluation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI 면접 시뮬레이션</h1>
+            <p>구직자AI vs 면접AI의 실시간 면접 대화</p>
+        </div>
+
+        <!-- AI 면접 시뮬레이션 -->
+        <div class="screen-section">
+            <div class="screen-title">🎯 실시간 AI 면접 진행</div>
+            <div class="screen-content">
+                <!-- 통합 채팅창 -->
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-title">
+                            <h3>💬 AI 면접 대화</h3>
+                            <p>면접AI 🤖 vs 구직자AI 👤</p>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- 면접AI 메시지 (좌측) -->
+                        <div class="message-container interviewer">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble question">
+                                    안녕하세요! 콜린웨이브 커머스플랫폼 프론트엔드 개발자 포지션에 지원해주셔서 감사합니다. 먼저 자기소개를 부탁드립니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-time">14:30:15</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 구직자AI 메시지 (우측) -->
+                        <div class="message-container candidate">
+                            <div class="message-content">
+                                <div class="message-bubble answer">
+                                    안녕하세요! 5년차 Frontend Developer 이지은입니다. React와 TypeScript를 주로 사용하며, 특히 커머스 플랫폼에서의 사용자 경험 개선과 아름다운 인터페이스 구현에 깊은 관심을 가지고 있습니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-time">14:30:18</span>
+                                    <span class="message-sender">이지은</span>
+                                </div>
+                            </div>
+                            <div class="message-avatar">👤</div>
+                        </div>
+
+                        <!-- 면접AI 메시지 (좌측) -->
+                        <div class="message-container interviewer">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble question">
+                                    제출하신 직무 적성검사 결과를 보면, '예술형' 점수가 96점으로 매우 높은 반면, 정해진 절차나 구조를 따르는 '관습형' 점수는 21점으로 매우 낮게 나타났습니다. 일반적으로 기술 부채를 해결하는 과정은 매우 체계적이고 관습적인 규칙(코딩 컨벤션, 문서화 등)을 따라야 하는데, 이지은 님의 성향과는 다소 상충하는 면이 있어 보입니다. 이 부분에 대해 어떻게 생각하십니까?
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-time">14:31:22</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 구직자AI 메시지 (우측) -->
+                        <div class="message-container candidate">
+                            <div class="message-content">
+                                <div class="message-bubble answer">
+                                    매우 정확한 분석입니다. 제 강점은 창의적인 해결책을 찾는 데 있지만, 그 창의성이 빛을 발하려면 안정적인 기반이 필수적이라는 것을 경험으로 배웠습니다. 제가 기술 부채 해결에 집착하는 이유는, 그것이 '지루한 규칙'이라서가 아니라, 오히려 '더 자유로운 창작 활동을 위한 기반'을 다지는 과정이라고 생각하기 때문입니다. 기술 부채가 쌓이면 사소한 수정에도 엄청난 노력이 들어 창의적인 시도를 할 여유가 사라집니다. 저는 이 비효율을 제거해야만 진정으로 아름답고 새로운 사용자 경험을 만드는 데 집중할 수 있다고 믿습니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-time">14:31:35</span>
+                                    <span class="message-sender">이지은</span>
+                                </div>
+                            </div>
+                            <div class="message-avatar">👤</div>
+                        </div>
+
+                        <!-- 면접AI 메시지 (좌측) -->
+                        <div class="message-container interviewer">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble question">
+                                    창작을 위한 기반이라는 관점은 신선하군요. 하지만 저희 '코드 리뷰' 가상 시뮬레이션에서는, 팀의 코딩 컨벤션과 약간 다른 창의적인 컴포넌트 구조를 제안하시고, 새 기능 개발 시간을 확보하기 위해 두 차례 문서화를 생략한 기록이 있습니다. 방금 말씀하신 신념과 이 행동 사이의 간극은 어떻게 설명하시겠습니까?
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-time">14:32:45</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 구직자AI 메시지 (우측) -->
+                        <div class="message-container candidate">
+                            <div class="message-content">
+                                <div class="message-bubble answer">
+                                    네, 해당 기록은 저의 장단점을 명확히 보여주는 사례라고 생각합니다. 당시 시뮬레이션에서는 새로운 인터랙션을 구현하려는 의욕이 앞서 표준 절차의 중요성을 잠시 간과했습니다. 이는 저의 낮은 '관습형' 성향이 드러난 부분이며, 지속적으로 보완해야 할 점입니다. 다만, 해당 제안 이후 팀원들과의 논의를 통해 컨벤션을 따르는 방향으로 수정했고, 생략된 문서는 주말을 이용해 모두 보완했습니다. 저의 강점인 창의성을 팀의 생산성에 긍정적으로 기여하도록, 정해진 절차와 시스템의 중요성을 항상 의식하고 협업하는 태도를 갖추겠습니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-time">14:32:50</span>
+                                    <span class="message-sender">이지은</span>
+                                </div>
+                            </div>
+                            <div class="message-avatar">👤</div>
+                        </div>
+
+                        <!-- 면접AI 메시지 (좌측) -->
+                        <div class="message-container interviewer">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble question">
+                                    팀의 코딩 컨벤션이 본인의 스타일보다 비효율적이라고 생각될 때 어떻게 대처하시나요?
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-time">14:33:15</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 구직자AI 메시지 (우측) -->
+                        <div class="message-container candidate">
+                            <div class="message-content">
+                                <div class="message-bubble answer">
+                                    해당 제안 이후 팀원들과의 논의를 통해 컨벤션을 따르는 방향으로 수정했고, 생략된 문서는 주말을 이용해 모두 보완했습니다. 저의 강점인 창의성을 팀의 생산성에 긍정적으로 기여하도록, 정해진 절차와 시스템의 중요성을 항상 의식하고 협업하는 태도를 갖추겠습니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-time">14:33:20</span>
+                                    <span class="message-sender">이지은</span>
+                                </div>
+                            </div>
+                            <div class="message-avatar">👤</div>
+                        </div>
+
+                        <!-- 면접AI 메시지 (좌측) -->
+                        <div class="message-container interviewer">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble question">
+                                    빠른 결과물과 장기적인 코드 품질 중 무엇을 우선시하시나요?
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-sender">면접AI</span>
+                                    <span class="message-time">14:34:30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 구직자AI 메시지 (우측) -->
+                        <div class="message-container candidate">
+                            <div class="message-content">
+                                <div class="message-bubble answer">
+                                    저는 장기적인 코드 품질을 우선시합니다. 빠른 결과물이 필요할 때도, 최소한의 품질 기준은 유지하면서 점진적으로 개선해나가는 방식을 선호합니다. 특히 커머스 플랫폼처럼 사용자가 많은 서비스에서는 코드 품질이 곧 서비스 안정성과 직결되기 때문에, 단기적인 속도보다는 장기적인 유지보수성과 확장성을 고려합니다.
+                                </div>
+                                <div class="message-info">
+                                    <span class="message-time">14:34:35</span>
+                                    <span class="message-sender">이지은</span>
+                                </div>
+                            </div>
+                            <div class="message-avatar">👤</div>
+                        </div>
+
+                        <!-- 타이핑 인디케이터 -->
+                        <div class="message-container interviewer typing">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <div class="message-bubble typing-indicator">
+                                    <span>질문 생성 중...</span>
+                                    <div class="typing-dots">
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <!-- 평가 결과 -->
+                <div class="evaluation-section">
+                    <div class="evaluation-header">
+                        <h3>📊 AI 면접 평가 결과</h3>
+                    </div>
+                    <div class="evaluation-grid">
+                        <div class="evaluation-item">
+                            <div class="evaluation-score">92.3</div>
+                            <div class="evaluation-label">하드 스킬</div>
+                        </div>
+                        <div class="evaluation-item">
+                            <div class="evaluation-score">83.7</div>
+                            <div class="evaluation-label">소프트 스킬</div>
+                        </div>
+                        <div class="evaluation-item">
+                            <div class="evaluation-score">87.5</div>
+                            <div class="evaluation-label">종합 점수</div>
+                        </div>
+                        <div class="evaluation-item">
+                            <div class="evaluation-score">A+</div>
+                            <div class="evaluation-label">면접 등급</div>
+                        </div>
+                    </div>
+                    <div class="ai-analysis">
+                        <h4>🤖 면접AI 분석 리포트</h4>
+                        <p>
+                            이 대화는 지원자의 가장 큰 장점과 가장 명확한 단점을 동시에 보여주는 핵심적인 순간이었습니다.<br><br>
+                            
+                            지원자는 자신의 성향(높은 창의성, 낮은 규범성)을 정확히 인지하고 있으며, 압박 질문에도 당황하지 않고 논리적으로 자신의 행동 동기와 후속 조치를 설명하는 높은 자기 객관화 능력을 보여주었습니다.<br><br>
+                            
+                            하지만 '의욕이 앞서 절차를 간과했다'는 답변은, 유사한 상황(특히 마감일 압박 등)에서 팀의 표준 프로세스를 따르기보다 개인의 판단을 우선시할 수 있는 잠재적 리스크가 존재함을 시사합니다.<br><br>
+                            
+                            결론적으로, 지원자는 단순히 '규칙을 안 지키는 사람'이 아니라, <strong>'자신의 성향적 약점을 인지하고 보완하려는 의지를 가진 창의적인 인재'</strong>로 평가할 수 있습니다. 따라서 대면 면접에서는 이 '자기 인식'이 실제 팀워크에서 어떻게 책임감 있는 행동으로 발현되는지를 집중적으로 확인할 필요가 있습니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 컨트롤 패널 -->
+                <div class="control-panel">
+                    <div class="control-header">
+                        <h3>🎮 면접 시뮬레이션 컨트롤</h3>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="btn btn-primary" onclick="startInterview()">▶️ 면접 시작</button>
+                        <button class="btn btn-secondary" onclick="nextQuestion()">❓ 다음 질문</button>
+                        <button class="btn btn-warning" onclick="generateReport()">📋 평가 리포트 생성</button>
+                        <button class="btn btn-primary" onclick="window.open('ai_individual_report.html', '_blank')">📊 상세 리포트 보기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let interviewStep = 0;
+        const questions = [
+            "새로운 기술 스택을 도입해야 할 때 어떻게 학습하시나요?",
+            "마감일이 임박한 상황에서 예상치 못한 버그가 발생했다면 어떻게 대응하시나요?",
+            "코드 리뷰를 받을 때 어떤 점을 중점적으로 확인하시나요?",
+            "사용자 경험을 개선한 경험이 있다면 구체적으로 설명해주세요.",
+            "프론트엔드 성능 최적화를 위해 어떤 방법들을 사용하시나요?"
+        ];
+
+        const answers = [
+            "공식 문서와 튜토리얼을 먼저 학습하고, 작은 프로젝트로 실습한 후 점진적으로 적용합니다. 커뮤니티와 동료들의 피드백도 적극 활용합니다.",
+            "우선순위를 재정립하고, 핵심 기능부터 해결합니다. 팀원들과 긴급 회의를 통해 대안을 모색하고, 필요시 마감일 연장을 요청합니다.",
+            "코드의 가독성, 성능, 보안, 그리고 비즈니스 로직의 정확성을 중점적으로 확인합니다. 특히 다른 개발자가 이해하기 쉽도록 작성했는지 검토합니다.",
+            "이전 프로젝트에서 로딩 시간을 3초에서 1초로 단축한 경험이 있습니다. 이미지 최적화, 코드 스플리팅, 캐싱 전략을 적용했습니다.",
+            "번들 크기 분석, 이미지 최적화, 코드 스플리팅, 메모이제이션, 가상화 등을 활용합니다. Lighthouse를 통한 정기적인 성능 모니터링도 중요합니다."
+        ];
+
+        function addMessage(message, isQuestion, time) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container ${isQuestion ? 'interviewer' : 'candidate'}`;
+            
+            const avatar = isQuestion ? '🤖' : '👤';
+            const sender = isQuestion ? '면접AI' : '이지은';
+            
+            if (isQuestion) {
+                // 면접AI 메시지 (좌측)
+                messageContainer.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">
+                        <div class="message-bubble question">
+                            ${message}
+                        </div>
+                        <div class="message-info">
+                            <span class="message-sender">${sender}</span>
+                            <span class="message-time">${time}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // 구직자AI 메시지 (우측)
+                messageContainer.innerHTML = `
+                    <div class="message-content">
+                        <div class="message-bubble answer">
+                            ${message}
+                        </div>
+                        <div class="message-info">
+                            <span class="message-time">${time}</span>
+                            <span class="message-sender">${sender}</span>
+                        </div>
+                    </div>
+                    <div class="message-avatar">${avatar}</div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageContainer);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function startInterview() {
+            alert('면접이 시작되었습니다! 구직자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
+        }
+
+        function nextQuestion() {
+            if (interviewStep < questions.length) {
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                
+                // 면접관 질문 추가
+                addMessage(questions[interviewStep], true, timeStr);
+                
+                // 잠시 후 구직자 답변 추가
+                setTimeout(() => {
+                    const answerTime = new Date().toTimeString().split(' ')[0];
+                    addMessage(answers[interviewStep], false, answerTime);
+                }, 2000);
+                
+                interviewStep++;
+            } else {
+                alert('모든 질문이 완료되었습니다. 평가 리포트를 생성해주세요.');
+            }
+        }
+
+        function generateReport() {
+            alert('AI 평가 리포트가 생성되었습니다! 상세 리포트를 확인해보세요.');
+        }
+
+        // 버튼 클릭 효과
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

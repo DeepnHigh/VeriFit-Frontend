@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 구직자 프로필 관리 - AI 기반 채용 플랫폼</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .screen-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .screen-title {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .screen-content {
+            padding: 30px;
+        }
+
+        /* 프로필 섹션 */
+        .profile-section {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-title {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .ai-status {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ai-status h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .ai-status p {
+            color: #333;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* 파일 업로드 섹션 */
+        .upload-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .upload-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .upload-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-card:hover {
+            border-color: #4CAF50;
+            background: #f8f9fa;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .upload-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        /* 업로드된 파일 목록 */
+        .uploaded-files {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .uploaded-files h4 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .file-icon {
+            font-size: 1.2rem;
+            color: #4CAF50;
+        }
+
+        .file-details h5 {
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .file-details p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small.btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-small.btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        /* 액션 버튼 스타일 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* AI 설정 섹션 */
+        .ai-settings {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .ai-settings h3 {
+            color: #1976d2;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 적성검사 섹션 - 개별 리포트와 동일한 스타일 */
+        .ai-settings.aptitude-section {
+            background: #f8f9fa;
+            border: 1px solid #494949;
+        }
+
+        .ai-settings.aptitude-section h3 {
+            color: #333;
+        }
+
+        .ai-personality {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .personality-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .personality-item:last-child {
+            border-bottom: none;
+        }
+
+        .personality-label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .personality-slider {
+            width: 200px;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .personality-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .personality-value {
+            color: #4CAF50;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* 액션 버튼 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 육각형 그래프 스타일 */
+        .hexagon-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .hexagon-chart {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        .hexagon-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hex-label {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translate(-50%, -50%);
+        }
+
+        .reliability {
+            display: block;
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        /* 적성검사 테이블 스타일 */
+        .personality-table-section {
+            margin: 30px 0;
+        }
+
+        .personality-table-section h5 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .personality-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .personality-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .personality-table th {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .personality-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .personality-table .highlight-row {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        }
+
+        .personality-table .low-row {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        }
+
+        .personality-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .personality-analysis {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .personality-analysis h5 {
+            color: #2e7d32;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .personality-analysis p {
+            color: #333;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* 질문 리스트 스타일 */
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .question-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .question-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .question-item.completed {
+            border-left: 4px solid #4CAF50;
+            background: linear-gradient(135deg, #f8f9fa, #e8f5e8);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-number {
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            flex: 1;
+            font-weight: bold;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .question-status {
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .question-item.completed .question-status {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .question-item:not(.completed) .question-status {
+            background: #ff9800;
+            color: white;
+        }
+
+        .question-answer {
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .question-input {
+            margin-top: 15px;
+        }
+
+        .question-input textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-input textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .btn-edit, .btn-save {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-edit {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-edit:hover, .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 구직자 프로필 관리</h1>
+            <p>나를 대변하는 AI를 위한 프로필 설정</p>
+        </div>
+
+        <!-- 프로필 관리 페이지 -->
+        <div class="screen-section">
+            <div class="screen-title">📋 구직자 프로필 관리</div>
+            <div class="screen-content">
+                <div class="profile-section">
+                    <!-- 프로필 카드 -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">이</div>
+                        <div class="profile-name">이지은</div>
+                        <div class="profile-title">Frontend Developer • 5년 경력</div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">156</div>
+                                <div class="stat-label">지원 공고</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">23</div>
+                                <div class="stat-label">AI 면접</div>
+                            </div>
+                        </div>
+
+                        <div class="ai-status">
+                            <h4>🤖 구직자AI 상태</h4>
+                            <p>프로필 완성도: <strong>87%</strong></p>
+                            <p>마지막 업데이트: 2024.08.29</p>
+                        </div>
+                    </div>
+
+                    <!-- 파일 업로드 섹션 -->
+                    <div class="upload-section">
+                        <h3>📁 포트폴리오 및 자료 업로드</h3>
+                        <div class="upload-grid">
+                            <div class="upload-card">
+                                <div class="upload-icon">📄</div>
+                                <div class="upload-title">자기소개서</div>
+                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                                <button class="upload-btn">파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">💼</div>
+                                <div class="upload-title">포트폴리오</div>
+                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                                <button class="upload-btn">파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🔗</div>
+                                <div class="upload-title">GitHub 링크</div>
+                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                                <button class="upload-btn">링크 추가</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📋</div>
+                                <div class="upload-title">이력서</div>
+                                <div class="upload-desc">최신 이력서 파일</div>
+                                <button class="upload-btn">파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🏆</div>
+                                <div class="upload-title">수상 경력</div>
+                                <div class="upload-desc">수상 내역 및 인증서</div>
+                                <button class="upload-btn">파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📚</div>
+                                <div class="upload-title">기타 자료</div>
+                                <div class="upload-desc">추가적인 경력 증명 자료</div>
+                                <button class="upload-btn">파일 선택</button>
+                            </div>
+                        </div>
+
+                        <!-- 업로드된 파일 목록 -->
+                        <div class="uploaded-files">
+                            <h4>📂 업로드된 파일</h4>
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-icon">📄</div>
+                                    <div class="file-details">
+                                        <h5>자기소개서_콜린웨이브.pdf</h5>
+                                        <p>2024.08.15 업로드 • 2.3MB</p>
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <button class="btn-small btn-secondary">보기</button>
+                                    <button class="btn-small btn-danger">삭제</button>
+                                </div>
+                            </div>
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-icon">💼</div>
+                                    <div class="file-details">
+                                        <h5>포트폴리오_아뜰리에.pdf</h5>
+                                        <p>2024.08.20 업로드 • 15.7MB</p>
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <button class="btn-small btn-secondary">보기</button>
+                                    <button class="btn-small btn-danger">삭제</button>
+                                </div>
+                            </div>
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-icon">🔗</div>
+                                    <div class="file-details">
+                                        <h5>GitHub: github.com/leejiyeon</h5>
+                                        <p>2024.08.10 연결 • 15개 저장소</p>
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <button class="btn-small btn-secondary">보기</button>
+                                    <button class="btn-small btn-danger">삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 적성검사 결과 -->
+                <div class="ai-settings aptitude-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>📊 적성검사 결과 분석</h3>
+                        <button class="btn btn-primary" onclick="startAptitudeTest()" style="padding: 8px 16px; font-size: 0.9rem;">
+                            🔄 적성검사 다시하기
+                        </button>
+                    </div>
+                    
+                    <!-- 육각형 그래프 -->
+                    <div class="hexagon-container">
+                        <div class="hexagon-chart">
+                            <canvas id="hexagonChart" width="400" height="400"></canvas>
+                            <div class="hexagon-labels">
+                                <div class="hex-label" style="top: 10%; left: 50%;">현실형<br><span class="reliability">신뢰도: 85%</span></div>
+                                <div class="hex-label" style="top: 25%; right: 10%;">탐구형<br><span class="reliability">신뢰도: 72%</span></div>
+                                <div class="hex-label" style="bottom: 25%; right: 10%;">관습형<br><span class="reliability">신뢰도: 91%</span></div>
+                                <div class="hex-label" style="bottom: 10%; left: 50%;">사회형<br><span class="reliability">신뢰도: 78%</span></div>
+                                <div class="hex-label" style="bottom: 25%; left: 10%;">진취형<br><span class="reliability">신뢰도: 83%</span></div>
+                                <div class="hex-label" style="top: 25%; left: 10%;">예술형<br><span class="reliability">신뢰도: 89%</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 적성검사 점수 및 신뢰도 테이블 -->
+                    <div class="personality-table-section">
+                        <h5>📋 적성검사 점수 및 신뢰도 분석</h5>
+                        <div class="personality-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>적성 유형</th>
+                                        <th>점수 (100점 만점)</th>
+                                        <th>AI면접관 신뢰도</th>
+                                        <th>신뢰도 측정 근거</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>현실형</strong><br>(실행/사물지향)</td>
+                                        <td>67점</td>
+                                        <td>85%</td>
+                                        <td>기술 부채 해결 경험과 구체적 성과 제시로 신뢰도 높음</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
+                                        <td>45점</td>
+                                        <td>72%</td>
+                                        <td>창의적 활동을 위한 도구로 활용하는 경향이 일관되게 나타남</td>
+                                    </tr>
+                                    <tr class="highlight-row">
+                                        <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
+                                        <td>96점</td>
+                                        <td>89%</td>
+                                        <td>UI/UX 포트폴리오와 면접 답변에서 창의성 일관성 확인</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>사회형</strong><br>(협력/사람지향)</td>
+                                        <td>33점</td>
+                                        <td>78%</td>
+                                        <td>과제 중심적 성향이 시뮬레이션과 면접에서 일치</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>진취형</strong><br>(관리/과제지향)</td>
+                                        <td>59점</td>
+                                        <td>83%</td>
+                                        <td>보통 수준의 리더십 성향으로, 필요시 주도적으로 과제를 진행할 수 있습니다.</td>
+                                    </tr>
+                                    <tr class="low-row">
+                                        <td><strong>관습형</strong><br>(동조/자료지향)</td>
+                                        <td>21점</td>
+                                        <td>91%</td>
+                                        <td>프로세스 준수 관련 문제가 시뮬레이션과 면접에서 명확히 드러남</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="personality-analysis">
+                        <h5>🎯 적성검사 결과 해석</h5>
+                        <p>
+                            <strong>예술형 96점</strong>은 지원자의 가장 뚜렷한 특성으로, 창의적인 UI/UX 구현과 아름다운 인터페이스 제작에 대한 강한 동기를 보여줍니다. 
+                            반면 <strong>관습형 21점</strong>은 정해진 절차나 규칙을 따르는 것에 대한 선호도가 낮음을 시사하며, 이는 팀 협업 시 프로세스 준수 측면에서 관리가 필요함을 의미합니다. 
+                            <strong>현실형 67점</strong>은 구체적인 성과와 실용적 해결책을 중시하는 성향으로, 기술 부채 해결과 같은 체계적 작업에서 긍정적으로 작용할 것으로 예상됩니다.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 0.9rem; color: #666;">
+                        <strong>마지막 검사일:</strong> 2024.08.25 | <strong>검사 소요시간:</strong> 15분 | <strong>전체 신뢰도:</strong> 89%
+                    </div>
+                </div>
+
+                <!-- AI 학습을 위한 질문 섹션 -->
+                <div class="ai-settings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>🤖 AI 학습을 위한 질문 답변</h3>
+                        <div style="font-size: 0.9rem; color: #666; text-align: right;">
+                            <strong>완료도: 3/10</strong><br>
+                            <span style="color: #4CAF50;">● ● ● ○ ○ ○ ○ ○ ○ ○</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #e8f5e8, #c8e6c9); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">💡 AI 에이전트 학습 안내</h4>
+                        <p style="color: #333; line-height: 1.6; font-size: 0.95rem;">
+                            아래 질문들에 자세히 답변해주시면, 구직자AI가 더욱 정확하게 본인을 대변할 수 있습니다. 
+                            답변이 많을수록 AI가 본인의 성향, 경험, 가치관을 더 정확하게 파악하여 면접에서 더 자연스럽고 일관된 답변을 생성할 수 있습니다.
+                        </p>
+                    </div>
+
+                    <div class="question-list">
+                        <!-- 질문 1 -->
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q1</span>
+                                <span class="question-text">자신의 가장 큰 강점과 약점은 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 제 가장 큰 강점은 창의적인 문제 해결 능력입니다. 특히 사용자 경험을 개선하는 아이디어를 떠올리고 구현하는 데 뛰어납니다. 약점은 때로 의욕이 앞서 정해진 절차를 간과하는 경향이 있어, 팀 프로세스를 따르는 것에 더 신경 써야 합니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(1)">수정</button>
+                        </div>
+
+                        <!-- 질문 2 -->
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q2</span>
+                                <span class="question-text">이직을 고려하는 이유는 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 현재 회사에서도 좋은 경험을 쌓고 있지만, 더 큰 규모의 서비스와 다양한 기술 스택을 경험하고 싶습니다. 특히 커머스 플랫폼에서의 사용자 경험 개선에 깊은 관심이 있어, 이런 기회를 찾고 있습니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(2)">수정</button>
+                        </div>
+
+                        <!-- 질문 3 -->
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q3</span>
+                                <span class="question-text">팀워크에서 본인의 역할은 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 저는 주로 '창의적 해결책 제안자' 역할을 합니다. 문제가 발생했을 때 새로운 관점에서 접근하고, 사용자 경험을 개선할 수 있는 아이디어를 제시하는 것을 좋아합니다. 다만 팀의 의견을 수렴하고 합의를 이끌어내는 것도 중요하다고 생각합니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(3)">수정</button>
+                        </div>
+
+                        <!-- 질문 4 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q4</span>
+                                <span class="question-text">실패했던 프로젝트 경험이 있다면 어떻게 극복했나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(4)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 5 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q5</span>
+                                <span class="question-text">앞으로 5년 후 본인의 모습은 어떨 것 같나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(5)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 6 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q6</span>
+                                <span class="question-text">업무 외에 개인적으로 관심 있는 기술이나 분야는?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(6)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 7 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q7</span>
+                                <span class="question-text">스트레스 상황에서 어떻게 대처하시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(7)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 8 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q8</span>
+                                <span class="question-text">리더십 경험이 있다면 어떤 방식으로 팀을 이끌었나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(8)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 9 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q9</span>
+                                <span class="question-text">업무와 개인생활의 균형을 어떻게 맞추시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(9)">저장</button>
+                            </div>
+                        </div>
+
+                        <!-- 질문 10 -->
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q10</span>
+                                <span class="question-text">이 회사에 지원한 가장 큰 이유는 무엇인가요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save" onclick="saveAnswer(10)">저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveProfile()">💾 프로필 저장</button>
+                    <button class="btn btn-secondary" onclick="trainAI()">🤖 AI 학습 시작</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateValue(slider) {
+            const value = slider.value;
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = value + '%';
+        }
+
+        function saveProfile() {
+            alert('프로필이 성공적으로 저장되었습니다! 구직자AI가 업데이트된 정보를 학습합니다.');
+        }
+
+        function trainAI() {
+            alert('구직자AI 학습이 시작되었습니다. 학습 완료까지 약 5-10분 소요됩니다.');
+        }
+
+        function startAptitudeTest() {
+            if (confirm('적성검사를 시작하시겠습니까?\n\n• 검사 소요시간: 약 15-20분\n• 총 60문항 (각 유형별 10문항)\n• 검사 중간에 중단할 수 없습니다\n\n준비되셨다면 "확인"을 눌러주세요.')) {
+                // 적성검사 페이지로 이동하거나 모달 창을 띄우는 로직
+                alert('적성검사 페이지로 이동합니다...\n\n(실제 구현 시에는 적성검사 페이지나 모달 창을 띄웁니다)');
+                
+                // 예시: 새 창에서 적성검사 페이지 열기
+                // window.open('aptitude_test.html', '_blank');
+                
+                // 또는 현재 페이지에서 적성검사 모달 띄우기
+                // showAptitudeTestModal();
+            }
+        }
+
+        // 육각형 그래프 그리기
+        function drawHexagonChart() {
+            const canvas = document.getElementById('hexagonChart');
+            const ctx = canvas.getContext('2d');
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            
+            // 데이터 (점수, 신뢰도)
+            const data = [
+                { score: 67, reliability: 85, label: '현실형', color: '#4CAF50' },
+                { score: 45, reliability: 72, label: '탐구형', color: '#2196F3' },
+                { score: 96, reliability: 89, label: '예술형', color: '#FF9800' },
+                { score: 33, reliability: 78, label: '사회형', color: '#9C27B0' },
+                { score: 59, reliability: 83, label: '진취형', color: '#607D8B' },
+                { score: 21, reliability: 91, label: '관습형', color: '#f44336' }
+            ];
+            
+            // 육각형 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 데이터 포인트 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const scoreRadius = (radius * data[i].score) / 100;
+                const x = centerX + scoreRadius * Math.cos(angle);
+                const y = centerY + scoreRadius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 중심점
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4CAF50';
+            ctx.fill();
+        }
+        
+        // 페이지 로드 시 육각형 그래프 그리기
+        window.addEventListener('load', drawHexagonChart);
+
+        // 질문 답변 관련 함수들
+        function editAnswer(questionNumber) {
+            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const answerDiv = questionItem.querySelector('.question-answer');
+            const currentAnswer = answerDiv.textContent.replace('답변:', '').trim();
+            
+            // 답변을 textarea로 변경
+            answerDiv.innerHTML = `
+                <textarea placeholder="답변을 입력해주세요..." rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px;">${currentAnswer}</textarea>
+                <button class="btn-save" onclick="updateAnswer(${questionNumber})">업데이트</button>
+                <button class="btn-edit" onclick="cancelEdit(${questionNumber})" style="background: #f44336; margin-left: 10px;">취소</button>
+            `;
+        }
+
+        function updateAnswer(questionNumber) {
+            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const textarea = questionItem.querySelector('textarea');
+            const newAnswer = textarea.value.trim();
+            
+            if (newAnswer) {
+                questionItem.querySelector('.question-answer').innerHTML = `<strong>답변:</strong> ${newAnswer}`;
+                updateProgress();
+                alert('답변이 성공적으로 업데이트되었습니다!');
+            } else {
+                alert('답변을 입력해주세요.');
+            }
+        }
+
+        function cancelEdit(questionNumber) {
+            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const answerDiv = questionItem.querySelector('.question-answer');
+            // 원래 답변으로 복원 (실제로는 서버에서 가져와야 함)
+            const originalAnswers = [
+                '제 가장 큰 강점은 창의적인 문제 해결 능력입니다. 특히 사용자 경험을 개선하는 아이디어를 떠올리고 구현하는 데 뛰어납니다. 약점은 때로 의욕이 앞서 정해진 절차를 간과하는 경향이 있어, 팀 프로세스를 따르는 것에 더 신경 써야 합니다.',
+                '현재 회사에서도 좋은 경험을 쌓고 있지만, 더 큰 규모의 서비스와 다양한 기술 스택을 경험하고 싶습니다. 특히 커머스 플랫폼에서의 사용자 경험 개선에 깊은 관심이 있어, 이런 기회를 찾고 있습니다.',
+                '저는 주로 \'창의적 해결책 제안자\' 역할을 합니다. 문제가 발생했을 때 새로운 관점에서 접근하고, 사용자 경험을 개선할 수 있는 아이디어를 제시하는 것을 좋아합니다. 다만 팀의 의견을 수렴하고 합의를 이끌어내는 것도 중요하다고 생각합니다.'
+            ];
+            answerDiv.innerHTML = `<strong>답변:</strong> ${originalAnswers[questionNumber - 1]}`;
+        }
+
+        function saveAnswer(questionNumber) {
+            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const textarea = questionItem.querySelector('textarea');
+            const answer = textarea.value.trim();
+            
+            if (answer) {
+                // 답변 저장 및 UI 업데이트
+                questionItem.classList.add('completed');
+                questionItem.querySelector('.question-status').textContent = '✓ 완료';
+                questionItem.querySelector('.question-status').style.background = '#4CAF50';
+                
+                // textarea를 답변 텍스트로 변경
+                const questionInput = questionItem.querySelector('.question-input');
+                questionInput.innerHTML = `
+                    <div class="question-answer">
+                        <strong>답변:</strong> ${answer}
+                    </div>
+                    <button class="btn-edit" onclick="editAnswer(${questionNumber})">수정</button>
+                `;
+                
+                updateProgress();
+                alert('답변이 성공적으로 저장되었습니다!');
+            } else {
+                alert('답변을 입력해주세요.');
+            }
+        }
+
+        function updateProgress() {
+            const completedQuestions = document.querySelectorAll('.question-item.completed').length;
+            const totalQuestions = 10;
+            const progressElement = document.querySelector('.ai-settings h3 + div strong');
+            const progressDots = document.querySelector('.ai-settings h3 + div span');
+            
+            progressElement.textContent = `완료도: ${completedQuestions}/${totalQuestions}`;
+            
+            // 진행도 점 업데이트
+            let dots = '';
+            for (let i = 0; i < totalQuestions; i++) {
+                dots += i < completedQuestions ? '● ' : '○ ';
+            }
+            progressDots.innerHTML = dots;
+        }
+
+        // 파일 업로드 버튼 클릭 효과
+        document.querySelectorAll('.upload-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // 액션 버튼 클릭 효과
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

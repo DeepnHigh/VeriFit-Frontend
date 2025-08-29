@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI 기반 채용 플랫폼 - 구직자AI vs 면접AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            color: white;
+            padding: 60px 0 40px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        /* 플랫폼 소개 섹션 */
+        .intro-section {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .intro-section h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        /* AI 대화 시뮬레이션 */
+        .ai-conversation {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 40px;
+            margin: 40px 0;
+            border-radius: 15px;
+        }
+
+        .conversation-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .conversation-header h3 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .conversation-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .ai-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .ai-panel.interviewer {
+            border-left: 5px solid #2196F3;
+        }
+
+        .ai-panel.candidate {
+            border-left: 5px solid #FF9800;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .ai-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .ai-avatar.interviewer {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+        }
+
+        .ai-avatar.candidate {
+            background: linear-gradient(135deg, #FF9800, #f57c00);
+        }
+
+        .ai-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .ai-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .conversation-bubble {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .conversation-bubble.question {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: #1976d2;
+        }
+
+        .conversation-bubble.answer {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #f57c00;
+        }
+
+        /* 기능 소개 섹션 */
+        .features-section {
+            padding: 60px 40px;
+            background: #f8f9fa;
+        }
+
+        .features-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 데모 페이지 링크 */
+        .demo-section {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .demo-section h2 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .demo-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .demo-card p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .demo-card.secondary {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
+        }
+
+        .demo-card.warning {
+            background: linear-gradient(135deg, #FF9800, #f57c00);
+        }
+
+        /* 통계 섹션 */
+        .stats-section {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .stats-section h2 {
+            font-size: 2.5rem;
+            color: #2e7d32;
+            margin-bottom: 50px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* CTA 섹션 */
+        .cta-section {
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #4CAF50;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .conversation-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>🤖 AI 기반 채용 플랫폼</h1>
+            <p>구직자AI vs 면접AI의 혁신적인 채용 솔루션</p>
+            <div class="header-subtitle">
+                기업마다 다른 자기소개서를 작성할 필요 없이, 한 번의 프로필 설정으로 모든 기업에 지원하세요.
+                AI가 당신을 대신해서 면접에 응답하고, 기업은 AI 면접관을 통해 효율적으로 인재를 선발합니다.
+            </div>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 플랫폼 소개 -->
+            <div class="intro-section">
+                <h2>🎯 어떻게 작동하나요?</h2>
+                <div class="intro-text">
+                    구직자는 자신의 프로필과 포트폴리오를 한 번만 설정하면, 구직자AI가 모든 기업의 면접에 자동으로 응답합니다.
+                    기업은 면접AI를 설정하여 원하는 질문과 평가 기준을 정하면, AI가 지원자들을 자동으로 평가하고 랭킹합니다.
+                    결과적으로 서류 검토와 1차 면접을 대체하여 시간과 비용을 크게 절약할 수 있습니다.
+                </div>
+            </div>
+
+            <!-- AI 대화 시뮬레이션 -->
+            <div class="ai-conversation">
+                <div class="conversation-header">
+                    <h3>💬 AI 면접 시뮬레이션</h3>
+                    <p>실제로는 이런 대화가 AI끼리 이루어집니다</p>
+                </div>
+                <div class="conversation-container">
+                    <div class="ai-panel interviewer">
+                        <div class="ai-header">
+                            <div class="ai-avatar interviewer">🤖</div>
+                            <div class="ai-info">
+                                <h4>면접AI</h4>
+                                <p>기업 요구사항 기반</p>
+                            </div>
+                        </div>
+                        <div class="conversation-bubble question">
+                            "React의 주요 특징과 장점에 대해 설명해주세요."
+                        </div>
+                        <div class="conversation-bubble question">
+                            "팀 프로젝트에서 의견 충돌이 발생했을 때 어떻게 해결하시나요?"
+                        </div>
+                    </div>
+                    <div class="ai-panel candidate">
+                        <div class="ai-header">
+                            <div class="ai-avatar candidate">👤</div>
+                            <div class="ai-info">
+                                <h4>구직자AI</h4>
+                                <p>김개발님 프로필 기반</p>
+                            </div>
+                        </div>
+                        <div class="conversation-bubble answer">
+                            "React는 컴포넌트 기반 라이브러리로, 재사용성과 유지보수성이 뛰어납니다. Virtual DOM을 통해 성능도 최적화되어 있습니다."
+                        </div>
+                        <div class="conversation-bubble answer">
+                            "먼저 상대방의 관점을 이해하려 노력하고, 객관적 데이터를 바탕으로 논의를 진행합니다."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기능 소개 -->
+            <div class="features-section">
+                <h2>✨ 주요 기능</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📁</div>
+                        <h3>원스톱 프로필 관리</h3>
+                        <p>자기소개서, 포트폴리오, GitHub 링크 등을 한 번만 업로드하면 모든 기업 지원에 활용됩니다.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>AI 면접 자동화</h3>
+                        <p>구직자AI가 기업의 모든 질문에 자동으로 응답하고, 면접AI가 객관적으로 평가합니다.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>시간 절약</h3>
+                        <p>기존 40시간의 면접 시간을 2시간으로 단축하고, 95%의 시간을 절약할 수 있습니다.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💰</div>
+                        <h3>비용 절감</h3>
+                        <p>면접관 인건비 800만원을 AI 평가 비용 50만원으로 줄여 93.8%의 비용을 절감합니다.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>객관적 평가</h3>
+                        <p>AI가 감정이나 편견 없이 일관된 기준으로 모든 지원자를 평가합니다.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>맞춤형 질문</h3>
+                        <p>기업이 원하는 평가 기준과 질문을 설정하여 최적의 인재를 찾을 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 데모 페이지 링크 -->
+            <div class="demo-section">
+                <h2>🎮 데모 체험하기</h2>
+                <div class="demo-grid">
+                    <a href="candidate_profile_management.html" class="demo-card">
+                        <h3>👤 구직자 프로필 관리</h3>
+                        <p>나를 대변하는 AI를 위한 프로필 설정과 포트폴리오 업로드</p>
+                    </a>
+                    <a href="company_recruitment_management.html" class="demo-card secondary">
+                        <h3>🏢 기업 채용 관리</h3>
+                        <p>채용 공고 작성과 면접AI 설정</p>
+                    </a>
+                    <a href="ai_interview_simulation.html" class="demo-card warning">
+                        <h3>🤖 AI 면접 시뮬레이션</h3>
+                        <p>구직자AI와 면접AI의 실시간 면접 대화</p>
+                    </a>
+                    <a href="all_candidates_page.html" class="demo-card">
+                        <h3>📋 전체 지원자 관리</h3>
+                        <p>AI 평가 결과와 지원자 랭킹 확인</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 통계 -->
+            <div class="stats-section">
+                <h2>📈 플랫폼 성과</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">95%</div>
+                        <div class="stat-label">시간 절약</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">93.8%</div>
+                        <div class="stat-label">비용 절감</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">평가된 지원자</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">1차 통과자</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA 섹션 -->
+        <div class="cta-section">
+            <h2>🚀 지금 시작하세요</h2>
+            <p>AI 기반 채용 플랫폼으로 더 효율적이고 공정한 채용을 경험해보세요</p>
+            <div class="cta-buttons">
+                <a href="candidate_profile_management.html" class="btn btn-primary">구직자로 시작하기</a>
+                <a href="company_recruitment_management.html" class="btn btn-secondary">기업으로 시작하기</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 애니메이션 적용할 요소들
+        document.querySelectorAll('.feature-card, .demo-card, .stat-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // 버튼 호버 효과
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
