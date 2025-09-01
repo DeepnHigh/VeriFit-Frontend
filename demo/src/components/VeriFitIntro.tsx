@@ -32,10 +32,10 @@ const VeriFitIntro: React.FC = () => {
             </div>
             <div className="space-y-3">
               <div className="bg-blue-50 text-blue-800 rounded-xl p-4">
-                "React의 주요 특징과 장점에 대해 설명해주세요."
+                &ldquo;React의 주요 특징과 장점에 대해 설명해주세요.&rdquo;
               </div>
               <div className="bg-blue-50 text-blue-800 rounded-xl p-4">
-                "팀 프로젝트에서 의견 충돌이 발생했을 때 어떻게 해결하시나요?"
+                &ldquo;팀 프로젝트에서 의견 충돌이 발생했을 때 어떻게 해결하시나요?&rdquo;
               </div>
             </div>
           </div>
@@ -51,10 +51,10 @@ const VeriFitIntro: React.FC = () => {
             </div>
             <div className="space-y-3">
               <div className="bg-orange-50 text-orange-800 rounded-xl p-4">
-                "React는 컴포넌트 기반 라이브러리로, 재사용성과 유지보수성이 뛰어납니다. Virtual DOM을 통해 성능도 최적화되어 있습니다."
+                &ldquo;React는 컴포넌트 기반 라이브러리로, 재사용성과 유지보수성이 뛰어납니다. Virtual DOM을 통해 성능도 최적화되어 있습니다.&rdquo;
               </div>
               <div className="bg-orange-50 text-orange-800 rounded-xl p-4">
-                "먼저 상대방의 관점을 이해하려 노력하고, 객관적 데이터를 바탕으로 논의를 진행합니다."
+                &ldquo;먼저 상대방의 관점을 이해하려 노력하고, 객관적 데이터를 바탕으로 논의를 진행합니다.&rdquo;
               </div>
             </div>
           </div>
