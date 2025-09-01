@@ -1,4 +1,3 @@
-import Image from "next/image";
 import VeriFitIntro from "../components/VeriFitIntro";
 
 export default function Home() {
@@ -160,7 +159,7 @@ export default function Home() {
         {/* 푸터 */}
         <div className="text-center text-gray-800 mt-16">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-            <h3 className="text-2xl font-bold mb-4">🚀 AI 기반 채용 플랫폼, 'VeriFit'을 소개합니다!</h3>
+            <h3 className="text-2xl font-bold mb-4">🚀 AI 기반 채용 플랫폼, &apos;VeriFit&apos;을 소개합니다!</h3>
             <VeriFitIntro />
           </div>
         </div>
