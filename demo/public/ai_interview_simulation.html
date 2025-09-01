@@ -334,12 +334,12 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #2196F3, #1976d2);
+            background: linear-gradient(135deg, #FF9800, #f57c00);
             color: white;
         }
 
-        .btn-warning {
-            background: linear-gradient(135deg, #FF9800, #f57c00);
+        .btn-last {
+            background: linear-gradient(135deg, #2196F3, #1976d2);
             color: white;
         }
 
@@ -372,7 +372,7 @@
     <div class="container">
         <div class="header">
             <h1>🤖 AI 면접 시뮬레이션</h1>
-            <p>면접관AI vs 지원자AI의 실시간 면접 대화</p>
+            <p>면접관AI vs 이지은 지원자AI의 실시간 면접 대화</p>
         </div>
 
         <!-- AI 면접 시뮬레이션 -->
@@ -593,9 +593,8 @@
                     </div>
                     <div class="control-buttons">
                         <button class="btn btn-primary" onclick="startInterview()">▶️ 면접 시작</button>
-                        <button class="btn btn-secondary" onclick="nextQuestion()">❓ 다음 질문</button>
-                        <button class="btn btn-warning" onclick="generateReport()">📋 평가 리포트 생성</button>
-                        <button class="btn btn-primary" onclick="window.open('ai_individual_report.html', '_blank')">📊 상세 리포트 보기</button>
+                        <button class="btn btn-secondary" onclick="endInterview()">⏹️ 면접 종료</button>
+                        <button class="btn btn-last" onclick="window.open('ai_individual_report.html', '_blank')">📊 상세 리포트 보기</button>
                     </div>
                 </div>
             </div>
@@ -663,31 +662,11 @@
         }
 
         function startInterview() {
-            alert('면접이 시작되었습니다! 지원자AI가 지원자의 프로필을 기반으로 답변을 생성합니다.');
+            alert('면접이 시작되었습니다! 지원자AI가 지원자의 프로필을 기반으로 면접관AI의 질문에 대한 답변을 생성합니다.\n\n(현재 페이지에서는 진행중인 상황을 나타냅니다.)\n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
         }
 
-        function nextQuestion() {
-            if (interviewStep < questions.length) {
-                const now = new Date();
-                const timeStr = now.toTimeString().split(' ')[0];
-                
-                // 면접관 질문 추가
-                addMessage(questions[interviewStep], true, timeStr);
-                
-                // 잠시 후 지원자자 답변 추가
-                setTimeout(() => {
-                    const answerTime = new Date().toTimeString().split(' ')[0];
-                    addMessage(answers[interviewStep], false, answerTime);
-                }, 2000);
-                
-                interviewStep++;
-            } else {
-                alert('모든 질문이 완료되었습니다. 평가 리포트를 생성해주세요.');
-            }
-        }
-
-        function generateReport() {
-            alert('AI 평가 리포트가 생성되었습니다! 상세 리포트를 확인해보세요.');
+        function endInterview() {
+            alert('면접이 종료되었습니다. \n\n(현재 페이지에서는 진행중인 상황을 나타냅니다.)\n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
         }
 
         // 버튼 클릭 효과

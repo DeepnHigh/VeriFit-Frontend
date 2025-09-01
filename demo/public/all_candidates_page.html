@@ -140,7 +140,7 @@
         }
 
         .candidate-table tr:hover {
-            background: #f8f9fa;
+            background: #cde7ff;
         }
 
         .top-candidate {
@@ -206,7 +206,7 @@
             position: relative;
             width: 100%;
             height: 20px;
-            background: #f0f0f0;
+            background: #d3d3d3;
             border-radius: 10px;
             overflow: hidden;
         }
@@ -268,6 +268,18 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
+        .btn-small.btn-disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-small.btn-disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
         .pagination {
             display: flex;
             justify-content: center;
@@ -288,6 +300,18 @@
         .btn-page:hover {
             background: #f8f9fa;
             border-color: #4CAF50;
+        }
+
+        .btn-page:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-page:disabled:hover {
+            background: #e0e0e0;
+            border-color: #ddd;
         }
 
         .page-info {
@@ -405,8 +429,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 AI 기반 채용 플랫폼</h1>
-            <p>콜린웨이브 전체 지원자 관리</p>
+            <h1>🤖 전체 지원자 관리</h1>
+            <p>콜린웨이브 공고 전체 지원자 관리</p>
         </div>
 
         <!-- 전체 지원자 페이지 -->
@@ -551,7 +575,7 @@
                                         <div class="ai-comment">기술력과 소통능력이 모두 우수한 시니어급 개발자</div>
                                     </td>
                                     <td>
-                                        <button class="btn-small btn-primary">상세보기</button>
+                                        <button class="btn-small btn-disabled" disabled>상세보기</button>
                                     </td>
                                 </tr>
                                 <tr class="top-candidate">
@@ -585,7 +609,7 @@
                                         <div class="ai-comment">성장 가능성이 높은 중급 개발자, 학습 의지가 뛰어남</div>
                                     </td>
                                     <td>
-                                        <button class="btn-small btn-primary">상세보기</button>
+                                        <button class="btn-small btn-disabled" disabled>상세보기</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -619,7 +643,7 @@
                                         <div class="ai-comment">경험이 풍부하지만 새로운 기술 스택 적응이 필요</div>
                                     </td>
                                     <td>
-                                        <button class="btn-small btn-secondary">상세보기</button>
+                                        <button class="btn-small btn-disabled" disabled>상세보기</button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -653,16 +677,16 @@
                                         <div class="ai-comment">젊고 유연한 사고를 가진 주니어 개발자, 성장 잠재력 우수</div>
                                     </td>
                                     <td>
-                                        <button class="btn-small btn-secondary">상세보기</button>
+                                        <button class="btn-small btn-disabled" disabled>상세보기</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="pagination">
-                        <button class="btn-page">← 이전</button>
+                        <button class="btn-page" disabled>← 이전</button>
                         <span class="page-info">1-5 / 156명</span>
-                        <button class="btn-page">다음 →</button>
+                        <button class="btn-page" disabled>다음 →</button>
                     </div>
                 </div>
 
