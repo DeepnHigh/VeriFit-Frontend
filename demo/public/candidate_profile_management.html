@@ -564,6 +564,14 @@
             transform: translate(-50%, -50%);
         }
 
+        .hex-label .score {
+            display: block;
+            font-size: 0.7rem;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
         .reliability {
             display: block;
             font-size: 0.7rem;
@@ -948,12 +956,12 @@
                         <div class="hexagon-chart">
                             <canvas id="hexagonChart" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 4%; left: 36%;">현실형</div>
-                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형</div>
-                                <div class="hex-label" style="top: 75%; left: 67%;">관습형</div>
-                                <div class="hex-label" style="top: 96%; left: 36%;">사회형</div>
-                                <div class="hex-label" style="top: 75%; left: 5%;">진취형</div>
-                                <div class="hex-label" style="top: 25%; left: 5%;">예술형</div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score">67점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score">45점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score">21점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score">33점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score">59점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score">96점</span></div>
                             </div>
                         </div>
                     </div>

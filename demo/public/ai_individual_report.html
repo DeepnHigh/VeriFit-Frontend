@@ -715,8 +715,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 AI 기반 채용 플랫폼</h1>
-            <p>개별 지원자 평가 리포트</p>
+            <h1>🤖 개별 지원자 평가 리포트</h1>
+            <p>전체 지원자 중 이지은 지원자의 상세 평가 결과</p>
         </div>
 
         <!-- 결과 리포트 화면 -->
@@ -1010,9 +1010,8 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn btn-primary">✅ 1차 통과</button>
-                    <button class="btn btn-secondary">📞 면접 진행</button>
-                    <button class="btn btn-outline">📋 상세 리포트 다운로드</button>
+                    <button class="btn btn-primary" onclick="confirmFirstPass()">✅ 1차 통과 확정</button>
+                    <button class="btn btn-outline" onclick="downloadReport()">📋 상세 리포트 다운로드</button>
                 </div>
             </div>
         </div>
@@ -1118,6 +1117,13 @@
             drawHexagonChart();
             applyReliabilityColors();
         });
+
+        function confirmFirstPass() {
+            alert('1차 통과 확정처리 되었습니다.\n1차 통과자 목록에서 확인하실 수 있습니다.\n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
+        }
+        function downloadReport() {
+            alert('다운로드가 시작됩니다.\n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
+        }
     </script>
 </body>
 </html>

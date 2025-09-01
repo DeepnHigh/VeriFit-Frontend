@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 지원자 행동/적성 테스트 - AI 기반 행동 패턴 분석</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 50%, #e6f3ff 70%, #d1ecf1 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            color: #2c3e50;
+            padding: 60px 0 40px;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        /* 테스트 소개 섹션 */
+        .intro-section {
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .intro-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+
+        .intro-text {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        /* 테스트 유형 섹션 */
+        .test-types {
+            padding: 60px 40px;
+            background: #f8f9fa;
+        }
+
+        .test-types h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 50px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .test-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .test-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .test-card h3 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .test-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* AI 분석 결과 섹션 */
+        .ai-analysis {
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+        }
+
+        .ai-analysis h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2e7d32;
+            margin-bottom: 50px;
+        }
+
+        .analysis-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .analysis-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .analysis-panel h3 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .analysis-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-item h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .analysis-item p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 진행 상황 섹션 */
+        .progress-section {
+            padding: 60px 40px;
+            background: white;
+        }
+
+        .progress-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 50px;
+        }
+
+        .progress-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .progress-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+            color: #667eea;
+        }
+
+        .progress-content h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .progress-content p {
+            color: #666;
+        }
+
+        /* CTA 섹션 */
+        .cta-section {
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .analysis-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>🧠 지원자 행동/적성 테스트</h1>
+            <p>AI 기반 행동 패턴 및 적성 분석으로 더 정확한 인재 평가</p>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 테스트 소개 -->
+            <div class="intro-section">
+                <h2>🎯 AI가 분석하는 지원자 행동 패턴</h2>
+                <div class="intro-text">
+                    기존의 주관적인 면접 평가를 넘어서, AI가 지원자의 행동 패턴과 적성을 객관적으로 분석합니다.
+                    다양한 시나리오 기반 테스트를 통해 지원자의 실제 업무 환경에서의 행동을 예측하고,
+                    팀워크, 문제해결 능력, 스트레스 대응력 등을 종합적으로 평가합니다.
+                </div>
+            </div>
+
+            <!-- 테스트 유형 -->
+            <div class="test-types">
+                <h2>📋 테스트 유형</h2>
+                <div class="test-grid">
+                    <div class="test-card">
+                        <div class="test-icon">🎭</div>
+                        <h3>시나리오 기반 테스트</h3>
+                        <p>실제 업무 상황을 시뮬레이션하여 지원자의 대응 방식을 분석합니다.</p>
+                        <button class="test-btn">테스트 시작</button>
+                    </div>
+                    <div class="test-card">
+                        <div class="test-icon">🧩</div>
+                        <h3>문제해결 능력 테스트</h3>
+                        <p>복잡한 문제 상황에서의 논리적 사고와 창의적 해결 능력을 평가합니다.</p>
+                        <button class="test-btn">테스트 시작</button>
+                    </div>
+                    <div class="test-card">
+                        <div class="test-icon">🤝</div>
+                        <h3>팀워크 적성 테스트</h3>
+                        <p>협업 상황에서의 소통 능력과 팀 기여도를 분석합니다.</p>
+                        <button class="test-btn">테스트 시작</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI 분석 결과 -->
+            <div class="ai-analysis">
+                <h2>🤖 AI 분석 결과</h2>
+                <div class="analysis-container">
+                    <div class="analysis-panel">
+                        <h3>📊 행동 패턴 분석</h3>
+                        <div class="analysis-item">
+                            <h4>의사결정 스타일</h4>
+                            <p>분석적 사고 vs 직관적 판단</p>
+                        </div>
+                        <div class="analysis-item">
+                            <h4>스트레스 대응</h4>
+                            <p>압박 상황에서의 행동 패턴</p>
+                        </div>
+                        <div class="analysis-item">
+                            <h4>소통 방식</h4>
+                            <p>적극적 vs 수동적 소통 스타일</p>
+                        </div>
+                    </div>
+                    <div class="analysis-panel">
+                        <h3>🎯 적성 매칭</h3>
+                        <div class="analysis-item">
+                            <h4>업무 적합도</h4>
+                            <p>지원 직무와의 매칭 점수</p>
+                        </div>
+                        <div class="analysis-item">
+                            <h4>팀 문화 적합도</h4>
+                            <p>조직 문화와의 일치도</p>
+                        </div>
+                        <div class="analysis-item">
+                            <h4>성장 잠재력</h4>
+                            <p>장기적 발전 가능성</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 진행 상황 -->
+            <div class="progress-section">
+                <h2>📈 테스트 진행 상황</h2>
+                <div class="progress-container">
+                    <div class="progress-item">
+                        <div class="progress-icon">✅</div>
+                        <div class="progress-content">
+                            <h3>프로필 설정 완료</h3>
+                            <p>지원자 기본 정보 및 경력 사항 입력 완료</p>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-icon">🔄</div>
+                        <div class="progress-content">
+                            <h3>행동 패턴 테스트 진행 중</h3>
+                            <p>시나리오 기반 테스트 3/5 완료</p>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-icon">⏳</div>
+                        <div class="progress-content">
+                            <h3>AI 분석 대기</h3>
+                            <p>테스트 완료 후 AI 분석 결과 생성 예정</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA 섹션 -->
+        <div class="cta-section">
+            <h2>🚀 지금 시작하세요</h2>
+            <p>AI 기반 행동/적성 테스트로 더 정확하고 객관적인 인재 평가를 경험해보세요</p>
+            <div class="cta-buttons">
+                <a href="candidate_profile_management.html" class="btn btn-primary">프로필 관리로 돌아가기</a>
+                <a href="index.html" class="btn btn-secondary">메인 페이지로</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 테스트 버튼 클릭 이벤트
+        document.querySelectorAll('.test-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                alert('테스트가 시작됩니다. 잠시만 기다려주세요...');
+                // 실제 테스트 로직 구현
+            });
+        });
+
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // 애니메이션 적용할 요소들
+        document.querySelectorAll('.test-card, .analysis-panel, .progress-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

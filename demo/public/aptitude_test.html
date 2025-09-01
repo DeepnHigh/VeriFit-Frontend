@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 적성검사 - Holland 성격유형 검사</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 50%, #e6f3ff 70%, #d1ecf1 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 헤더 */
+        .header {
+            text-align: center;
+            color: #2c3e50;
+            padding: 40px 0;
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        /* 검사 안내 */
+        .instructions {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .instructions h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        /* 검사 폼 */
+        .test-form {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .questions-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .question:hover {
+            border-color: #667eea;
+        }
+
+        .question h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem; /* 질문 텍스트 크기 축소 */
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px; /* 옵션 간격 축소 */
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px; /* 패딩 축소 */
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background-color: #667eea;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        /* 제출 버튼 */
+        .submit-section {
+            text-align: center;
+            margin: 20px 0;
+            grid-column: 1 / -1; /* 전체 그리드 너비 사용 */
+            justify-self: center; /* 그리드 내에서 가운데 정렬 */
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            max-width: 200px;
+            height: 70px;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 결과 섹션 */
+        .results {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            border-top: 5px solid #667eea;
+            grid-column: 1 / -1; /* 전체 그리드 너비 사용 */
+        }
+
+        .results h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .score-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 5px solid #667eea;
+        }
+
+        .score-item h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .score-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        /* 육각형 그래프 스타일 */
+        .hexagon-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            overflow: visible;
+        }
+
+        .hexagon-chart {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            overflow: visible; /* 라벨이 차트 밖으로 나갈 수 있도록 허용 */
+        }
+
+        .hexagon-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 140%;
+            height: 100%;
+            pointer-events: none; /* 라벨 클릭 차단(선택사항) */
+        }
+
+        .hex-label {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translate(-50%, -50%);
+        }
+
+        .hex-label .score {
+            display: block;
+            font-size: 0.7rem;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        /* 적성검사 테이블 스타일 */
+        .personality-table-section {
+            margin: 30px 0;
+        }
+
+        .personality-table-section h5 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .personality-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .personality-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .personality-table th {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .personality-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .personality-table .highlight-row {
+            background: linear-gradient(135deg, #e2eeff, #b2cff5);
+        }
+
+        .interpretation {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .interpretation h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .interpretation p {
+            color: #2e7d32;
+            line-height: 1.8;
+        }
+
+        /* 진행률 표시 */
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hexagon-chart canvas {
+                width: 300px;
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 적성검사</h1>
+            <p>Holland 성격유형 검사로 나에게 맞는 직업을 찾아보세요</p>
+        </div>
+
+        <div class="instructions">
+            <h2>📋 검사 안내</h2>
+            <ul>
+                <li>총 20개의 질문에 답해주세요</li>
+                <li>각 질문마다 가장 적합한 답을 하나만 선택해주세요</li>
+                <li>솔직하게 답변해주시면 더 정확한 결과를 얻을 수 있습니다</li>
+                <li>검사 소요 시간은 약 15-20분입니다</li>
+            </ul>
+        </div>
+
+        <div class="progress-text">진행률: <span id="progress">0</span>%</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <form class="test-form" id="aptitudeForm">
+            <div class="questions-grid">
+                <div class="question">
+                    <h3>1. 새로운 기술을 배울 때 가장 좋아하는 방법은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q1" value="R">
+                            <span>실습을 통해 직접 해보기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="I">
+                            <span>이론과 원리를 깊이 파악하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="A">
+                            <span>창의적인 방법으로 접근하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="S">
+                            <span>다른 사람과 함께 학습하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="E">
+                            <span>체계적인 계획을 세워 진행하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="C">
+                            <span>정해진 순서와 절차를 따르기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>2. 팀 프로젝트에서 내가 가장 잘하는 역할은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q2" value="R">
+                            <span>구체적인 작업을 실행하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="I">
+                            <span>문제를 분석하고 해결책 제시하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="A">
+                            <span>새로운 아이디어와 디자인 제안하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="S">
+                            <span>팀원들과 소통하고 조율하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="E">
+                            <span>프로젝트를 관리하고 일정 조율하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="C">
+                            <span>문서화와 정리 작업하기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>3. 업무 환경에서 가장 중요하게 생각하는 것은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q3" value="R">
+                            <span>구체적인 성과와 결과</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="I">
+                            <span>지적 도전과 문제 해결</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="A">
+                            <span>창의성과 자유로운 표현</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="S">
+                            <span>사람들과의 협력과 소통</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="E">
+                            <span>목표 달성과 성공</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="C">
+                            <span>안정성과 질서</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>4. 스트레스 상황에서 내가 취하는 행동은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q4" value="R">
+                            <span>구체적인 해결책을 찾아 실행하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="I">
+                            <span>상황을 분석하고 논리적으로 접근하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="A">
+                            <span>창의적인 방법으로 문제를 재해석하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="S">
+                            <span>다른 사람과 상담하고 도움 요청하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="E">
+                            <span>계획을 세우고 체계적으로 대응하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="C">
+                            <span>기존의 검증된 방법을 따르기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>5. 새로운 프로젝트를 시작할 때 가장 먼저 하는 것은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q5" value="R">
+                            <span>구체적인 작업 계획 세우기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="I">
+                            <span>프로젝트의 핵심 문제 파악하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="A">
+                            <span>창의적인 아이디어 브레인스토밍하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="S">
+                            <span>팀원들과 아이디어 공유하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="E">
+                            <span>전체적인 로드맵과 일정 수립하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q5" value="C">
+                            <span>기존 사례와 가이드라인 확인하기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>6. 업무에서 가장 만족스러운 순간은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q6" value="R">
+                            <span>구체적인 결과물을 완성했을 때</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="I">
+                            <span>복잡한 문제를 해결했을 때</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="A">
+                            <span>새로운 아이디어를 구현했을 때</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="S">
+                            <span>팀원들과 함께 성공했을 때</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="E">
+                            <span>목표를 달성했을 때</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="C">
+                            <span>모든 것이 체계적으로 정리되었을 때</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>7. 동료와 의견이 다를 때 내가 취하는 행동은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q7" value="R">
+                            <span>구체적인 예시를 들어 설명하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="I">
+                            <span>논리적으로 분석하여 설득하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="A">
+                            <span>창의적인 대안을 제시하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="S">
+                            <span>상호 이해를 위해 대화하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="E">
+                            <span>결정을 내리고 진행하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q7" value="C">
+                            <span>기준과 원칙에 따라 판단하기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>8. 업무를 배울 때 가장 어려워하는 부분은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q8" value="R">
+                            <span>추상적인 개념 이해하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="I">
+                            <span>실무적인 적용하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="A">
+                            <span>기존 규칙을 따르기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="S">
+                            <span>혼자서 작업하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="E">
+                            <span>세부사항에 집중하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q8" value="C">
+                            <span>변화에 적응하기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>9. 팀 회의에서 내가 가장 잘하는 역할은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q9" value="R">
+                            <span>구체적인 실행 계획 제시하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="I">
+                            <span>문제의 핵심을 분석하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="A">
+                            <span>창의적인 아이디어 제안하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="S">
+                            <span>의견을 조율하고 소통하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="E">
+                            <span>회의를 진행하고 정리하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q9" value="C">
+                            <span>회의록 작성과 정리하기</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>10. 업무 환경에서 가장 선호하는 것은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q10" value="R">
+                            <span>구체적이고 실용적인 작업</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="I">
+                            <span>지적 도전과 연구</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="A">
+                            <span>창의적이고 자유로운 환경</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="S">
+                            <span>협력과 소통이 활발한 환경</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="E">
+                            <span>목표 지향적이고 체계적인 환경</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q10" value="C">
+                            <span>안정적이고 질서 있는 환경</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>11. 여가 시간에 즐겨하는 활동은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q11" value="R">
+                            <span>목공, 요리, 조립 등 손으로 하는 활동</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q11" value="I">
+                            <span>과학 다큐멘터리 시청, 퍼즐 풀기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q11" value="A">
+                            <span>그림 그리기, 악기 연주, 글쓰기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q11" value="S">
+                            <span>친구들과 만나거나 봉사 활동하기</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q11" value="E">
+                            <span>새로운 모임 주도, 행사 기획</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q11" value="C">
+                            <span>가계부 정리, 서류 파일링</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>12. 당신의 강점을 한 단어로 표현한다면?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q12" value="R">
+                            <span>실행력</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q12" value="I">
+                            <span>분석력</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q12" value="A">
+                            <span>상상력</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q12" value="S">
+                            <span>공감능력</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q12" value="E">
+                            <span>추진력</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q12" value="C">
+                            <span>정확성</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>13. 다른 사람에게 조언을 할 때 주로 어떤 식으로 하는가?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q13" value="R">
+                            <span>현실적인 해결책과 구체적인 방법을 제시한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q13" value="I">
+                            <span>문제의 원인을 함께 분석하고 논리적으로 접근한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q13" value="A">
+                            <span>틀에 박히지 않은 새로운 시각을 제시한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q13" value="S">
+                            <span>상대방의 감정을 헤아리며 정서적 지지를 해준다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q13" value="E">
+                            <span>목표를 설정하고 달성하도록 독려한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q13" value="C">
+                            <span>과거 사례나 규칙을 바탕으로 신중하게 조언한다</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>14. 다음 직업 중 가장 흥미를 느끼는 분야는?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q14" value="R">
+                            <span>건축, 엔지니어링, 농업</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q14" value="I">
+                            <span>과학자, 프로그래머, 의사</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q14" value="A">
+                            <span>디자이너, 작가, 음악가</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q14" value="S">
+                            <span>상담사, 교사, 사회복지사</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q14" value="E">
+                            <span>사업가, 영업직, 정치인</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q14" value="C">
+                            <span>회계사, 공무원, 사서</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>15. 업무 중 예상치 못한 문제가 발생했을 때 어떻게 대처하는가?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q15" value="R">
+                            <span>현장 상황을 파악하고 바로 수정한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q15" value="I">
+                            <span>원인을 분석하고 재발 방지책을 마련한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q15" value="A">
+                            <span>기존에 없던 새로운 해결 방법을 시도한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q15" value="S">
+                            <span>관련 팀원들과 협력하여 해결한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q15" value="E">
+                            <span>책임지고 해결 방안을 결정한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q15" value="C">
+                            <span>정해진 매뉴얼과 절차에 따라 처리한다</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>16. 다음 중 가장 편안하게 느껴지는 상황은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q16" value="R">
+                            <span>명확한 작업 목표가 주어지는 상황</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q16" value="I">
+                            <span>복잡하고 깊이 있는 주제를 탐구하는 상황</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q16" value="A">
+                            <span>규칙 없이 자유롭게 상상하고 표현하는 상황</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q16" value="S">
+                            <span>사람들과 의미 있는 관계를 맺는 상황</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q16" value="E">
+                            <span>그룹을 이끌고 결과를 만들어내는 상황</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q16" value="C">
+                            <span>모든 것이 체계적으로 정리되어 있는 상황</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>17. 새로운 정보를 얻을 때 당신의 반응은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q17" value="R">
+                            <span>직접 만져보고 체험하며 이해한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q17" value="I">
+                            <span>정보의 논리적 구조와 사실관계를 확인한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q17" value="A">
+                            <span>다양한 관점에서 정보를 재해석한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q17" value="S">
+                            <span>다른 사람의 의견을 듣고 교류한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q17" value="E">
+                            <span>정보를 활용해 어떤 이득을 얻을 수 있을지 생각한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q17" value="C">
+                            <span>정보의 출처와 정확성을 꼼꼼히 확인한다</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>18. 당신이 가장 중요하게 여기는 가치는?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q18" value="R">
+                            <span>기술력과 숙련도</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q18" value="I">
+                            <span>지식과 진리</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q18" value="A">
+                            <span>미와 독창성</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q18" value="S">
+                            <span>타인과의 관계</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q18" value="E">
+                            <span>영향력과 성취</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q18" value="C">
+                            <span>안정성과 질서</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>19. 어려운 결정을 내려야 할 때, 당신의 접근 방식은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q19" value="R">
+                            <span>가능한 모든 대안을 실행해보고 결과를 본다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q19" value="I">
+                            <span>장단점을 분석하고 가장 합리적인 결론을 도출한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q19" value="A">
+                            <span>직감에 따라 새로운 길을 모색한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q19" value="S">
+                            <span>주변 사람들의 의견을 경청하고 조율한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q19" value="E">
+                            <span>자신감을 가지고 신속하게 결정하고 추진한다</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q19" value="C">
+                            <span>관련 규정과 과거 데이터를 꼼꼼히 검토한다</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <h3>20. 업무 보고서를 작성할 때 가장 신경 쓰는 부분은?</h3>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q20" value="R">
+                            <span>결과물의 실제적 효용성</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q20" value="I">
+                            <span>논리적 오류 없이 정확한 분석</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q20" value="A">
+                            <span>보고서의 독창적이고 시각적인 표현</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q20" value="S">
+                            <span>모든 이해관계자가 만족할 만한 내용</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q20" value="E">
+                            <span>목표 달성 전략과 미래 방향 제시</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q20" value="C">
+                            <span>오타나 누락 없는 완벽한 문서 형식</span>
+                        </label>
+                    </div>
+                </div>
+
+            <!-- 제출 버튼 -->
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>검사 완료하기</button>
+            </div>
+        </form>
+
+        <!-- 결과 섹션 -->
+        <div class="results" id="results">
+            <h2>🎯 적성검사 결과</h2>
+            
+            <!-- 육각형 그래프 -->
+            <div class="hexagon-container">
+                <div class="hexagon-chart">
+                    <canvas id="hexagonChart" width="400" height="400"></canvas>
+                    <div class="hexagon-labels">
+                        <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score" id="labelR">0점</span></div>
+                        <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score" id="labelI">0점</span></div>
+                        <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score" id="labelC">0점</span></div>
+                        <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score" id="labelS">0점</span></div>
+                        <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score" id="labelE">0점</span></div>
+                        <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score" id="labelA">0점</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 적성검사 점수 테이블 -->
+            <div class="personality-table-section">
+                <h5>📋 적성검사 점수</h5>
+                <div class="personality-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>적성 유형</th>
+                                <th>점수 (100점 만점)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>현실형</strong><br>(실행/사물지향)</td>
+                                <td id="tableR">0점</td>
+                            </tr>
+                            <tr>
+                                <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
+                                <td id="tableI">0점</td>
+                            </tr>
+                            <tr>
+                                <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
+                                <td id="tableA">0점</td>
+                            </tr>
+                            <tr>
+                                <td><strong>사회형</strong><br>(협력/사람지향)</td>
+                                <td id="tableS">0점</td>
+                            </tr>
+                            <tr>
+                                <td><strong>진취형</strong><br>(관리/과제지향)</td>
+                                <td id="tableE">0점</td>
+                            </tr>
+                            <tr>
+                                <td><strong>관습형</strong><br>(동조/자료지향)</td>
+                                <td id="tableC">0점</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="score-grid">
+                <div class="score-item">
+                    <h3>현실형<br>(실행/사물지향)</h3>
+                    <div class="score-value" id="scoreR">0</div>
+                    <div class="score-description">구체적이고 실용적인 작업 선호</div>
+                </div>
+                <div class="score-item">
+                    <h3>탐구형<br>(사고/아이디어 지향)</h3>
+                    <div class="score-value" id="scoreI">0</div>
+                    <div class="score-description">논리적 사고와 분석 선호</div>
+                </div>
+                <div class="score-item">
+                    <h3>예술형<br>(창조/아이디어 지향)</h3>
+                    <div class="score-value" id="scoreA">0</div>
+                    <div class="score-description">창의성과 자유로운 표현 선호</div>
+                </div>
+                <div class="score-item">
+                    <h3>사회형<br>(협력/사람지향)</h3>
+                    <div class="score-value" id="scoreS">0</div>
+                    <div class="score-description">사람들과의 협력과 소통 선호</div>
+                </div>
+                <div class="score-item">
+                    <h3>진취형<br>(관리/과제지향)</h3>
+                    <div class="score-value" id="scoreE">0</div>
+                    <div class="score-description">목표 달성과 리더십 선호</div>
+                </div>
+                <div class="score-item">
+                    <h3>관습형<br>(동조/자료지향)</h3>
+                    <div class="score-value" id="scoreC">0</div>
+                    <div class="score-description">체계적이고 질서 있는 작업 선호</div>
+                </div>
+            </div>
+
+            <div class="interpretation">
+                <h3>🎯 적성검사 결과 해석</h3>
+                <p id="interpretationText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 질문 수
+        const totalQuestions = 20;
+        
+        // 진행률 업데이트 함수
+        function updateProgress() {
+            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
+            const progress = Math.round((answeredQuestions / totalQuestions) * 100);
+            
+            document.getElementById('progress').textContent = progress;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // 모든 질문에 답했는지 확인
+            const submitBtn = document.getElementById('submitBtn');
+            if (answeredQuestions === totalQuestions) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        // 라디오 버튼 클릭 이벤트
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgress);
+        });
+
+        // 옵션 선택 시 시각적 피드백
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                // 같은 질문의 다른 옵션들 선택 해제
+                const question = this.closest('.question');
+                question.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // 선택된 옵션 표시
+                this.classList.add('selected');
+                
+                // 라디오 버튼 선택
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                updateProgress();
+            });
+        });
+
+        // 폼 제출 처리
+        document.getElementById('aptitudeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 점수 계산
+            const scores = {
+                R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
+            };
+            
+            // 각 질문의 답변 확인
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    scores[selected.value]++;
+                }
+            }
+            
+            // 점수를 100점 만점으로 변환 (10문제 기준)
+            const maxScore = totalQuestions;
+            const convertedScores = {};
+            Object.keys(scores).forEach(key => {
+                convertedScores[key] = Math.round((scores[key] / maxScore) * 100);
+            });
+            
+            // 결과 표시
+            displayResults(convertedScores);
+        });
+
+        // 육각형 그래프 그리기
+        function drawHexagonChart(scores) {
+            const canvas = document.getElementById('hexagonChart');
+            const ctx = canvas.getContext('2d');
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            
+            // 데이터 (점수)
+            const data = [
+                { score: scores.R || 0, label: '현실형', color: '#4CAF50' },
+                { score: scores.I || 0, label: '탐구형', color: '#2196F3' },
+                { score: scores.A || 0, label: '예술형', color: '#FF9800' },
+                { score: scores.S || 0, label: '사회형', color: '#9C27B0' },
+                { score: scores.E || 0, label: '진취형', color: '#607D8B' },
+                { score: scores.C || 0, label: '관습형', color: '#f44336' }
+            ];
+            
+            // 캔버스 초기화
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 육각형 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 데이터 포인트 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const scoreRadius = (radius * data[i].score) / 100;
+                const x = centerX + scoreRadius * Math.cos(angle);
+                const y = centerY + scoreRadius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 중심점
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4CAF50';
+            ctx.fill();
+        }
+
+        // 결과 표시 함수
+        function displayResults(scores) {
+            // 육각형 차트 그리기
+            drawHexagonChart(scores);
+            
+            // 점수 표시
+            document.getElementById('scoreR').textContent = scores.R + '점';
+            document.getElementById('scoreI').textContent = scores.I + '점';
+            document.getElementById('scoreA').textContent = scores.A + '점';
+            document.getElementById('scoreS').textContent = scores.S + '점';
+            document.getElementById('scoreE').textContent = scores.E + '점';
+            document.getElementById('scoreC').textContent = scores.C + '점';
+            
+            // 육각형 차트 라벨 업데이트
+            document.getElementById('labelR').textContent = scores.R + '점';
+            document.getElementById('labelI').textContent = scores.I + '점';
+            document.getElementById('labelA').textContent = scores.A + '점';
+            document.getElementById('labelS').textContent = scores.S + '점';
+            document.getElementById('labelE').textContent = scores.E + '점';
+            document.getElementById('labelC').textContent = scores.C + '점';
+            
+            // 테이블 점수 업데이트
+            document.getElementById('tableR').textContent = scores.R + '점';
+            document.getElementById('tableI').textContent = scores.I + '점';
+            document.getElementById('tableA').textContent = scores.A + '점';
+            document.getElementById('tableS').textContent = scores.S + '점';
+            document.getElementById('tableE').textContent = scores.E + '점';
+            document.getElementById('tableC').textContent = scores.C + '점';
+            
+            // 최고 점수 찾기
+            const maxScore = Math.max(...Object.values(scores));
+            const maxTypes = Object.keys(scores).filter(key => scores[key] === maxScore);
+            
+            // 최저 점수 찾기
+            const minScore = Math.min(...Object.values(scores));
+            const minTypes = Object.keys(scores).filter(key => scores[key] === minScore);
+            
+            // 유형별 이름
+            const typeNames = {
+                R: '현실형',
+                I: '탐구형',
+                A: '예술형',
+                S: '사회형',
+                E: '진취형',
+                C: '관습형'
+            };
+            
+            // 해석 텍스트 생성
+            let interpretation = '';
+            
+            if (maxTypes.length === 1) {
+                const maxType = maxTypes[0];
+                interpretation += `${typeNames[maxType]} ${scores[maxType]}점은 지원자의 가장 뚜렷한 특성으로, `;
+                
+                switch(maxType) {
+                    case 'R':
+                        interpretation += '구체적이고 실용적인 작업을 선호하며, 기술적 문제 해결에 강점을 보입니다. ';
+                        break;
+                    case 'I':
+                        interpretation += '논리적 사고와 분석을 중시하며, 복잡한 문제를 체계적으로 접근하는 능력이 뛰어납니다. ';
+                        break;
+                    case 'A':
+                        interpretation += '창의성과 혁신적인 아이디어를 중시하며, 독창적인 솔루션을 제시하는 능력이 뛰어납니다. ';
+                        break;
+                    case 'S':
+                        interpretation += '사람들과의 협력과 소통을 중시하며, 팀워크와 갈등 해결에 강점을 보입니다. ';
+                        break;
+                    case 'E':
+                        interpretation += '목표 달성과 리더십을 중시하며, 프로젝트 관리와 의사결정에 강점을 보입니다. ';
+                        break;
+                    case 'C':
+                        interpretation += '체계적이고 질서 있는 작업을 선호하며, 정확성과 일관성을 중시합니다. ';
+                        break;
+                }
+            }
+            
+            if (minTypes.length === 1) {
+                const minType = minTypes[0];
+                interpretation += `반면 ${typeNames[minType]} ${scores[minType]}점은 `;
+                
+                switch(minType) {
+                    case 'R':
+                        interpretation += '구체적인 실행보다는 이론적 접근을 선호함을 시사하며, 실무적 작업에서 관리가 필요할 수 있습니다. ';
+                        break;
+                    case 'I':
+                        interpretation += '깊이 있는 분석보다는 실용적 접근을 선호함을 시사하며, 복잡한 문제 해결 시 지원이 필요할 수 있습니다. ';
+                        break;
+                    case 'A':
+                        interpretation += '창의적 표현보다는 기존 방식을 따르는 것을 선호함을 시사하며, 혁신적 접근에서 관리가 필요할 수 있습니다. ';
+                        break;
+                    case 'S':
+                        interpretation += '개인 작업보다는 팀 협업을 선호함을 시사하며, 독립적 업무 수행에서 관리가 필요할 수 있습니다. ';
+                        break;
+                    case 'E':
+                        interpretation += '체계적 관리보다는 자유로운 작업을 선호함을 시사하며, 프로젝트 관리에서 지원이 필요할 수 있습니다. ';
+                        break;
+                    case 'C':
+                        interpretation += '유연한 접근보다는 정해진 절차를 따르는 것을 선호함을 시사하며, 변화 대응에서 관리가 필요할 수 있습니다. ';
+                        break;
+                }
+            }
+            
+            interpretation += '이러한 특성을 고려하여 업무 배치와 팀 구성 시 적절한 역할을 부여하는 것이 중요합니다.';
+            
+            document.getElementById('interpretationText').textContent = interpretation;
+            
+            // 결과 섹션 표시
+            document.getElementById('results').style.display = 'block';
+            
+            // 결과로 스크롤
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 초기 진행률 설정
+        updateProgress();
+    </script>
+</body>
+</html>
