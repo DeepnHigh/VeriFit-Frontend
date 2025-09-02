@@ -582,6 +582,8 @@
             padding: 15px;
             border-bottom: 1px solid #f0f0f0;
             vertical-align: top;
+            word-break: keep-all;
+            word-wrap: break-word;
         }
 
         .report-table tr:last-child td {
@@ -1012,6 +1014,7 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="confirmFirstPass()">✅ 1차 통과 확정</button>
                     <button class="btn btn-outline" onclick="downloadReport()">📋 상세 리포트 다운로드</button>
+                    <button class="btn btn-outline" onclick="viewCandidateProfile()">👤 지원자 프로필</button>
                 </div>
             </div>
         </div>
@@ -1123,6 +1126,10 @@
         }
         function downloadReport() {
             alert('다운로드가 시작됩니다.\n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
+        }
+        
+        function viewCandidateProfile() {
+            window.open('/candidate_profile.html', '_blank');
         }
     </script>
 </body>

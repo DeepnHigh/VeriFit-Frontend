@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시뮬레이션 검사 - 소프트 스킬 평가</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+        }
+
+        .scenario-section {
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .scenario-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .scenario-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .character-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .character-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .character-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .character-info p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .character-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .detail-value {
+            color: #7f8c8d;
+        }
+
+        .task-section {
+            background: white;
+            padding: 30px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .task-title {
+            font-size: 1.3rem;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-title::before {
+            content: "⚠️";
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .task-description {
+            line-height: 1.6;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .messenger-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .messenger-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .messenger-tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .messenger-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #f1f2f6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .messenger-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .messenger-tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .messenger-content {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .chat-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-info p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .message.received {
+            justify-content: flex-start;
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 0 8px;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+        }
+
+        .message.sent .message-bubble {
+            background: #667eea;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .message-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-button {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .action-plan-section {
+            background: white;
+            padding: 30px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .action-plan-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .action-plan-input {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 120px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .action-plan-input:focus {
+            border-color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .evaluation-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .evaluation-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .evaluation-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .evaluation-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .evaluation-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .characters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .messenger-tabs {
+                flex-direction: column;
+            }
+
+            .chat-messages {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 시뮬레이션 검사</h1>
+            <p>실제 업무 상황에서의 소프트 스킬과 사회성을 평가합니다</p>
+        </div>
+
+        <div class="test-container">
+            <!-- 시나리오 섹션 -->
+            <div class="scenario-section">
+                <h2 class="scenario-title">📋 시나리오: 스케줄 조정 위기</h2>
+                
+                <div class="scenario-content">
+                    <p>당신은 프로젝트 매니저로, 내일 오후 2시에 거래처와 중요한 미팅을 예정했습니다. 
+                    팀원들과 함께 준비한 프레젠테이션을 발표할 예정이었습니다.</p>
+                    
+                    <p>그런데 갑자기 거래처에서 연락이 와서 "내일 일정이 안 된다"며 미팅을 취소하겠다고 합니다. 
+                    이는 프로젝트 진행에 큰 차질을 빚을 수 있는 상황입니다.</p>
+                    
+                    <p>이 상황을 어떻게 해결하시겠습니까?</p>
+                </div>
+
+                <!-- 가상 캐릭터들 -->
+                <div class="characters-grid">
+                    <div class="character-card">
+                        <div class="character-header">
+                            <div class="character-avatar">A</div>
+                            <div class="character-info">
+                                <h3>김영수 (거래처 담당자)</h3>
+                                <p>마케팅팀 팀장</p>
+                            </div>
+                        </div>
+                        <div class="character-details">
+                            <div class="detail-item">
+                                <span class="detail-label">성격:</span>
+                                <span class="detail-value">직설적, 시간 엄수</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">말투:</span>
+                                <span class="detail-value">공식적, 간결</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">성별:</span>
+                                <span class="detail-value">남성</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">특징:</span>
+                                <span class="detail-value">바쁜 스케줄</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-card">
+                        <div class="character-header">
+                            <div class="character-avatar">B</div>
+                            <div class="character-info">
+                                <h3>박미영 (팀원)</h3>
+                                <p>프로젝트 담당자</p>
+                            </div>
+                        </div>
+                        <div class="character-details">
+                            <div class="detail-item">
+                                <span class="detail-label">성격:</span>
+                                <span class="detail-value">책임감 강함, 걱정 많음</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">말투:</span>
+                                <span class="detail-value">친근함, 존댓말</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">성별:</span>
+                                <span class="detail-value">여성</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">특징:</span>
+                                <span class="detail-value">프레젠 준비 완료</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-card">
+                        <div class="character-header">
+                            <div class="character-avatar">C</div>
+                            <div class="character-info">
+                                <h3>이철수 (상사)</h3>
+                                <p>개발팀 부장</p>
+                            </div>
+                        </div>
+                        <div class="character-details">
+                            <div class="detail-item">
+                                <span class="detail-label">성격:</span>
+                                <span class="detail-value">결과 지향적, 압박감</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">말투:</span>
+                                <span class="detail-value">단호함, 명령조</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">성별:</span>
+                                <span class="detail-value">남성</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">특징:</span>
+                                <span class="detail-value">프로젝트 성과 중시</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 업무 상황 -->
+            <div class="task-section">
+                <h3 class="task-title">🚨 긴급 상황</h3>
+                <div class="task-description">
+                    <p><strong>거래처 담당자 김영수 팀장</strong>이 갑자기 연락하여 내일 오후 2시 미팅을 취소하겠다고 합니다. 
+                    이유는 "내일 일정이 안 된다"는 것뿐입니다.</p>
+                    
+                    <p>이 상황에서 당신은:</p>
+                    <ul style="margin: 15px 0; padding-left: 20px;">
+                        <li>거래처와의 관계를 유지하면서 미팅을 재조정해야 합니다</li>
+                        <li>팀원들의 노력을 헛되게 하지 않아야 합니다</li>
+                        <li>상사에게 상황을 보고해야 합니다</li>
+                        <li>프로젝트 일정에 차질이 생기지 않도록 해야 합니다</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 메신저 섹션 -->
+            <div class="messenger-section">
+                <h3 class="messenger-title">💬 메신저로 상황 해결하기</h3>
+                
+                <div class="messenger-tabs">
+                    <button class="messenger-tab active" onclick="switchTab('tab1')">김영수 팀장</button>
+                    <button class="messenger-tab" onclick="switchTab('tab2')">박미영 팀원</button>
+                    <button class="messenger-tab" onclick="switchTab('tab3')">이철수 부장</button>
+                </div>
+
+                <!-- 김영수 팀장 채팅 -->
+                <div class="messenger-content tab-content active" id="tab1">
+                    <div class="chat-header">
+                        <div class="chat-avatar">A</div>
+                        <div class="chat-info">
+                            <h3>김영수 팀장</h3>
+                            <p>마케팅팀 팀장 • 마지막 활동: 방금 전</p>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chat1">
+                        <div class="message received">
+                            <div class="message-avatar">A</div>
+                            <div class="message-bubble">
+                                안녕하세요. 내일 오후 2시 미팅인데 일정이 안 되겠습니다. 미팅 취소하겠습니다.
+                                <div class="message-time">오후 3:42</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <textarea class="message-input" id="input1" placeholder="메시지를 입력하세요..." rows="3"></textarea>
+                            <button class="send-button" onclick="sendMessage('input1', 'chat1', 'A')">전송</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 박미영 팀원 채팅 -->
+                <div class="messenger-content tab-content" id="tab2">
+                    <div class="chat-header">
+                        <div class="chat-avatar">B</div>
+                        <div class="chat-info">
+                            <h3>박미영 팀원</h3>
+                            <p>프로젝트 담당자 • 마지막 활동: 5분 전</p>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chat2">
+                        <div class="message received">
+                            <div class="message-avatar">B</div>
+                            <div class="message-bubble">
+                                매니저님, 내일 미팅 준비 다 됐습니다. 프레젠테이션도 완벽하게 준비했어요! 😊
+                                <div class="message-time">오후 3:40</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <textarea class="message-input" id="input2" placeholder="메시지를 입력하세요..." rows="3"></textarea>
+                            <button class="send-button" onclick="sendMessage('input2', 'chat2', 'B')">전송</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 이철수 부장 채팅 -->
+                <div class="messenger-content tab-content" id="tab3">
+                    <div class="chat-header">
+                        <div class="chat-avatar">C</div>
+                        <div class="chat-info">
+                            <h3>이철수 부장</h3>
+                            <p>개발팀 부장 • 마지막 활동: 10분 전</p>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chat3">
+                        <div class="message received">
+                            <div class="message-avatar">C</div>
+                            <div class="message-bubble">
+                                내일 미팅 준비 상황은 어떻나? 거래처와의 협의가 잘 진행되고 있나?
+                                <div class="message-time">오후 3:35</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <div class="input-group">
+                            <textarea class="message-input" id="input3" placeholder="메시지를 입력하세요..." rows="3"></textarea>
+                            <button class="send-button" onclick="sendMessage('input3', 'chat3', 'C')">전송</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 행동 계획 섹션 -->
+            <div class="action-plan-section">
+                <h3 class="action-plan-title">📋 전체적인 행동 계획</h3>
+                <textarea 
+                    class="action-plan-input" 
+                    id="actionPlan" 
+                    placeholder="이 상황을 해결하기 위한 구체적인 행동 계획을 단계별로 작성해주세요."
+                ></textarea>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="evaluateTest()">다음 시나리오</button>
+            </div>
+
+            <!-- 평가 결과 섹션 -->
+            <div class="evaluation-section hidden" id="evaluationSection">
+                <h3 class="evaluation-title">📊 평가 결과</h3>
+                
+                <div class="evaluation-grid">
+                    <div class="evaluation-card">
+                        <div class="evaluation-score" id="communicationScore">-</div>
+                        <div class="evaluation-label">의사소통 능력</div>
+                    </div>
+                    
+                    <div class="evaluation-card">
+                        <div class="evaluation-score" id="problemSolvingScore">-</div>
+                        <div class="evaluation-label">문제 해결 능력</div>
+                    </div>
+                    
+                    <div class="evaluation-card">
+                        <div class="evaluation-score" id="leadershipScore">-</div>
+                        <div class="evaluation-label">리더십</div>
+                    </div>
+                    
+                    <div class="evaluation-card">
+                        <div class="evaluation-score" id="emotionalIntelligenceScore">-</div>
+                        <div class="evaluation-label">감정 지능</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="showDetailedFeedback()">상세 피드백 보기</button>
+                    <button class="btn btn-secondary" onclick="resetTest()">테스트 다시 시작</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 탭 전환 함수
+        function switchTab(tabName) {
+            // 모든 탭과 콘텐츠 숨기기
+            document.querySelectorAll('.messenger-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // 선택된 탭과 콘텐츠 활성화
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // 메시지 전송 함수
+        function sendMessage(inputId, chatId, character) {
+            const input = document.getElementById(inputId);
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chat = document.getElementById(chatId);
+            const currentTime = new Date().toLocaleTimeString('ko-KR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    ${message}
+                    <div class="message-time">${currentTime}</div>
+                </div>
+            `;
+            
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+            
+            // 입력창 초기화
+            input.value = '';
+            
+            // 자동 응답 (선택사항)
+            setTimeout(() => {
+                showAutoResponse(chatId, character);
+            }, 1000);
+        }
+
+        // 자동 응답 표시
+        function showAutoResponse(chatId, character) {
+            const chat = document.getElementById(chatId);
+            const currentTime = new Date().toLocaleTimeString('ko-KR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            let response = '';
+            let avatar = '';
+            
+            switch(character) {
+                case 'A':
+                    response = '네, 알겠습니다. 다시 연락드리겠습니다.';
+                    avatar = 'A';
+                    break;
+                case 'B':
+                    response = '네, 매니저님! 알겠습니다.';
+                    avatar = 'B';
+                    break;
+                case 'C':
+                    response = '좋습니다. 계속 진행하세요.';
+                    avatar = 'C';
+                    break;
+            }
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message received';
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-bubble">
+                    ${response}
+                    <div class="message-time">${currentTime}</div>
+                </div>
+            `;
+            
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        // Enter 키로 메시지 전송
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const activeTab = document.querySelector('.tab-content.active');
+                const input = activeTab.querySelector('.message-input');
+                const sendBtn = activeTab.querySelector('.send-button');
+                sendBtn.click();
+            }
+        });
+
+        // 테스트 평가 함수
+        function evaluateTest() {
+            const messages1 = document.querySelectorAll('#chat1 .message.sent .message-bubble');
+            const messages2 = document.querySelectorAll('#chat2 .message.sent .message-bubble');
+            const messages3 = document.querySelectorAll('#chat3 .message.sent .message-bubble');
+            const actionPlan = document.getElementById('actionPlan').value;
+
+            if (messages1.length === 0 || messages2.length === 0 || messages3.length === 0 || !actionPlan.trim()) {
+                alert('모든 캐릭터와 대화하고 행동 계획을 작성해주세요.');
+                return;
+            }
+
+            // 메시지 내용 추출
+            const messageA = Array.from(messages1).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+            const messageB = Array.from(messages2).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+            const messageC = Array.from(messages3).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+
+            // 평가 로직
+            const scores = calculateScores(messageA, messageB, messageC, actionPlan);
+            
+            // 결과 표시
+            displayResults(scores);
+            
+            // 평가 섹션 표시
+            document.getElementById('evaluationSection').classList.remove('hidden');
+            
+            // 페이지 스크롤
+            document.getElementById('evaluationSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 점수 계산 함수
+        function calculateScores(messageA, messageB, messageC, actionPlan) {
+            let communicationScore = 0;
+            let problemSolvingScore = 0;
+            let leadershipScore = 0;
+            let emotionalIntelligenceScore = 0;
+
+            // 거래처 담당자 메시지 평가
+            if (messageA.includes('이해') || messageA.includes('협조') || messageA.includes('대안')) {
+                communicationScore += 25;
+                problemSolvingScore += 20;
+            }
+            if (messageA.includes('감사') || messageA.includes('양해')) {
+                emotionalIntelligenceScore += 20;
+            }
+
+            // 팀원 메시지 평가
+            if (messageB.includes('걱정') || messageB.includes('안심') || messageB.includes('함께')) {
+                emotionalIntelligenceScore += 25;
+                leadershipScore += 20;
+            }
+            if (messageB.includes('해결') || messageB.includes('방안')) {
+                problemSolvingScore += 20;
+            }
+
+            // 상사 메시지 평가
+            if (messageC.includes('보고') || messageC.includes('해결') || messageC.includes('계획')) {
+                leadershipScore += 25;
+                communicationScore += 20;
+            }
+            if (messageC.includes('책임') || messageC.includes('대응')) {
+                leadershipScore += 20;
+            }
+
+            // 행동 계획 평가
+            if (actionPlan.includes('단계') || actionPlan.includes('계획') || actionPlan.includes('대안')) {
+                problemSolvingScore += 25;
+                leadershipScore += 20;
+            }
+            if (actionPlan.includes('소통') || actionPlan.includes('협의')) {
+                communicationScore += 20;
+            }
+
+            // 추가 점수 (키워드 기반)
+            const keywords = ['즉시', '신속', '효율', '창의', '협력', '전문', '체계'];
+            keywords.forEach(keyword => {
+                if (actionPlan.includes(keyword)) {
+                    problemSolvingScore += 5;
+                }
+            });
+
+            // 점수 제한 (100점 만점)
+            return {
+                communication: Math.min(100, communicationScore),
+                problemSolving: Math.min(100, problemSolvingScore),
+                leadership: Math.min(100, leadershipScore),
+                emotionalIntelligence: Math.min(100, emotionalIntelligenceScore)
+            };
+        }
+
+        // 결과 표시 함수
+        function displayResults(scores) {
+            document.getElementById('communicationScore').textContent = scores.communication;
+            document.getElementById('problemSolvingScore').textContent = scores.problemSolving;
+            document.getElementById('leadershipScore').textContent = scores.leadership;
+            document.getElementById('emotionalIntelligenceScore').textContent = scores.emotionalIntelligence;
+        }
+
+        // 상세 피드백 표시
+        function showDetailedFeedback() {
+            const messages1 = document.querySelectorAll('#chat1 .message.sent .message-bubble');
+            const messages2 = document.querySelectorAll('#chat2 .message.sent .message-bubble');
+            const messages3 = document.querySelectorAll('#chat3 .message.sent .message-bubble');
+            const actionPlan = document.getElementById('actionPlan').value;
+
+            const messageA = Array.from(messages1).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+            const messageB = Array.from(messages2).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+            const messageC = Array.from(messages3).map(msg => msg.textContent.replace(/[\d:]+$/, '')).join(' ');
+
+            let feedback = "📝 상세 피드백\n\n";
+            
+            // 거래처 메시지 피드백
+            feedback += "🔸 거래처 담당자 메시지:\n";
+            if (messageA.includes('이해') && messageA.includes('협조')) {
+                feedback += "✓ 상황을 이해하고 협조를 구하는 좋은 접근\n";
+            } else {
+                feedback += "⚠️ 더 구체적인 대안 제시가 필요할 수 있습니다\n";
+            }
+            
+            // 팀원 메시지 피드백
+            feedback += "\n🔸 팀원 메시지:\n";
+            if (messageB.includes('걱정') && messageB.includes('함께')) {
+                feedback += "✓ 팀원의 감정을 고려한 좋은 소통\n";
+            } else {
+                feedback += "⚠️ 팀원을 안심시키는 내용을 더 강화할 수 있습니다\n";
+            }
+            
+            // 상사 메시지 피드백
+            feedback += "\n🔸 상사 메시지:\n";
+            if (messageC.includes('보고') && messageC.includes('해결')) {
+                feedback += "✓ 상황 보고와 해결 방안을 제시한 좋은 보고\n";
+            } else {
+                feedback += "⚠️ 더 구체적인 해결 계획이 필요할 수 있습니다\n";
+            }
+            
+            // 행동 계획 피드백
+            feedback += "\n🔸 행동 계획:\n";
+            if (actionPlan.includes('단계') && actionPlan.includes('계획')) {
+                feedback += "✓ 체계적인 계획 수립\n";
+            } else {
+                feedback += "⚠️ 더 구체적이고 단계적인 계획이 필요합니다\n";
+            }
+
+            alert(feedback);
+        }
+
+        // 테스트 리셋
+        function resetTest() {
+            // 모든 채팅 초기화
+            document.querySelectorAll('.chat-messages').forEach(chat => {
+                chat.innerHTML = '';
+            });
+            
+            // 초기 메시지 복원
+            document.getElementById('chat1').innerHTML = `
+                <div class="message received">
+                    <div class="message-avatar">A</div>
+                    <div class="message-bubble">
+                        안녕하세요. 내일 오후 2시 미팅인데 일정이 안 되겠습니다. 미팅 취소하겠습니다.
+                        <div class="message-time">오후 3:42</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('chat2').innerHTML = `
+                <div class="message received">
+                    <div class="message-avatar">B</div>
+                    <div class="message-bubble">
+                        매니저님, 내일 미팅 준비 다 됐습니다. 프레젠테이션도 완벽하게 준비했어요! 😊
+                        <div class="message-time">오후 3:40</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('chat3').innerHTML = `
+                <div class="message received">
+                    <div class="message-avatar">C</div>
+                    <div class="message-bubble">
+                        내일 미팅 준비 상황은 어떻나? 거래처와의 협의가 잘 진행되고 있나?
+                        <div class="message-time">오후 3:35</div>
+                    </div>
+                </div>
+            `;
+            
+            // 행동 계획 초기화
+            document.getElementById('actionPlan').value = '';
+            
+            // 평가 섹션 숨기기
+            document.getElementById('evaluationSection').classList.add('hidden');
+            
+            // 첫 번째 탭 활성화
+            switchTab('tab1');
+            
+            // 페이지 상단으로 스크롤
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
