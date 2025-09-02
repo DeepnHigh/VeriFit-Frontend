@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 지원자 프로필 - AI 기반 채용 플랫폼</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fff6fd 0%, #f0d8f0 50%, #f5dbf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: black;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .screen-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .screen-title {
+            background: linear-gradient(135deg, #7e4dac, #834eb4);
+            color: white;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .screen-content {
+            padding: 30px;
+        }
+
+        /* 프로필 섹션 */
+        .profile-section {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .profile-title {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .profile-intro {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+            word-break: keep-all;
+            word-wrap: break-word;
+        }
+
+        .profile-details {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .detail-group {
+            margin-bottom: 25px;
+        }
+
+        .detail-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .detail-value {
+            color: #333;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        /* 포트폴리오 섹션 */
+        .portfolio-section {
+            margin-bottom: 40px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .portfolio-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .portfolio-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .portfolio-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .portfolio-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .file-info {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-top: 15px;
+        }
+
+        .file-info strong {
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .file-info small {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        /* 적성검사 결과 섹션 */
+        .aptitude-section {
+            margin-bottom: 40px;
+        }
+
+        .aptitude-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .aptitude-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .aptitude-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7e4dac;
+            margin-bottom: 10px;
+        }
+
+        .aptitude-label {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .aptitude-reliability {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* 육각형 차트 */
+        .hexagon-chart-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .hexagon-chart {
+            margin: 20px auto;
+        }
+
+        /* 적성검사 결과 스타일 */
+        .ai-interview-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .ai-interview-section h4 {
+            margin-bottom: 16px;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+        .ai-interview-section h5 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* 육각형 그래프 스타일 */
+        .hexagon-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .hexagon-chart {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            overflow: visible;
+        }
+
+        .hexagon-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 140%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hex-label {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translate(-50%, -50%);
+        }
+
+        .reliability {
+            display: block;
+            font-size: 0.7rem;
+            color: #666;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        /* 신뢰도 퍼센트별 색상 클래스 */
+        .reliability.excellent .percent { color: #25bb25; }
+        .reliability.good .percent { color: #6aa6eb; }
+        .reliability.average .percent { color: #FFD700; }
+        .reliability.poor .percent { color: #FFA500; }
+        .reliability.very-poor .percent { color: #FF0000; }
+
+        /* 적성검사 테이블 스타일 */
+        .personality-table-section {
+            margin: 30px 0;
+        }
+
+        .personality-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .personality-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .personality-table th {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .personality-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .personality-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .personality-table .highlight-row {
+            background: linear-gradient(135deg, #e2eeff, #b2cff5);
+        }
+
+        .personality-table .low-row {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        }
+
+        .personality-analysis {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .personality-analysis h5 {
+            color: #2e7d32;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .personality-analysis p {
+            color: #333;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* AI 학습 질문 섹션 */
+        .ai-learning-section {
+            margin-bottom: 40px;
+        }
+
+        .question-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .question-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .question-number {
+            background: #7e4dac;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .question-status {
+            background: #4CAF50;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .answer-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            color: #555;
+            line-height: 1.6;
+            border-left: 4px solid #7e4dac;
+        }
+
+        /* 네비게이션 */
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7e4dac, #834eb4);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .nav-button.secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .aptitude-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <h1>👤 지원자 프로필</h1>
+            <p>이지은 지원자의 상세 프로필 정보</p>
+        </div>
+
+        <!-- 프로필 정보 -->
+        <div class="screen-section">
+            <div class="screen-title">📋 기본 프로필</div>
+            <div class="screen-content">
+                <div class="profile-section">
+                    <div class="profile-card">
+                        <div class="profile-avatar">이</div>
+                        <div class="profile-name">이지은</div>
+                        <div class="profile-title">프론트엔드 개발자</div>
+                        <div class="profile-intro">
+                            React, TypeScript, Next.js를 주력으로 하는 프론트엔드 개발자입니다. 
+                            사용자 경험을 중시하며, 깔끔하고 효율적인 코드 작성을 지향합니다. 
+                            팀 협업과 지속적인 학습을 통해 성장하는 개발자입니다.
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>📞 연락처</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">이메일</span>
+                                <span class="detail-value">lee.jieun@email.com</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">전화번호</span>
+                                <span class="detail-value">010-1234-5678</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>🎓 학력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">최종학력</span>
+                                <span class="detail-value">서울대학교 컴퓨터공학과 졸업</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">졸업년도</span>
+                                <span class="detail-value">2022년</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>💼 경력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">총 경력</span>
+                                <span class="detail-value">2년 6개월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">최근 직장</span>
+                                <span class="detail-value">테크스타트업 프론트엔드 개발자</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 포트폴리오 및 자료 -->
+        <div class="screen-section">
+            <div class="screen-title">📁 포트폴리오 및 자료</div>
+            <div class="screen-content">
+                <div class="portfolio-grid">
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">📝</div>
+                        <div class="portfolio-title">자기소개서</div>
+                        <div class="portfolio-description">
+                            지원자의 경력과 기술 스택, 프로젝트 경험을 상세히 기술한 자기소개서입니다.
+                            React, TypeScript, Next.js 등 현대적인 프론트엔드 기술에 대한 깊은 이해와
+                            실제 프로젝트에서의 활용 경험을 포함하고 있습니다.
+                        </div>
+                        <div class="file-info">
+                            <strong>자기소개서_콜린웨이브.pdf</strong><br>
+                            <small>2024.08.15 업로드 • 2.3MB</small>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">💻</div>
+                        <div class="portfolio-title">포트폴리오</div>
+                        <div class="portfolio-description">
+                            다양한 웹 애플리케이션과 모바일 앱 개발 프로젝트를 포함한 포트폴리오입니다.
+                            E-commerce 플랫폼, 관리자 대시보드, SNS 애플리케이션 등 실제 서비스로
+                            운영된 프로젝트들의 코드와 데모를 확인할 수 있습니다.
+                        </div>
+                        <div class="file-info">
+                            <strong>포트폴리오_아뜰리에.pdf</strong><br>
+                            <small>2024.08.20 업로드 • 15.7MB</small>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">🔗</div>
+                        <div class="portfolio-title">GitHub 링크</div>
+                        <div class="portfolio-description">
+                            오픈소스 기여와 개인 프로젝트를 포함한 GitHub 프로필입니다.
+                            코드 품질, 커밋 패턴, 협업 능력을 확인할 수 있으며,
+                            다양한 기술 스택을 활용한 프로젝트들을 살펴볼 수 있습니다.
+                        </div>
+                        <div class="file-info">
+                            <strong>GitHub: github.com/leejieun</strong><br>
+                            <small>2024.08.10 연결 • 15개 저장소</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 적성검사 결과 -->
+        <div class="screen-section">
+            <div class="screen-title">🧠 적성검사 결과</div>
+            <div class="screen-content">
+                <div class="ai-interview-section">
+                    <h4>📊 적성검사 결과 분석</h4>
+                    
+                    <!-- 육각형 그래프 -->
+                    <div class="hexagon-container">
+                        <div class="hexagon-chart">
+                            <canvas id="hexagonChart" width="400" height="400"></canvas>
+                            <div class="hexagon-labels">
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="85">신뢰도: <span class="percent">85%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="72">신뢰도: <span class="percent">72%</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="91">신뢰도: <span class="percent">91%</span></span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="78">신뢰도: <span class="percent">78%</span></span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="83">신뢰도: <span class="percent">83%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="89">신뢰도: <span class="percent">89%</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 적성검사 점수 및 신뢰도 테이블 -->
+                    <div class="personality-table-section">
+                        <h5>📋 적성검사 점수 및 신뢰도 분석</h5>
+                        <div class="personality-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>적성 유형</th>
+                                        <th>점수 (100점 만점)</th>
+                                        <th>AI면접관 신뢰도</th>
+                                        <th>신뢰도 측정 근거</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>현실형</strong><br>(실행/사물지향)</td>
+                                        <td>67점</td>
+                                        <td>85%</td>
+                                        <td>기술 부채 해결 경험과 구체적 성과 제시로 신뢰도 높음</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
+                                        <td>45점</td>
+                                        <td>72%</td>
+                                        <td>창의적 활동을 위한 도구로 활용하는 경향이 일관되게 나타남</td>
+                                    </tr>
+                                    <tr class="highlight-row">
+                                        <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
+                                        <td>96점</td>
+                                        <td>89%</td>
+                                        <td>UI/UX 포트폴리오와 면접 답변에서 창의성 일관성 확인</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>사회형</strong><br>(협력/사람지향)</td>
+                                        <td>33점</td>
+                                        <td>78%</td>
+                                        <td>과제 중심적 성향이 시뮬레이션과 면접에서 일치</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>진취형</strong><br>(관리/과제지향)</td>
+                                        <td>59점</td>
+                                        <td>83%</td>
+                                        <td>보통 수준의 리더십 성향이 다양한 상황에서 확인됨</td>
+                                    </tr>
+                                    <tr class="low-row">
+                                        <td><strong>관습형</strong><br>(동조/자료지향)</td>
+                                        <td>21점</td>
+                                        <td>91%</td>
+                                        <td>프로세스 준수 관련 문제가 시뮬레이션과 면접에서 명확히 드러남</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="personality-analysis">
+                        <h5>🎯 적성검사 결과 해석</h5>
+                        <p>
+                            <strong>예술형 96점</strong>은 지원자의 가장 뚜렷한 특성으로, 창의적인 UI/UX 구현과 아름다운 인터페이스 제작에 대한 강한 동기를 보여줍니다. 
+                            반면 <strong>관습형 21점</strong>은 정해진 절차나 규칙을 따르는 것에 대한 선호도가 낮음을 시사하며, 이는 팀 협업 시 프로세스 준수 측면에서 관리가 필요함을 의미합니다. 
+                            <strong>현실형 67점</strong>은 구체적인 성과와 실용적 해결책을 중시하는 성향으로, 기술 부채 해결과 같은 체계적 작업에서 긍정적으로 작용할 것으로 예상됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 학습을 위한 질문 답변 -->
+        <div class="screen-section">
+            <div class="screen-title">🤖 AI 학습을 위한 질문 답변</div>
+            <div class="screen-content">
+                <div class="question-list">
+                    <div class="question-item">
+                        <div class="question-header">
+                            <div class="question-number">질문 1</div>
+                        </div>
+                        <div class="question-text">
+                            React의 주요 특징과 장점에 대해 설명해주세요.
+                        </div>
+                        <div class="answer-text">
+                            React는 컴포넌트 기반 라이브러리로, 재사용성과 유지보수성이 뛰어납니다. 
+                            Virtual DOM을 통해 성능도 최적화되어 있고, JSX를 사용하여 HTML과 JavaScript를 
+                            함께 작성할 수 있어 개발 효율성이 높습니다. 또한 풍부한 생태계와 커뮤니티 지원으로 
+                            다양한 라이브러리와 도구를 활용할 수 있습니다.
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <div class="question-header">
+                            <div class="question-number">질문 2</div>
+                        </div>
+                        <div class="question-text">
+                            팀 프로젝트에서 의견 충돌이 발생했을 때 어떻게 해결하시나요?
+                        </div>
+                        <div class="answer-text">
+                            먼저 상대방의 관점을 이해하려 노력하고, 객관적 데이터를 바탕으로 논의를 진행합니다. 
+                            각자의 의견을 정리하여 장단점을 비교하고, 팀의 목표에 가장 부합하는 방향을 찾아 
+                            합의점을 도출합니다. 필요시 중재자나 팀 리더의 의견을 구하여 최종 결정을 내립니다.
+                        </div>
+                    </div>
+
+                    <div class="question-item">
+                        <div class="question-header">
+                            <div class="question-number">질문 3</div>
+                        </div>
+                        <div class="question-text">
+                            새로운 기술을 학습할 때 어떤 방법을 사용하시나요?
+                        </div>
+                        <div class="answer-text">
+                            공식 문서와 튜토리얼을 먼저 학습한 후, 간단한 예제 프로젝트를 만들어보며 
+                            실습을 통해 이해를 깊게 합니다. 온라인 강의나 커뮤니티의 도움을 받기도 하고, 
+                            학습한 내용을 블로그나 노트에 정리하여 나중에 참고할 수 있도록 합니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 네비게이션 -->
+        <!-- <div class="navigation">
+            <button class="nav-button" onclick="window.open('/ai_individual_report.html', '_blank')">← 뒤로 가기</button>
+        </div> -->
+    </div>
+
+    <script>
+        // 육각형 그래프 그리기
+        function drawHexagonChart() {
+            const canvas = document.getElementById('hexagonChart');
+            const ctx = canvas.getContext('2d');
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            
+            // 데이터 (점수, 신뢰도)
+            const data = [
+                { score: 67, reliability: 85, label: '현실형', color: '#4CAF50' },
+                { score: 45, reliability: 72, label: '탐구형', color: '#2196F3' },
+                { score: 96, reliability: 89, label: '예술형', color: '#FF9800' },
+                { score: 33, reliability: 78, label: '사회형', color: '#9C27B0' },
+                { score: 59, reliability: 83, label: '진취형', color: '#607D8B' },
+                { score: 21, reliability: 91, label: '관습형', color: '#f44336' }
+            ];
+            
+            // 육각형 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 데이터 포인트 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const scoreRadius = (radius * data[i].score) / 100;
+                const x = centerX + scoreRadius * Math.cos(angle);
+                const y = centerY + scoreRadius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 중심점
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4CAF50';
+            ctx.fill();
+        }
+
+        // 신뢰도 색상 적용 함수
+        function applyReliabilityColors() {
+            const reliabilityElements = document.querySelectorAll('.reliability');
+            reliabilityElements.forEach(element => {
+                const text = element.textContent;
+                const percentMatch = text.match(/(\d+)%/);
+                if (percentMatch) {
+                    const percent = parseInt(percentMatch[1]);
+                    let colorClass = '';
+                    if (percent >= 80) colorClass = 'excellent';
+                    else if (percent >= 60) colorClass = 'good';
+                    else if (percent >= 40) colorClass = 'average';
+                    else if (percent >= 20) colorClass = 'poor';
+                    else colorClass = 'very-poor';
+                    element.classList.add(colorClass);
+                }
+            });
+        }
+
+        // 페이지 로드 시 육각형 그래프와 신뢰도 색상 적용
+        window.addEventListener('load', () => {
+            drawHexagonChart();
+            applyReliabilityColors();
+        });
+    </script>
+</body>
+</html>

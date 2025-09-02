@@ -17,13 +17,13 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">🏢 기업 회원 기능</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 기업 채용 관리 */}
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden hover:transform hover:scale-105 transition-transform duration-300">
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden hoㄿver:transform hover:scale-105 transition-transform duration-300">
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
                   <h2 className="text-2xl font-bold mb-2">🏢 기업 채용 관리</h2>
                   <p className="opacity-90">채용공고 작성 및 AI 면접관 설정</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
                     콜린웨이브의 채용공고와 AI 면접관 평가 기준을 설정하는 페이지입니다.
                   </p>
                   <a 
@@ -44,7 +44,7 @@ export default function Home() {
                   <p className="opacity-90">지원자 순위 및 평가 결과</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
                     모든 지원자의 AI 평가 결과와 순위를 확인하는 페이지입니다.
                   </p>
                   <a 
@@ -65,7 +65,7 @@ export default function Home() {
                   <p className="opacity-90">이지은 지원자 상세 평가 결과</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
                     이지은 지원자의 상세한 AI 평가 결과와 추천사항을 확인하는 페이지입니다.
                   </p>
                   <a 
@@ -86,7 +86,7 @@ export default function Home() {
                   <p className="opacity-90">실시간 면접관AI vs 이지은 지원자AI 대화</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
                     AI 면접관과 지원자 AI 간의 실시간 대화를 시연하는 페이지입니다.
                   </p>
                   <a 
@@ -118,7 +118,7 @@ export default function Home() {
                   <p className="opacity-90">이력서 업로드 및 AI 성격 설정</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
                     이지은 지원자의 프로필과 적성검사 결과를 관리하는 페이지입니다.
                   </p>
                   <a 
@@ -139,17 +139,27 @@ export default function Home() {
                   <p className="opacity-90">AI 기반 행동 패턴 및 적성 분석</p>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-600 mb-4">
-                    지원자의 행동 패턴과 적성을 AI가 분석하여 객관적인 평가 결과를 제공합니다.
+                  <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
+                    지원자의 행동 패턴과 적성을 분석하여 객관적인 평가 결과를 제공합니다.
                   </p>
-                  <a 
-                    href="/aptitude_test.html" 
-                    className="inline-block bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    바로가기 →
-                  </a>
+                  <div className="flex gap-3">
+                    <a 
+                      href="/aptitude_test.html" 
+                      className="inline-block bg-indigo-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-600 transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      적성 →
+                    </a>
+                    <a 
+                      href="/simulation_test.html" 
+                      className="inline-block bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      행동 →
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
