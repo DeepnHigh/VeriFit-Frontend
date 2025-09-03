@@ -16,7 +16,7 @@ const VeriFitIntro: React.FC = () => {
       {/* AI 대화 시뮬레이션 */}
       <div className="bg-gradient-to-r from-gray-50 to-gray-200 rounded-2xl p-8 mb-12 shadow-lg">
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-3">💬 AI 면접 시뮬레이션</h3>
+          <h3 className="text-2xl font-bold text-gray-800 mb-3">💬 면접관AI vs 지원자AI 면접</h3>
           <p className="text-gray-600">실제로는 이런 대화가 AI끼리 이루어집니다</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -26,7 +26,7 @@ const VeriFitIntro: React.FC = () => {
                 🤖
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800">면접관AI</h4>
+                <h4 className="font-semibold text-gray-800 text-left">면접관AI</h4>
                 <p className="text-sm text-gray-600">기업 요구사항 기반</p>
               </div>
             </div>
@@ -45,8 +45,8 @@ const VeriFitIntro: React.FC = () => {
                 👤
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800">지원자AI</h4>
-                <p className="text-sm text-gray-600">김지원님 프로필 기반</p>
+                <h4 className="font-semibold text-gray-800 text-left">지원자AI</h4>
+                <p className="text-sm text-gray-600">지원자의 프로필과 적성/행동검사 기반</p>
               </div>
             </div>
             <div className="space-y-3">

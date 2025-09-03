@@ -380,6 +380,7 @@
             position: relative;
             text-align: center;
             margin: 40px 0;
+            padding: 20px 0px 0px 0px;
         }
 
         .divider hr {
@@ -390,13 +391,64 @@
         }
 
         .divider span {
-            background: white;
-            padding: 0 20px;
+            background: rgb(213, 224, 241);
+            padding: 5px 20px;
             color: #666;
             font-weight: 600;
             font-size: 1.1rem;
             position: relative;
             top: -12px;
+            border-radius: 15px;
+        }
+
+        .container-header {
+            padding: 0px 0px 20px 0px;
+        }
+
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0px 0px 0px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #809fc0;
+            border-color: #809fc0;
+        }
+
+        .pagination-btn.active {
+            background: #79b0ee;
+            color: white;
+            border-color: #79b0ee;
+        }
+
+        .pagination-btn:disabled {
+            background: #f8f9fa;
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #e0e0e0;
         }
 
         /* 새 공고 작성 폼 */
@@ -928,126 +980,149 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 구분선 -->
-                <div class="divider">
-                    <hr>
-                    <span>새 공고 작성</span>
-                </div>
-
-                <!-- 새 공고 작성 폼 -->
-                <div class="new-job-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">포지션명</label>
-                            <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">경력 요구사항</label>
-                            <select class="form-input form-select">
-                                <option>신입</option>
-                                <option>1-3년</option>
-                                <option>3-5년</option>
-                                <option>5년 이상</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">근무 형태</label>
-                            <select class="form-input form-select">
-                                <option>정규직</option>
-                                <option>계약직</option>
-                                <option>인턴</option>
-                                <option>프리랜서</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">급여 범위</label>
-                            <input type="text" class="form-input" placeholder="예: 3,500만원 ~ 5,000만원">
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">주요 업무</label>
-                            <textarea class="form-input form-textarea" placeholder="주요 업무 내용을 입력하세요"></textarea>
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">자격 요건</label>
-                            <textarea class="form-input form-textarea" placeholder="자격 요건을 입력하세요"></textarea>
-                        </div>
-                        <div class="form-group full-width">
-                            <label class="form-label">우대사항</label>
-                            <textarea class="form-input form-textarea" placeholder="우대사항을 입력하세요"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 면접관AI 설정 -->
-                <div class="interview-ai-section">
-                    <h3>🤖 면접관AI 평가 기준 설정</h3>
-                    <div class="ai-criteria">
-                        <div class="criteria-table-container">
-                            <table class="criteria-table">
-                                <thead>
-                                    <tr>
-                                        <th>Index</th>
-                                        <th>평가 항목</th>
-                                        <th>세부 항목</th>
-                                        <th>비율 (%)</th>
-                                        <th>액션</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="criteriaTableBody">
-                                    <tr>
-                                        <td>1</td>
-                                        <td><input type="text" class="criteria-input" value="문제 해결 능력" placeholder="평가 항목 입력"></td>
-                                        <td><input type="text" class="criteria-input" value="시스템 설계 능력, 성능 최적화, 보안 고려사항" placeholder="세부 항목 입력"></td>
-                                        <td><input type="number" class="criteria-input percentage-input" value="25" min="0" max="100" onchange="updateTotalPercentage()"></td>
-                                        <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td><input type="text" class="criteria-input" value="기술적 역량" placeholder="평가 항목 입력"></td>
-                                        <td><input type="text" class="criteria-input" value="프로그래밍 언어 숙련도, 프레임워크 활용 능력" placeholder="세부 항목 입력"></td>
-                                        <td><input type="number" class="criteria-input percentage-input" value="20" min="0" max="100" onchange="updateTotalPercentage()"></td>
-                                        <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td><input type="text" class="criteria-input" value="의사소통 능력" placeholder="평가 항목 입력"></td>
-                                        <td><input type="text" class="criteria-input" value="명확한 설명, 적극적 경청, 피드백 수용" placeholder="세부 항목 입력"></td>
-                                        <td><input type="number" class="criteria-input percentage-input" value="15" min="0" max="100" onchange="updateTotalPercentage()"></td>
-                                        <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td><input type="text" class="criteria-input" value="팀워크 및 협업" placeholder="평가 항목 입력"></td>
-                                        <td><input type="text" class="criteria-input" value="협력적 태도, 갈등 해결, 책임감" placeholder="세부 항목 입력"></td>
-                                        <td><input type="number" class="criteria-input percentage-input" value="15" min="0" max="100" onchange="updateTotalPercentage()"></td>
-                                        <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td><input type="text" class="criteria-input" value="학습 의지 및 성장 가능성" placeholder="평가 항목 입력"></td>
-                                        <td><input type="text" class="criteria-input" value="새로운 기술 적응력, 자기 개발 의지" placeholder="세부 항목 입력"></td>
-                                        <td><input type="number" class="criteria-input percentage-input" value="25" min="0" max="100" onchange="updateTotalPercentage()"></td>
-                                        <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="table-controls">
-                                <button class="btn btn-secondary" onclick="addNewRow()">+ 행 추가</button>
-                                <div class="total-percentage">
-                                    <span>총 비율: <span id="totalPercentage">100</span>%</span>
-                                </div>
+                        
+                        <!-- 페이지네이션 -->
+                        <div class="pagination">
+                            <div class="pagination-controls">
+                                <button class="pagination-btn" disabled>
+                                    <span>‹</span>
+                                </button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn" disabled>
+                                    <span>›</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 공고 올리기 버튼 -->
-                <div class="publish-section">
-                    <button class="btn btn-primary btn-large" onclick="publishNewJob()">📢 공고 올리기</button>
+            </div>
+        </div>
+
+        <!-- 두 번째 컨테이너: 새 공고 작성 -->
+        <div class="container-box">
+            <!-- 구분선 -->
+            <div class="divider">
+                <hr>
+                <span>새 공고 작성</span>
+            </div>
+
+            <div class="container-header">
+                <h2>📝 새 공고 작성</h2>
+                <p>새로운 채용 공고를 작성하고 면접관AI 평가 기준을 설정하세요.</p>
+            </div>
+
+            <!-- 새 공고 작성 폼 -->
+            <div class="new-job-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">포지션명</label>
+                        <input type="text" class="form-input" placeholder="예: 백엔드 개발자">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">경력 요구사항</label>
+                        <select class="form-input form-select">
+                            <option>신입</option>
+                            <option>1-3년</option>
+                            <option>3-5년</option>
+                            <option>5년 이상</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">근무 형태</label>
+                        <select class="form-input form-select">
+                            <option>정규직</option>
+                            <option>계약직</option>
+                            <option>인턴</option>
+                            <option>프리랜서</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">급여 범위</label>
+                        <input type="text" class="form-input" placeholder="예: 3,500만원 ~ 5,000만원">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">주요 업무</label>
+                        <textarea class="form-input form-textarea" placeholder="주요 업무 내용을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">자격 요건</label>
+                        <textarea class="form-input form-textarea" placeholder="자격 요건을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">우대사항</label>
+                        <textarea class="form-input form-textarea" placeholder="우대사항을 입력하세요"></textarea>
+                    </div>
                 </div>
+            </div>
+
+            <!-- 면접관AI 설정 -->
+            <div class="interview-ai-section">
+                <h3>🤖 면접관AI 평가 기준 설정</h3>
+                <div class="ai-criteria">
+                    <div class="criteria-table-container">
+                        <table class="criteria-table">
+                            <thead>
+                                <tr>
+                                    <th>Index</th>
+                                    <th>평가 항목</th>
+                                    <th>세부 항목</th>
+                                    <th>비율 (%)</th>
+                                    <th>액션</th>
+                                </tr>
+                            </thead>
+                            <tbody id="criteriaTableBody">
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="text" class="criteria-input" value="문제 해결 능력" placeholder="평가 항목 입력"></td>
+                                    <td><input type="text" class="criteria-input" value="시스템 설계 능력, 성능 최적화, 보안 고려사항" placeholder="세부 항목 입력"></td>
+                                    <td><input type="number" class="criteria-input percentage-input" value="25" min="0" max="100" onchange="updateTotalPercentage()"></td>
+                                    <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><input type="text" class="criteria-input" value="기술적 역량" placeholder="평가 항목 입력"></td>
+                                    <td><input type="text" class="criteria-input" value="프로그래밍 언어 숙련도, 프레임워크 활용 능력" placeholder="세부 항목 입력"></td>
+                                    <td><input type="number" class="criteria-input percentage-input" value="20" min="0" max="100" onchange="updateTotalPercentage()"></td>
+                                    <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><input type="text" class="criteria-input" value="의사소통 능력" placeholder="평가 항목 입력"></td>
+                                    <td><input type="text" class="criteria-input" value="명확한 설명, 적극적 경청, 피드백 수용" placeholder="세부 항목 입력"></td>
+                                    <td><input type="number" class="criteria-input percentage-input" value="15" min="0" max="100" onchange="updateTotalPercentage()"></td>
+                                    <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td><input type="text" class="criteria-input" value="팀워크 및 협업" placeholder="평가 항목 입력"></td>
+                                    <td><input type="text" class="criteria-input" value="협력적 태도, 갈등 해결, 책임감" placeholder="세부 항목 입력"></td>
+                                    <td><input type="number" class="criteria-input percentage-input" value="15" min="0" max="100" onchange="updateTotalPercentage()"></td>
+                                    <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td><input type="text" class="criteria-input" value="학습 의지 및 성장 가능성" placeholder="평가 항목 입력"></td>
+                                    <td><input type="text" class="criteria-input" value="새로운 기술 적응력, 자기 개발 의지" placeholder="세부 항목 입력"></td>
+                                    <td><input type="number" class="criteria-input percentage-input" value="25" min="0" max="100" onchange="updateTotalPercentage()"></td>
+                                    <td><button class="btn-remove" onclick="removeRow(this)">삭제</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-controls">
+                            <button class="btn btn-secondary" onclick="addNewRow()">+ 행 추가</button>
+                            <div class="total-percentage">
+                                <span>총 비율: <span id="totalPercentage">100</span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 공고 올리기 버튼 -->
+            <div class="publish-section">
+                <button class="btn btn-primary btn-large" onclick="publishNewJob()">📢 공고 올리기</button>
+            </div>
 
                 <!-- 액션 버튼 -->
                 <div class="action-buttons">
@@ -1271,7 +1346,6 @@
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="reopenJob()">🔄 공고 재개</button>
-                    <button class="btn btn-outline" onclick="viewApplicants()">👥 지원자 목록</button>
                 </div>
             </div>
         </div>
@@ -1428,11 +1502,6 @@
                 alert('공고가 다시 개시되었습니다. \n\n(미반영 : 데모페이지에서는 기능이 제한되어 있습니다.)');
                 closeClosedJobModal();
             }
-        }
-
-        function viewApplicants() {
-            alert('지원자 목록 페이지로 이동합니다.');
-            closeClosedJobModal();
         }
 
         function viewAllCandidates() {

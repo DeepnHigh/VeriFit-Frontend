@@ -391,12 +391,12 @@
             font-weight: normal;
             margin-top: 2px;
         }
-        /* 신뢰도 퍼센트별 색상 클래스 (candidate와 동일) */
-        .reliability.excellent .percent { color: #25bb25; }
-        .reliability.good .percent { color: #6aa6eb; }
-        .reliability.average .percent { color: #FFD700; }
-        .reliability.poor .percent { color: #FFA500; }
-        .reliability.very-poor .percent { color: #FF0000; }
+        /* 신뢰도 퍼센트별 색상 클래스 */
+        .reliability.excellent .percent { color: #25bb25; } /* 초록색 - 80-100% */
+        .reliability.good .percent { color: #6aa6eb; } /* 하늘색 - 60-79% */
+        .reliability.average .percent { color: #FFA500; } /* 주황색 - 40-59% */
+        .reliability.poor .percent { color: #ff5ac8; } /* 분홍색 - 20-39% */
+        .reliability.very-poor .percent { color: #FF0000; } /* 빨강색 - 0-19% */
 
         /* 적성검사 테이블 스타일 */
         .personality-table-section {
@@ -734,7 +734,7 @@
                         </div>
                     </div>
                                             <div class="score-badge">
-                            종합 점수: 87.5점
+                            종합 점수: 92.8점
                             <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.9;">
                                 전체 156명 중 1등
                             </div>
@@ -744,17 +744,17 @@
                 <div class="score-grid">
                     <div class="score-card hard-skill">
                         <h4>💻 하드 스킬</h4>
-                        <div class="score-value">92.3</div>
+                        <div class="score-value">96.2</div>
                         <div class="score-label">기술 역량 평가</div>
                     </div>
                     <div class="score-card soft-skill">
                         <h4>🎭 소프트 스킬</h4>
-                        <div class="score-value">83.7</div>
+                        <div class="score-value">89.5</div>
                         <div class="score-label">시뮬레이션 평가</div>
                     </div>
                     <div class="score-card overall">
                         <h4>🏆 종합 평가</h4>
-                        <div class="score-value">87.5</div>
+                        <div class="score-value">92.8</div>
                         <div class="score-label">AI 종합 점수</div>
                         <div style="font-size: 0.8rem; color: #9C27B0; margin-top: 5px; font-weight: bold;">
                             🥇 전체 1등
@@ -1040,17 +1040,35 @@
             const centerY = canvas.height / 2;
             const radius = 150;
             
-            // 데이터 (점수, 신뢰도)
+            // 데이터 (점수) - 육각형 실제 순서에 맞춤
+            // 현실형, 탐구형, 관습형, 사회형, 진취형, 예술형
             const data = [
-                { score: 67, reliability: 85, label: '현실형', color: '#4CAF50' },
-                { score: 45, reliability: 72, label: '탐구형', color: '#2196F3' },
-                { score: 96, reliability: 89, label: '예술형', color: '#FF9800' },
-                { score: 33, reliability: 78, label: '사회형', color: '#9C27B0' },
-                { score: 59, reliability: 83, label: '진취형', color: '#607D8B' },
-                { score: 21, reliability: 91, label: '관습형', color: '#f44336' }
+                67,  // 현실형
+                45,  // 탐구형
+                21,  // 관습형
+                33,  // 사회형
+                59,  // 진취형
+                96   // 예술형
             ];
             
-            // 육각형 그리기
+            // 등고선 그리기 (20%, 40%, 60%, 80%, 100%)
+            for (let level = 1; level <= 5; level++) {
+                const currentRadius = (radius * level) / 5;
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                    const x = centerX + currentRadius * Math.cos(angle);
+                    const y = centerY + currentRadius * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // 외곽 육각형 그리기
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 const angle = (i * Math.PI) / 3 - Math.PI / 2;
@@ -1072,7 +1090,7 @@
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 const angle = (i * Math.PI) / 3 - Math.PI / 2;
-                const scoreRadius = (radius * data[i].score) / 100;
+                const scoreRadius = (radius * data[i]) / 100;
                 const x = centerX + scoreRadius * Math.cos(angle);
                 const y = centerY + scoreRadius * Math.sin(angle);
                 
@@ -1089,11 +1107,14 @@
             ctx.lineWidth = 3;
             ctx.stroke();
             
-            // 중심점
+            // 중심점 그리기
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
             ctx.fillStyle = '#4CAF50';
             ctx.fill();
+            ctx.strokeStyle = '#2E7D32';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
         
         // 신뢰도 색상 적용 함수 (candidate와 동일)

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 지원자 프로필 - 박상영</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #fff6fd 0%, #f0d8f0 50%, #f5dbf5 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: black; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; color: #000000; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        .screen-section { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px; overflow: hidden; }
+        .screen-section.narrow { max-width: 1200px; margin: 0 auto; }
+        .screen-title { background: linear-gradient(135deg, #7e4dac, #834eb4); color: white; padding: 20px; font-size: 1.5rem; font-weight: bold; }
+        .screen-content { padding: 30px; }
+        .profile-section { display: grid; grid-template-columns: 300px 1fr; gap: 30px; margin-bottom: 40px; }
+        .profile-card { background: #f8f9fa; border-radius: 15px; padding: 25px; text-align: center; border: 2px solid #e0e0e0; }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; font-weight: bold; margin: 0 auto 20px; }
+        .profile-name { font-size: 1.5rem; font-weight: bold; color: #333; margin-bottom: 10px; }
+        .profile-title { color: #666; margin-bottom: 15px; }
+        .profile-intro { color: #555; font-size: 0.95rem; line-height: 1.6; margin-top: 20px; padding: 15px; background: white; border-radius: 10px; border: 1px solid #e0e0e0; text-align: left; word-break: keep-all; word-wrap: break-word; }
+        .profile-details { background: #f8f9fa; border-radius: 15px; padding: 25px; }
+        .detail-group { margin-bottom: 25px; }
+        .detail-group h3 { color: #333; margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; }
+        .detail-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-label { font-weight: 600; color: #555; }
+        .detail-value { color: #333; text-align: right; max-width: 60%; }
+        .portfolio-section { margin-bottom: 40px; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .portfolio-item { background: #f8f9fa; border-radius: 15px; padding: 20px; border: 2px solid #e0e0e0; transition: transform 0.3s ease; }
+        .portfolio-item:hover { transform: translateY(-5px); }
+        .portfolio-icon { font-size: 2rem; margin-bottom: 15px; }
+        .portfolio-title { font-weight: bold; color: #333; margin-bottom: 10px; }
+        .portfolio-description { color: #666; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; }
+        .file-info { background: white; padding: 12px; border-radius: 8px; border: 1px solid #e0e0e0; margin-top: 15px; }
+        .file-info strong { color: #333; font-size: 0.95rem; }
+        .file-info small { color: #666; font-size: 0.85rem; }
+        .ai-interview-section { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 30px; border: 2px solid #e0e0e0; }
+        .ai-interview-section h4 { margin-bottom: 16px; color: #333; font-size: 1.3rem; }
+        .hexagon-container { display: flex; justify-content: center; margin: 30px 0; }
+        .hexagon-chart { position: relative; width: 400px; height: 400px; overflow: visible; }
+        .hexagon-labels { position: absolute; top: 0; left: 0; width: 140%; height: 100%; pointer-events: none; }
+        .hex-label { position: absolute; background: rgba(255, 255, 255, 0.9); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform: translate(-50%, -50%); }
+        .reliability { display: block; font-size: 0.7rem; color: #666; font-weight: normal; margin-top: 2px; }
+        .reliability.excellent .percent { color: #25bb25; }
+        .reliability.good .percent { color: #6aa6eb; }
+        .reliability.average .percent { color: #FFD700; }
+        .reliability.poor .percent { color: #FFA500; }
+        .reliability.very-poor .percent { color: #FF0000; }
+        .personality-table-section { margin: 30px 0; }
+        .personality-table { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .personality-table table { width: 100%; border-collapse: collapse; }
+        .personality-table th { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 15px; text-align: left; font-weight: bold; }
+        .personality-table td { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .personality-table tr:last-child td { border-bottom: none; }
+        .personality-table .highlight-row { background: linear-gradient(135deg, #e2eeff, #b2cff5); }
+        .personality-table .low-row { background: linear-gradient(135deg, #ffebee, #ffcdd2); }
+        .personality-analysis { background: linear-gradient(135deg, #e8f5e8, #c8e6c9); border-radius: 10px; padding: 20px; margin-top: 20px; }
+        .personality-analysis h5 { color: #2e7d32; margin-bottom: 12px; font-size: 1.1rem; }
+        .personality-analysis p { color: #333; line-height: 1.6; font-size: 0.95rem; }
+        @media (max-width: 768px) { .profile-section { grid-template-columns: 1fr; } .portfolio-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 지원자 프로필</h1>
+            <p>박상영 지원자의 상세 프로필 정보</p>
+        </div>
+
+        <div class="screen-section">
+            <div class="screen-title">📋 기본 프로필</div>
+            <div class="screen-content">
+                <div class="profile-section">
+                    <div class="profile-card">
+                        <div class="profile-avatar">박</div>
+                        <div class="profile-name">박상영</div>
+                        <div class="profile-title">프론트엔드 개발자</div>
+                        <div class="profile-intro">
+                            React와 TypeScript 기반의 웹 애플리케이션 개발에 강점이 있는 프론트엔드 개발자입니다. 성능 최적화와 컴포넌트 아키텍처 설계에 관심이 많으며, 원활한 커뮤니케이션으로 팀 생산성을 높이는 데 기여합니다.
+                        </div>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>📞 연락처</h3>
+                            <div class="detail-item"><span class="detail-label">이메일</span><span class="detail-value">park.dev@email.com</span></div>
+                            <div class="detail-item"><span class="detail-label">전화번호</span><span class="detail-value">010-5678-1234</span></div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>🎓 학력</h3>
+                            <div class="detail-item"><span class="detail-label">최종학력</span><span class="detail-value">KAIST 전산학부 졸업</span></div>
+                            <div class="detail-item"><span class="detail-label">졸업년도</span><span class="detail-value">2019년</span></div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>💼 경력</h3>
+                            <div class="detail-item"><span class="detail-label">총 경력</span><span class="detail-value">5년</span></div>
+                            <div class="detail-item"><span class="detail-label">최근 직장</span><span class="detail-value">커머스 플랫폼 프론트엔드 개발자</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen-section">
+            <div class="screen-title">📁 포트폴리오 및 자료</div>
+            <div class="screen-content">
+                <div class="portfolio-grid">
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">📝</div>
+                        <div class="portfolio-title">자기소개서</div>
+                        <div class="portfolio-description">경력 요약과 핵심 성과를 정리한 자기소개서입니다.</div>
+                        <div class="file-info"><strong>자기소개서_프레스토.pdf</strong><br><small>2025.07.22 업로드 • 2.0MB</small></div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">💻</div>
+                        <div class="portfolio-title">포트폴리오</div>
+                        <div class="portfolio-description">커머스 리뉴얼 프로젝트 중심의 포트폴리오입니다.</div>
+                        <div class="file-info"><strong>포트폴리오_커머스리뉴얼.pdf</strong><br><small>2025.08.01 업로드 • 12.4MB</small></div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">🔗</div>
+                        <div class="portfolio-title">GitHub 링크</div>
+                        <div class="portfolio-description">주요 저장소와 기여 내역을 확인할 수 있습니다.</div>
+                        <div class="file-info"><strong>github.com/parksangyoung</strong><br><small>2025.06.30 연결 • 28개 저장소</small></div>
+                    </div>
+                    <div class="portfolio-item">
+                        <div class="portfolio-icon">📋</div>
+                        <div class="portfolio-title">이력서</div>
+                        <div class="portfolio-description">최신 이력서 파일입니다.</div>
+                        <div class="file-info"><strong>이력서_박상영.pdf</strong><br><small>2025.08.18 업로드 • 1.8MB</small></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen-section">
+            <div class="screen-title">🧠 적성검사 결과</div>
+            <div class="screen-content">
+                <div class="ai-interview-section">
+                    <h4>📊 적성검사 결과 분석</h4>
+                    <div class="hexagon-container">
+                        <div class="hexagon-chart">
+                            <canvas id="hexagonChart" width="400" height="400"></canvas>
+                            <div class="hexagon-labels">
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="82">신뢰도: <span class="percent">82%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="74">신뢰도: <span class="percent">74%</span></span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="69">신뢰도: <span class="percent">69%</span></span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="76">신뢰도: <span class="percent">76%</span></span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="85">신뢰도: <span class="percent">85%</span></span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="70">신뢰도: <span class="percent">70%</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="personality-table-section">
+                        <div class="personality-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>적성 유형</th>
+                                        <th>점수 (100점 만점)</th>
+                                        <th>AI면접관 신뢰도</th>
+                                        <th>신뢰도 측정 근거</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>현실형</strong><br>(실행/사물지향)</td><td>72점</td><td>82%</td><td>성능 개선 사례와 품질 지표 일치</td></tr>
+                                    <tr><td><strong>탐구형</strong><br>(사고/아이디어 지향)</td><td>58점</td><td>74%</td><td>리팩터링 제안과 원인 분석 답변</td></tr>
+                                    <tr class="highlight-row"><td><strong>진취형</strong><br>(관리/과제지향)</td><td>81점</td><td>85%</td><td>의사결정/리드 경험과 시뮬 결과 일치</td></tr>
+                                    <tr><td><strong>사회형</strong><br>(협력/사람지향)</td><td>62점</td><td>76%</td><td>코드 리뷰 커뮤니케이션 패턴</td></tr>
+                                    <tr><td><strong>예술형</strong><br>(창조/아이디어 지향)</td><td>49점</td><td>70%</td><td>UI 표현 준수, 구조화 선호</td></tr>
+                                    <tr class="low-row"><td><strong>관습형</strong><br>(동조/자료지향)</td><td>35점</td><td>69%</td><td>유연한 접근 선호, 표준 절차 선택 빈도</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="personality-analysis">
+                        <h5>🎯 적성검사 결과 해석</h5>
+                        <p>진취형과 현실형이 높아 주도적 문제 해결과 실행력이 강점입니다. 관습형은 다소 낮아 프로세스 정렬에 유의가 필요합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function drawHexagonChart() {
+            const canvas = document.getElementById('hexagonChart');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            
+            // 데이터 (점수) - 육각형 실제 순서에 맞춤
+            // 현실형, 탐구형, 관습형, 사회형, 진취형, 예술형
+            const data = [
+                72,  // 현실형
+                58,  // 탐구형
+                35,  // 관습형
+                62,  // 사회형
+                81,  // 진취형
+                49   // 예술형
+            ];
+            
+            // 등고선 그리기 (20%, 40%, 60%, 80%, 100%)
+            for (let level = 1; level <= 5; level++) {
+                const currentRadius = (radius * level) / 5;
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                    const x = centerX + currentRadius * Math.cos(angle);
+                    const y = centerY + currentRadius * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // 외곽 육각형 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 데이터 육각형 그리기
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                const r = (radius * data[i]) / 100;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 중심점 그리기
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = '#4CAF50';
+            ctx.fill();
+            ctx.strokeStyle = '#2E7D32';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        function applyReliabilityColors(){
+            document.querySelectorAll('.reliability').forEach(el=>{
+                const m=(el.textContent||'').match(/(\d+)%/); const p=m?parseInt(m[1]):parseInt(el.getAttribute('data-percent')||'0');
+                el.classList.add(p>=80?'excellent':p>=60?'good':p>=40?'average':p>=20?'poor':'very-poor');
+            });
+        }
+        window.addEventListener('load', ()=>{ drawHexagonChart(); applyReliabilityColors(); });
+    </script>
+
+    <!-- AI 학습을 위한 질문 답변 -->
+    <div class="screen-section narrow">
+        <div class="screen-title">🤖 AI 학습을 위한 질문 답변</div>
+        <div class="screen-content">
+            <div class="question-list" style="display:grid; gap:20px;">
+                <div class="question-item" style="background:white; border-radius:15px; padding:20px; border:2px solid #e0e0e0;">
+                    <div class="question-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div class="question-number" style="background:#7e4dac; color:#fff; padding:8px 15px; border-radius:20px; font-weight:bold;">질문 1</div>
+                    </div>
+                    <div class="question-text" style="color:#333; font-weight:600; margin-bottom:15px; line-height:1.5;">자신의 가장 큰 강점과 약점은 무엇인가요?</div>
+                    <div class="answer-text" style="background:#f8f9fa; padding:15px; border-radius:10px; color:#555; line-height:1.6; border-left:4px solid #7e4dac;">
+                        강점은 문제 해결을 위한 구조화된 접근과 커뮤니케이션입니다. 약점은 때때로 완벽주의로 인해 일정 지연이 발생할 수 있어, 우선순위 기준을 명확히 세워 보완하고 있습니다.
+                    </div>
+                </div>
+
+                <div class="question-item" style="background:white; border-radius:15px; padding:20px; border:2px solid #e0e0e0;">
+                    <div class="question-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div class="question-number" style="background:#7e4dac; color:#fff; padding:8px 15px; border-radius:20px; font-weight:bold;">질문 2</div>
+                    </div>
+                    <div class="question-text" style="color:#333; font-weight:600; margin-bottom:15px; line-height:1.5;">이직을 고려하는 이유는 무엇인가요?</div>
+                    <div class="answer-text" style="background:#f8f9fa; padding:15px; border-radius:10px; color:#555; line-height:1.6; border-left:4px solid #7e4dac;">
+                        대규모 트래픽 환경에서 React/TypeScript로 성능 최적화를 주도하고, 제품 임팩트를 극대화할 수 있는 역할을 경험하고 싶습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
