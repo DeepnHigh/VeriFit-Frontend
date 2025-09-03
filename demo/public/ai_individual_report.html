@@ -663,6 +663,7 @@
         }
 
         .btn {
+            font-size: 1.0rem;
             padding: 12px 25px;
             border: none;
             border-radius: 8px;
@@ -712,6 +713,8 @@
                 align-items: flex-start;
             }
         }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 18%{transform:scale(1.04)} 32%{transform:scale(1)} 46%{transform:scale(1.04)} 74%{transform:scale(1)} }
+        .pulse-heart { animation: heartbeat 1.8s ease-in-out infinite; transform-origin: center; will-change: transform; }
     </style>
 </head>
 <body>
@@ -942,7 +945,7 @@
                         </div>
                     </div>
                     <div class="chat-footer">
-                        <a href="ai_interview_simulation.html" class="btn btn-secondary" style="text-decoration: none;">전체 보기</a>
+                        <a href="ai_interview_simulation.html" class="btn btn-secondary pulse-heart" style="text-decoration: none;">전체 보기</a>
                     </div>
                 </div>
 
@@ -1014,7 +1017,7 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="confirmFirstPass()">✅ 1차 통과 확정</button>
                     <button class="btn btn-outline" onclick="downloadReport()">📋 상세 리포트 다운로드</button>
-                    <button class="btn btn-outline" onclick="viewCandidateProfile()">👤 지원자 프로필</button>
+                    <button class="btn btn-secondary pulse-heart" onclick="viewCandidateProfile()">👤 지원자 프로필</button>
                 </div>
             </div>
         </div>

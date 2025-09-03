@@ -14,8 +14,15 @@ export default function CompanyPage() {
         {/* 기업 기능 소개 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* 채용 관리 */}
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden hover:transform hover:scale-105 transition-transform duration-300">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+          <div className="bg-white rounded-2xl shadow-2xl hover:transform hover:scale-105 transition-transform duration-300 relative">
+            {/* main화면 스티커 */}
+            <div className="absolute -top-2 -right-2 z-10">
+              <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-lg font-bold text-sm shadow-lg transform rotate-12 border-2 border-yellow-500">
+                main화면
+              </div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-300 rounded-full opacity-60"></div>
+            </div>
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white rounded-t-2xl">
               <h2 className="text-2xl font-bold mb-2">🏢 기업 채용 관리</h2>
               <p className="opacity-90">채용공고 작성 및 AI 면접관 설정</p>
             </div>
@@ -41,7 +48,7 @@ export default function CompanyPage() {
             </div>
             <div className="p-6">
               <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
-                모든 지원자의 AI 평가 결과와 순위를 확인하는 페이지입니다.
+                콜린웨이브의 채용공고 중 &apos;커머스플랫폼 프론트엔드 개발자&apos; 채용공고에 대한 모든 지원자의 AI 평가 결과와 순위를 확인하는 페이지입니다.
               </p>
               <Link 
                 href="/all_candidates_page.html" 
@@ -53,45 +60,6 @@ export default function CompanyPage() {
             </div>
           </div>
 
-          {/* 개별 지원자 리포트 */}
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden hover:transform hover:scale-105 transition-transform duration-300">
-            <div className="bg-gradient-to-r from-pink-500 to-pink-600 p-6 text-white">
-              <h2 className="text-2xl font-bold mb-2">📋 개별 지원자 리포트</h2>
-              <p className="opacity-90">이지은 지원자 상세 평가 결과</p>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
-                이지은 지원자의 상세한 AI 평가 결과와 추천사항을 확인하는 페이지입니다.
-              </p>
-              <Link 
-                href="/ai_individual_report.html" 
-                className="inline-block bg-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-pink-600 transition-colors"
-                target="_blank"
-              >
-                바로가기 →
-              </Link>
-            </div>
-          </div>
-
-          {/* AI 면접 시뮬레이션 */}
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden hover:transform hover:scale-105 transition-transform duration-300">
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
-              <h2 className="text-2xl font-bold mb-2">🤖 AI 면접 시뮬레이션</h2>
-              <p className="opacity-90">실시간 면접관AI vs 이지은 지원자AI 대화</p>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
-                AI 면접관과 지원자 AI 간의 실시간 대화를 시연하는 페이지입니다.
-              </p>
-              <Link 
-                href="/ai_interview_simulation.html" 
-                className="inline-block bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
-                target="_blank"
-              >
-                바로가기 →
-              </Link>
-            </div>
-          </div>
         </div>
 
         {/* 기업 혜택 */}

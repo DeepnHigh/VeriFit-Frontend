@@ -24,3 +24,84 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 심장박동 애니메이션 */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.02); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.02); }
+  70% { transform: scale(1); }
+}
+.pulse-button {
+  animation: heartbeat 1.8s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* 픽셀아트 느낌의 컨테이너 */
+.pixel-container {
+  position: relative;
+  border: 4px solid #1f2937; /* gray-800 */
+  box-shadow:
+    0 0 0 4px #9ca3af,       /* 외곽 라인 (gray-400) */
+    8px 8px 0 0 #111827;     /* 그림자 블록 (gray-900) */
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #f3f4f6 0px,
+      #f3f4f6 6px,
+      #e5e7eb 6px,
+      #e5e7eb 12px
+    );
+  image-rendering: pixelated;
+  transition: box-shadow .25s ease, background .25s ease;
+}
+.pixel-container:hover {
+  box-shadow:
+    0 0 0 4px #6b7280,       /* 더 진한 외곽 (gray-500) */
+    10px 10px 0 0 #0f172a;   /* 더 진한 그림자 (slate-900) */
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #e0f2fe 0px,           /* sky-100 */
+      #e0f2fe 6px,
+      #bae6fd 6px,           /* sky-200 */
+      #bae6fd 12px
+    );
+}
+
+/* 대형 버튼 유틸 */
+.btn-xl {
+  padding: 1rem 2rem; /* px-8 py-4 보다 큼 */
+  font-size: 1.25rem; /* text-xl */
+  border-radius: 0.75rem; /* rounded-xl */
+}
+
+/* CTA 버튼 호버 스타일 */
+.cta-button {
+  display: block;
+  text-align: center;
+  border: 2px solid #374151; /* gray-700 */
+  border-radius: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  transition: background-color .25s ease, color .25s ease, box-shadow .25s ease;
+}
+.cta-button:hover {
+  box-shadow: 0 12px 28px rgba(0,0,0,.22);
+}
+.cta-button--candidate {
+  background: #ffffff;
+  color: #111827; /* gray-900 */
+}
+.cta-button--candidate:hover {
+  background: #dbeafe; /* blue-100 */
+}
+.cta-button--company {
+  background: #f3f4f6; /* gray-100 */
+  color: #111827;
+}
+.cta-button--company:hover {
+  background: #fef3c7; /* amber-100 */
+}

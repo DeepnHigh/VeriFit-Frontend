@@ -50,7 +50,7 @@
         .personality-table .highlight-row { background: linear-gradient(135deg, #e2eeff, #b2cff5); }
         .personality-table .low-row { background: linear-gradient(135deg, #ffebee, #ffcdd2); }
         .action-buttons { display: flex; gap: 15px; justify-content: center; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
+        .btn { font-size: 1.0rem; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; }
         .btn-primary { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
         .btn-outline { background: white; color: #4CAF50; border: 2px solid #4CAF50; }
         .btn-secondary { background: linear-gradient(135deg, #2196F3, #1976d2); color: white; }
@@ -102,6 +102,8 @@
             font-weight: bold;
             color: #4CAF50;
         }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 18%{transform:scale(1.04)} 32%{transform:scale(1)} 46%{transform:scale(1.04)} 74%{transform:scale(1)} }
+        .pulse-heart { animation: heartbeat 1.8s ease-in-out infinite; transform-origin: center; will-change: transform; }
     </style>
 </head>
 <body>
@@ -320,7 +322,7 @@
                     </div>
 
                     <div class="chat-footer" style="display:flex;justify-content:flex-end;margin-top:12px;">
-                        <a href="ai_interview_simulation_park.html" class="btn btn-secondary" style="text-decoration:none;">전체 보기</a>
+                        <a href="ai_interview_simulation_park.html" class="btn btn-secondary pulse-heart" style="text-decoration:none;">전체 보기</a>
                     </div>
                 </div>
                 <div class="recommendations" style="background:#f8f9fa;border:1px solid #e0e0e0;border-radius:10px;padding:20px;margin-bottom:30px;">
@@ -386,7 +388,7 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="confirmFirstPass()">✅ 1차 통과 확정</button>
                     <button class="btn btn-outline" onclick="downloadReport()">📋 상세 리포트 다운로드</button>
-                    <button class="btn btn-secondary" onclick="viewCandidateProfile()">👤 지원자 프로필</button>
+                    <button class="btn btn-secondary pulse-heart" onclick="viewCandidateProfile()">👤 지원자 프로필</button>
                 </div>
             </div>
         </div>
