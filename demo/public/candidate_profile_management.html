@@ -56,15 +56,22 @@
             font-weight: bold;
         }
 
+        .screen-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            padding: 5px 0px 10px 10px;
+        }
+
         .screen-content {
-            padding: 30px;
+            padding: 0px 30px 30px 30px;
         }
 
         /* 탭 스타일 */
         .tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .tab-button {
@@ -909,6 +916,7 @@
         <!-- 프로필 관리 페이지 -->
         <div class="screen-section">
             <div class="screen-title">📋 지원자 프로필 관리</div>
+            <div class="screen-text">만약 로그인한 회원이</div>
             <div class="screen-content">
                 <!-- 탭 버튼 -->
                 <div class="tabs">
@@ -916,7 +924,7 @@
                     <button class="tab-button" data-key="sangyoung" onclick="showTab('sangyoung')">박상영</button>
                     <button class="tab-button" data-key="jiwon" onclick="showTab('jiwon')">김지원</button>
                 </div>
-
+                <div class="screen-text">이라면,</div>
                 <!-- 이지은 탭 -->
                 <div id="tab-jieun" class="tab-panel active">
                 <div class="profile-section">
