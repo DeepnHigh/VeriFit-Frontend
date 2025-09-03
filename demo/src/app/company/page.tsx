@@ -48,7 +48,7 @@ export default function CompanyPage() {
             </div>
             <div className="p-6">
               <p className="text-gray-600 mb-4 text-left whitespace-normal" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>
-                콜린웨이브의 채용공고 중 '커머스플랫폼 프론트엔드 개발자' 채용공고에 대한 모든 지원자의 AI 평가 결과와 순위를 확인하는 페이지입니다.
+                콜린웨이브의 채용공고 중 &apos;커머스플랫폼 프론트엔드 개발자&apos; 채용공고에 대한 모든 지원자의 AI 평가 결과와 순위를 확인하는 페이지입니다.
               </p>
               <Link 
                 href="/all_candidates_page.html" 

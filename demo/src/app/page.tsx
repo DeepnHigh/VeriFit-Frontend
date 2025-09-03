@@ -2,7 +2,7 @@ import VeriFitIntro from "../components/VeriFitIntro";
 import Link from "next/link";
 import Image from "next/image";
 import companyPic from "../../company.jpg";
-import applicantPic from "../../applicant.png";
+import applicantPic from "../../appli.png";
 
 export default function Home() {
   return (
