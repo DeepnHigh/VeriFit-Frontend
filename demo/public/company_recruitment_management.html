@@ -887,6 +887,8 @@
         .total-percentage.success {
             color: #28a745;
         }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 18%{transform:scale(1.04)} 32%{transform:scale(1)} 46%{transform:scale(1.04)} 74%{transform:scale(1)} }
+        .pulse-heart { animation: heartbeat 1.8s ease-in-out infinite; transform-origin: center; will-change: transform; }
     </style>
 </head>
 <body>
@@ -940,7 +942,7 @@
                                 </div>
                                 <div class="job-actions">
                                     <button class="btn btn-secondary" onclick="viewJobDetails()">공고보기</button>
-                                    <button class="btn btn-primary" onclick="viewAllCandidates()">채용현황</button>
+                                    <button class="btn btn-primary pulse-heart" onclick="viewAllCandidates()">채용현황</button>
                                 </div>
                             </div>
                             <div class="job-item">
