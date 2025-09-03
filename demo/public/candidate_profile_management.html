@@ -60,6 +60,47 @@
             padding: 30px;
         }
 
+        /* 탭 스타일 */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #7e4dac, #834eb4);
+            color: white;
+            border-color: #7e4dac;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .tab-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .embed-frame {
+            width: 100%;
+            height: 1800px;
+            border: 0;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
         /* 프로필 섹션 */
         .profile-section {
             display: grid;
@@ -132,6 +173,42 @@
             padding: 15px;
             margin-bottom: 20px;
         }
+
+        .profile-intro {
+            background: linear-gradient(135deg, #eef2ff, #e7f3ff);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
+            white-space: normal;
+        }
+
+        .intro-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: -12px;
+            margin-bottom: 16px;
+        }
+
+        .btn-intro {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            background: #e9ecf5;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .btn-intro.primary { background: #7e8bd6; color: #fff; }
+        .btn-intro.danger { background: #f06a6a; color: #fff; }
+        .btn-intro:disabled { opacity: 0.6; cursor: not-allowed; }
+        .profile-intro.editing { outline: 2px dashed #7e8bd6; background: #f3f6ff; }
 
         .ai-status h4 {
             color: #2e7d32;
@@ -483,10 +560,12 @@
             border-radius: 3px;
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
         }
 
         .personality-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
+            appearance: none;
             width: 18px;
             height: 18px;
             background: #4CAF50;
@@ -592,12 +671,12 @@
             margin-top: 2px;
         }
 
-        /* 신뢰도 퍼센트별 색상 클래스 */
-        .reliability.excellent .percent { color: #25bb25; } /* 초록색 - 80-100% */
-        .reliability.good .percent { color: #6aa6eb; } /* 하늘색 - 60-79% */
-        .reliability.average .percent { color: #FFD700; } /* 노랑색 - 40-59% */
-        .reliability.poor .percent { color: #FFA500; } /* 주황색 - 20-39% */
-        .reliability.very-poor .percent { color: #FF0000; } /* 빨강색 - 0-19% */
+        /* 점수별 색상 클래스 */
+        .score.excellent { color: #25bb25; } /* 초록색 - 80-100점 */
+        .score.good { color: #6aa6eb; } /* 하늘색 - 60-79점 */
+        .score.average { color: #FFA500; } /* 주황색 - 40-59점 */
+        .score.poor { color: #ff5ac8; } /* 분홍색 - 20-39점 */
+        .score.very-poor { color: #FF0000; } /* 빨강색 - 0-19점 */
 
         /* 적성검사 테이블 스타일 */
         .personality-table-section {
@@ -831,6 +910,15 @@
         <div class="screen-section">
             <div class="screen-title">📋 지원자 프로필 관리</div>
             <div class="screen-content">
+                <!-- 탭 버튼 -->
+                <div class="tabs">
+                    <button class="tab-button active" data-key="jieun" onclick="showTab('jieun')">이지은</button>
+                    <button class="tab-button" data-key="sangyoung" onclick="showTab('sangyoung')">박상영</button>
+                    <button class="tab-button" data-key="jiwon" onclick="showTab('jiwon')">김지원</button>
+                </div>
+
+                <!-- 이지은 탭 -->
+                <div id="tab-jieun" class="tab-panel active">
                 <div class="profile-section">
                     <!-- 프로필 카드 -->
                     <div class="profile-card">
@@ -847,6 +935,15 @@
                                 <div class="stat-value">2</div>
                                 <div class="stat-label">AI 면접</div>
                             </div>
+                        </div>
+
+                        <div id="intro-jieun" class="profile-intro" contenteditable="false">
+                            React, TypeScript, Next.js를 주력으로 하는 프론트엔드 개발자입니다. 사용자 경험을 중시하며, 깔끔하고 효율적인 코드 작성을 지향합니다. 팀 협업과 지속적인 학습을 통해 성장하는 개발자입니다.
+                        </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="startIntroEdit('jieun')">편집</button>
+                            <button class="btn-intro primary" onclick="saveIntroEdit('jieun')" disabled>저장</button>
+                            <button class="btn-intro danger" onclick="cancelIntroEdit('jieun')" disabled>취소</button>
                         </div>
 
                         <div class="ai-status">
@@ -871,7 +968,7 @@
                                             <div class="upload-card-file-icon">📄</div>
                                             <div class="upload-card-file-details">
                                                 <h6>자기소개서_콜린웨이브.pdf</h6>
-                                                <p>2024.08.15 업로드 • 2.3MB</p>
+                                                <p>2025.08.15 업로드 • 2.3MB</p>
                                             </div>
                                         </div>
                                         <div class="upload-card-file-actions">
@@ -892,7 +989,7 @@
                                             <div class="upload-card-file-icon">💼</div>
                                             <div class="upload-card-file-details">
                                                 <h6>포트폴리오_아뜰리에.pdf</h6>
-                                                <p>2024.08.20 업로드 • 15.7MB</p>
+                                                <p>2025.08.20 업로드 • 15.7MB</p>
                                             </div>
                                         </div>
                                         <div class="upload-card-file-actions">
@@ -913,7 +1010,7 @@
                                             <div class="upload-card-file-icon">🔗</div>
                                             <div class="upload-card-file-details">
                                                 <h6>GitHub: github.com/leejieun</h6>
-                                                <p>2024.08.10 연결 • 15개 저장소</p>
+                                                <p>2025.08.10 연결 • 15개 저장소</p>
                                             </div>
                                         </div>
                                         <div class="upload-card-file-actions">
@@ -979,14 +1076,14 @@
                     <!-- 육각형 그래프 -->
                     <div class="hexagon-container">
                         <div class="hexagon-chart">
-                            <canvas id="hexagonChart" width="400" height="400"></canvas>
+                            <canvas id="hexagonChart-jieun" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score">67점</span></div>
-                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score">45점</span></div>
-                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score">21점</span></div>
-                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score">33점</span></div>
-                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score">59점</span></div>
-                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score">96점</span></div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score excellent">67점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score average">45점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score very-poor">21점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score poor">33점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score good">59점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score excellent">96점</span></div>
                             </div>
                         </div>
                     </div>
@@ -1042,7 +1139,7 @@
                     </div>
                     
                     <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 0.9rem; color: #666;">
-                        <strong>마지막 검사일:</strong> 2024.08.25 | <strong>검사 소요시간:</strong> 15분
+                        <strong>마지막 검사일:</strong> 2025.08.25 | <strong>검사 소요시간:</strong> 15분
                     </div>
                 </div>
 
@@ -1201,11 +1298,802 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="saveProfile()">💾 프로필 저장</button>
                 </div>
+                </div> <!-- /tab-jieun -->
+
+                <!-- 박상영 탭 -->
+                <div id="tab-sangyoung" class="tab-panel">
+                <div class="profile-section">
+                    <!-- 프로필 카드 -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">박</div>
+                        <div class="profile-name">박상영</div>
+                        <div class="profile-title">Frontend Developer • 5년 경력</div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">6</div>
+                                <div class="stat-label">지원 공고</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">AI 면접</div>
+                            </div>
+                        </div>
+
+                        <div id="intro-sangyoung" class="profile-intro" contenteditable="false">
+                            React와 TypeScript 기반의 웹 애플리케이션 개발에 강점이 있는 프론트엔드 개발자입니다. 성능 최적화와 컴포넌트 아키텍처 설계에 관심이 많으며, 원활한 커뮤니케이션으로 팀 생산성을 높이는 데 기여합니다.
+                        </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="startIntroEdit('sangyoung')">편집</button>
+                            <button class="btn-intro primary" onclick="saveIntroEdit('sangyoung')" disabled>저장</button>
+                            <button class="btn-intro danger" onclick="cancelIntroEdit('sangyoung')" disabled>취소</button>
+                        </div>
+
+                        <div class="ai-status">
+                            <h4>🤖 지원자AI 상태</h4>
+                            <p>프로필 완성도: <strong>92%</strong></p>
+                            <p>마지막 업데이트: 2025.08.27</p>
+                        </div>
+                    </div>
+
+                    <!-- 파일 업로드 섹션 -->
+                    <div class="upload-section">
+                        <h3>📁 포트폴리오 및 자료 업로드</h3>
+                        <div class="upload-grid">
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">📄</div>
+                                <div class="upload-title">자기소개서</div>
+                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">📄</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>자기소개서_프레스토.pdf</h6>
+                                                <p>2025.07.22 업로드 • 2.0MB</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">💼</div>
+                                <div class="upload-title">포트폴리오</div>
+                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">💼</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>포트폴리오_커머스리뉴얼.pdf</h6>
+                                                <p>2025.08.01 업로드 • 12.4MB</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">🔗</div>
+                                <div class="upload-title">GitHub 링크</div>
+                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                                <button class="upload-btn" disabled>링크 추가</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">🔗</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>GitHub: github.com/parksangyoung</h6>
+                                                <p>2025.06.30 연결 • 28개 저장소</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">📋</div>
+                                <div class="upload-title">이력서</div>
+                                <div class="upload-desc">최신 이력서 파일</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">📋</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>이력서_박상영.pdf</h6>
+                                                <p>2025.08.18 업로드 • 1.8MB</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🎖️</div>
+                                <div class="upload-title">자격증</div>
+                                <div class="upload-desc">관련 자격증 및 인증서</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🏆</div>
+                                <div class="upload-title">수상 경력</div>
+                                <div class="upload-desc">수상 내역 및 인증서</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📜</div>
+                                <div class="upload-title">증명서</div>
+                                <div class="upload-desc">학력증명서, 경력증명서 등</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📖</div>
+                                <div class="upload-title">논문</div>
+                                <div class="upload-desc">발표 논문 및 연구 자료</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                        </div>
+
+                        <!-- 하단 기타자료 섹션 -->
+                        <div class="upload-grid-bottom">
+                            <div class="upload-card">
+                                <div class="upload-icon">📚</div>
+                                <div class="upload-title">기타 자료</div>
+                                <div class="upload-desc">추가적인 경력 증명 자료</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 적성검사 결과 -->
+                <div class="ai-settings aptitude-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>📊 적성검사 결과 분석</h3>
+                        <button class="btn btn-primary" onclick="startAptitudeTest()" style="padding: 8px 16px; font-size: 0.9rem;">
+                            🔄 적성검사 다시하기
+                        </button>
+                    </div>
+                    
+                    <!-- 육각형 그래프 -->
+                    <div class="hexagon-container">
+                        <div class="hexagon-chart">
+                            <canvas id="hexagonChart-sangyoung" width="400" height="400"></canvas>
+                            <div class="hexagon-labels">
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score good">72점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score good">58점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score poor">35점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score good">62점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score excellent">81점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score average">49점</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 적성검사 점수 테이블 -->
+                    <div class="personality-table-section">
+                        <h5>📋 적성검사 점수</h5>
+                        <div class="personality-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>적성 유형</th>
+                                        <th>점수 (100점 만점)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>현실형</strong><br>(실행/사물지향)</td>
+                                        <td>72점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
+                                        <td>58점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
+                                        <td>49점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>사회형</strong><br>(협력/사람지향)</td>
+                                        <td>62점</td>
+                                    </tr>
+                                    <tr class="highlight-row">
+                                        <td><strong>진취형</strong><br>(관리/과제지향)</td>
+                                        <td>81점</td>
+                                    </tr>
+                                    <tr class="low-row">
+                                        <td><strong>관습형</strong><br>(동조/자료지향)</td>
+                                        <td>35점</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="personality-analysis">
+                        <h5>🎯 적성검사 결과 해석</h5>
+                        <p>
+                            <strong>진취형 81점</strong>은 리드 역할과 의사결정, 문제 해결에 강점을 보이며, 팀 내 커뮤니케이션을 주도적으로 이끌 수 있음을 시사합니다. 
+                            <strong>현실형 72점</strong>은 구체적 성과 중심의 태도로 코드 품질과 성능 최적화 같은 실무 작업에서 탁월함을 기대할 수 있습니다.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 0.9rem; color: #666;">
+                        <strong>마지막 검사일:</strong> 2025.08.26 | <strong>검사 소요시간:</strong> 14분
+                    </div>
+                </div>
+
+                <!-- AI 학습을 위한 질문 섹션 -->
+                <div class="ai-settings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>🤖 AI 학습을 위한 질문 답변</h3>
+                        <div style="font-size: 0.9rem; color: #666; text-align: right;">
+                            <strong>완료도: 2/10</strong><br>
+                            <span style="color: #4CAF50;">● ● ○ ○ ○ ○ ○ ○ ○ ○</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #e8f5e8, #c8e6c9); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">💡 AI 에이전트 학습 안내</h4>
+                        <p style="color: #333; line-height: 1.6; font-size: 0.95rem;">
+                            아래 질문들에 답변해주시면, 지원자AI가 더욱 정확하게 본인을 대변할 수 있습니다.
+                        </p>
+                    </div>
+
+                    <div class="question-list">
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q1</span>
+                                <span class="question-text">자신의 가장 큰 강점과 약점은 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 강점은 문제 해결을 위한 구조화된 접근과 커뮤니케이션입니다. 약점은 때때로 완벽주의로 인한 일정 지연입니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(1)">수정</button>
+                        </div>
+
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q2</span>
+                                <span class="question-text">이직을 고려하는 이유는 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 대규모 트래픽 환경에서 React/TypeScript로 성능 최적화를 주도하고 싶습니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(2)">수정</button>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q3</span>
+                                <span class="question-text">팀워크에서 본인의 역할은 무엇인가요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(3)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q4</span>
+                                <span class="question-text">실패했던 프로젝트 경험이 있다면 어떻게 극복했나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(4)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q5</span>
+                                <span class="question-text">앞으로 5년 후 본인의 모습은 어떨 것 같나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(5)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q6</span>
+                                <span class="question-text">업무 외에 개인적으로 관심 있는 기술이나 분야는?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(6)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q7</span>
+                                <span class="question-text">스트레스 상황에서 어떻게 대처하시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(7)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q8</span>
+                                <span class="question-text">리더십 경험이 있다면 어떤 방식으로 팀을 이끌었나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(8)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q9</span>
+                                <span class="question-text">업무와 개인생활의 균형을 어떻게 맞추시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(9)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q10</span>
+                                <span class="question-text">이 회사에 지원한 가장 큰 이유는 무엇인가요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(10)" disabled>저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveProfile()">💾 프로필 저장</button>
+                </div>
+                </div> <!-- /tab-sangyoung -->
+
+                <!-- 김지원 탭 (관리 UI 동일 스타일) -->
+                <div id="tab-jiwon" class="tab-panel">
+                <div class="profile-section">
+                    <!-- 프로필 카드 -->
+                    <div class="profile-card">
+                        <div class="profile-avatar">김</div>
+                        <div class="profile-name">김지원</div>
+                        <div class="profile-title">Frontend Developer • 3년 경력</div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">4</div>
+                                <div class="stat-label">지원 공고</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1</div>
+                                <div class="stat-label">AI 면접</div>
+                            </div>
+                        </div>
+
+                        <div class="profile-intro">
+                            React/TypeScript 중심으로 빠르게 성장 중인 프론트엔드 개발자입니다. 실제 사용자 문제를 데이터 기반으로 해결하는 데 관심이 많으며, 협업을 통해 더 좋은 제품을 만드는 과정을 즐깁니다.
+                        </div>
+
+                        <div class="ai-status">
+                            <h4>🤖 지원자AI 상태</h4>
+                            <p>프로필 완성도: <strong>78%</strong></p>
+                            <p>마지막 업데이트: 2025.08.25</p>
+                            <p style="margin-top: 8px; color:#2e7d32;">평가: 성장 가능성이 높은 중급 개발자, 학습 의지 우수</p>
+                        </div>
+                    </div>
+
+                    <!-- 파일 업로드 섹션 -->
+                    <div class="upload-section">
+                        <h3>📁 포트폴리오 및 자료 업로드</h3>
+                        <div class="upload-grid">
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">📄</div>
+                                <div class="upload-title">자기소개서</div>
+                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">📄</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>자기소개서_커머스플랫폼.pdf</h6>
+                                                <p>2025.08.05 업로드 • 1.9MB</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">💼</div>
+                                <div class="upload-title">포트폴리오</div>
+                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">💼</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>포트폴리오_사이드프로젝트.pdf</h6>
+                                                <p>2025.08.12 업로드 • 10.1MB</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card has-files">
+                                <div class="upload-icon">🔗</div>
+                                <div class="upload-title">GitHub 링크</div>
+                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                                <button class="upload-btn" disabled>링크 추가</button>
+                                <div class="upload-card-files">
+                                    <div class="upload-card-file-item">
+                                        <div class="upload-card-file-info">
+                                            <div class="upload-card-file-icon">🔗</div>
+                                            <div class="upload-card-file-details">
+                                                <h6>GitHub: github.com/kimjiwon-dev</h6>
+                                                <p>2025.07.10 연결 • 20개 저장소</p>
+                                            </div>
+                                        </div>
+                                        <div class="upload-card-file-actions">
+                                            <button class="btn-tiny btn-secondary">보기</button>
+                                            <button class="btn-tiny btn-danger">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📋</div>
+                                <div class="upload-title">이력서</div>
+                                <div class="upload-desc">최신 이력서 파일</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🏆</div>
+                                <div class="upload-title">수상 경력</div>
+                                <div class="upload-desc">수상 내역 및 인증서</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📜</div>
+                                <div class="upload-title">증명서</div>
+                                <div class="upload-desc">학력증명서, 경력증명서 등</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">🎖️</div>
+                                <div class="upload-title">자격증</div>
+                                <div class="upload-desc">관련 자격증 및 인증서</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                            <div class="upload-card">
+                                <div class="upload-icon">📖</div>
+                                <div class="upload-title">논문</div>
+                                <div class="upload-desc">발표 논문 및 연구 자료</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                        </div>
+
+                        <!-- 하단 기타자료 섹션 -->
+                        <div class="upload-grid-bottom">
+                            <div class="upload-card">
+                                <div class="upload-icon">📚</div>
+                                <div class="upload-title">기타 자료</div>
+                                <div class="upload-desc">추가적인 경력 증명 자료</div>
+                                <button class="upload-btn" disabled>파일 선택</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 적성검사 결과 -->
+                <div class="ai-settings aptitude-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>📊 적성검사 결과 분석</h3>
+                        <button class="btn btn-primary" onclick="startAptitudeTest()" style="padding: 8px 16px; font-size: 0.9rem;">
+                            🔄 적성검사 다시하기
+                        </button>
+                    </div>
+                    
+                    <!-- 육각형 그래프 -->
+                    <div class="hexagon-container">
+                        <div class="hexagon-chart">
+                            <canvas id="hexagonChart-jiwon" width="400" height="400"></canvas>
+                            <div class="hexagon-labels">
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score good">63점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score good">52점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score poor">29점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score average">48점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score good">61점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score good">70점</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 적성검사 점수 테이블 -->
+                    <div class="personality-table-section">
+                        <h5>📋 적성검사 점수</h5>
+                        <div class="personality-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>적성 유형</th>
+                                        <th>점수 (100점 만점)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>현실형</strong><br>(실행/사물지향)</td>
+                                        <td>63점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
+                                        <td>52점</td>
+                                    </tr>
+                                    <tr class="highlight-row">
+                                        <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
+                                        <td>70점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>사회형</strong><br>(협력/사람지향)</td>
+                                        <td>48점</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>진취형</strong><br>(관리/과제지향)</td>
+                                        <td>61점</td>
+                                    </tr>
+                                    <tr class="low-row">
+                                        <td><strong>관습형</strong><br>(동조/자료지향)</td>
+                                        <td>29점</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="personality-analysis">
+                        <h5>🎯 적성검사 결과 해석</h5>
+                        <p>
+                            <strong>예술형 70점</strong>은 UI 표현력과 사용자 중심 사고에 강점을 보이며, <strong>현실형 63점</strong>은 실용적 문제 해결에 적합한 성향을 보여줍니다. 
+                            상대적으로 낮은 <strong>관습형 29점</strong>은 정형화된 프로세스보다 유연한 접근을 선호함을 의미합니다.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.7); border-radius: 8px; font-size: 0.9rem; color: #666;">
+                        <strong>마지막 검사일:</strong> 2025.08.22 | <strong>검사 소요시간:</strong> 13분
+                    </div>
+                </div>
+
+                <!-- AI 학습을 위한 질문 섹션 -->
+                <div class="ai-settings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3>🤖 AI 학습을 위한 질문 답변</h3>
+                        <div style="font-size: 0.9rem; color: #666; text-align: right;">
+                            <strong>완료도: 2/10</strong><br>
+                            <span style="color: #4CAF50;">● ● ○ ○ ○ ○ ○ ○ ○ ○</span>
+                        </div>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #e8f5e8, #c8e6c9); border-radius: 10px; padding: 20px; margin-bottom: 25px;">
+                        <h4 style="color: #2e7d32; margin-bottom: 10px;">💡 AI 에이전트 학습 안내</h4>
+                        <p style="color: #333; line-height: 1.6; font-size: 0.95rem;">
+                            아래 질문들에 답변해주시면, 지원자AI가 더욱 정확하게 본인을 대변할 수 있습니다.
+                        </p>
+                    </div>
+
+                    <div class="question-list">
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q1</span>
+                                <span class="question-text">자신의 가장 큰 강점과 약점은 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 강점은 빠른 학습과 꼼꼼함입니다. 약점은 실무 경험이 상대적으로 적어 우선순위 판단에서 더 경험을 쌓고 있으며, 체크리스트로 보완하고 있습니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(1)">수정</button>
+                        </div>
+
+                        <div class="question-item completed">
+                            <div class="question-header">
+                                <span class="question-number">Q2</span>
+                                <span class="question-text">이직을 고려하는 이유는 무엇인가요?</span>
+                                <span class="question-status">✓ 완료</span>
+                            </div>
+                            <div class="question-answer">
+                                <strong>답변:</strong> 멘토링과 코드 리뷰 문화가 탄탄한 팀에서 더 빠르게 성장하고, 사용자 문제를 데이터 기반으로 해결하는 경험을 확대하고 싶습니다.
+                            </div>
+                            <button class="btn-edit" onclick="editAnswer(2)">수정</button>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q3</span>
+                                <span class="question-text">팀워크에서 본인의 역할은 무엇인가요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(3)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q4</span>
+                                <span class="question-text">실패했던 프로젝트 경험이 있다면 어떻게 극복했나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(4)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q5</span>
+                                <span class="question-text">앞으로 5년 후 본인의 모습은 어떨 것 같나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(5)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q6</span>
+                                <span class="question-text">업무 외에 개인적으로 관심 있는 기술이나 분야는?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(6)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q7</span>
+                                <span class="question-text">스트레스 상황에서 어떻게 대처하시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(7)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q8</span>
+                                <span class="question-text">리더십 경험이 있다면 어떤 방식으로 팀을 이끌었나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(8)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q9</span>
+                                <span class="question-text">업무와 개인생활의 균형을 어떻게 맞추시나요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(9)" disabled>저장</button>
+                            </div>
+                        </div>
+
+                        <div class="question-item">
+                            <div class="question-header">
+                                <span class="question-number">Q10</span>
+                                <span class="question-text">이 회사에 지원한 가장 큰 이유는 무엇인가요?</span>
+                                <span class="question-status">미완료</span>
+                            </div>
+                            <div class="question-input">
+                                <textarea placeholder="이 질문에 대한 답변을 입력해주세요..." rows="3"></textarea>
+                                <button class="btn-save btn-disabled" onclick="saveAnswer(10)" disabled>저장</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼 -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveProfile()">💾 프로필 저장</button>
+                </div>
+                </div> <!-- /tab-jiwon -->
             </div>
         </div>
     </div>
 
     <script>
+        // 탭 전환
+        function showTab(key) {
+            const buttons = document.querySelectorAll('.tab-button');
+            const panels = document.querySelectorAll('.tab-panel');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            const targetBtn = Array.from(buttons).find((b) => b.getAttribute('data-key') === key);
+            const targetPanel = document.getElementById(`tab-${key}`);
+            if (targetBtn && targetPanel) {
+                targetBtn.classList.add('active');
+                targetPanel.classList.add('active');
+            }
+
+            // 탭 전환 시 해당 차트가 아직 그려지지 않았다면 렌더링
+            if (key === 'sangyoung' && !window.__chartDrawn?.sangyoung) {
+                drawHexagonChart('hexagonChart-sangyoung', [
+                    { score: 72, label: '현실형', color: '#4CAF50' },
+                    { score: 58, label: '탐구형', color: '#2196F3' },
+                    { score: 35, label: '관습형', color: '#f44336' },
+                    { score: 62, label: '사회형', color: '#9C27B0' },
+                    { score: 81, label: '진취형', color: '#607D8B' },
+                    { score: 49, label: '예술형', color: '#FF9800' }
+                ]);
+                window.__chartDrawn.sangyoung = true;
+            } else if (key === 'jiwon' && !window.__chartDrawn?.jiwon) {
+                drawHexagonChart('hexagonChart-jiwon', [
+                    { score: 63, label: '현실형', color: '#4CAF50' },
+                    { score: 52, label: '탐구형', color: '#2196F3' },
+                    { score: 29, label: '관습형', color: '#f44336' },
+                    { score: 48, label: '사회형', color: '#9C27B0' },
+                    { score: 61, label: '진취형', color: '#607D8B' },
+                    { score: 70, label: '예술형', color: '#FF9800' }
+                ]);
+                window.__chartDrawn.jiwon = true;
+            }
+        }
         function updateValue(slider) {
             const value = slider.value;
             const valueDisplay = slider.nextElementSibling;
@@ -1233,26 +2121,34 @@
             }
         }
 
-        // 육각형 그래프 그리기
-        function drawHexagonChart() {
-            const canvas = document.getElementById('hexagonChart');
+        // 육각형 그래프 그리기 (캔버스 ID, 데이터)
+        function drawHexagonChart(canvasId, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = 150;
             
-            // 데이터 (점수, 신뢰도)
-            const data = [
-                { score: 67, reliability: 85, label: '현실형', color: '#4CAF50' },
-                { score: 45, reliability: 72, label: '탐구형', color: '#2196F3' },
-                { score: 96, reliability: 89, label: '예술형', color: '#FF9800' },
-                { score: 33, reliability: 78, label: '사회형', color: '#9C27B0' },
-                { score: 59, reliability: 83, label: '진취형', color: '#607D8B' },
-                { score: 21, reliability: 91, label: '관습형', color: '#f44336' }
-            ];
+            // 등고선 그리기 (20%, 40%, 60%, 80%, 100%)
+            for (let level = 1; level <= 5; level++) {
+                const currentRadius = (radius * level) / 5;
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3 - Math.PI / 2;
+                    const x = centerX + currentRadius * Math.cos(angle);
+                    const y = centerY + currentRadius * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
             
-            // 육각형 그리기
+            // 외곽 육각형 그리기
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 const angle = (i * Math.PI) / 3 - Math.PI / 2;
@@ -1270,7 +2166,7 @@
             ctx.lineWidth = 2;
             ctx.stroke();
             
-            // 데이터 포인트 그리기
+            // 데이터 육각형 그리기
             ctx.beginPath();
             for (let i = 0; i < 6; i++) {
                 const angle = (i * Math.PI) / 3 - Math.PI / 2;
@@ -1291,19 +2187,34 @@
             ctx.lineWidth = 3;
             ctx.stroke();
             
-            // 중심점
+            // 중심점 그리기
             ctx.beginPath();
-            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
             ctx.fillStyle = '#4CAF50';
             ctx.fill();
+            ctx.strokeStyle = '#2E7D32';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
         
-        // 페이지 로드 시 육각형 그래프 그리기
-        window.addEventListener('load', drawHexagonChart);
+        // 페이지 로드 시 기본 탭(이지은) 차트 렌더링 준비
+        window.__chartDrawn = { jieun: false, sangyoung: false, jiwon: false };
+        window.addEventListener('load', function() {
+            drawHexagonChart('hexagonChart-jieun', [
+                { score: 67, label: '현실형', color: '#4CAF50' },
+                { score: 45, label: '탐구형', color: '#2196F3' },
+                { score: 21, label: '관습형', color: '#f44336' },
+                { score: 33, label: '사회형', color: '#9C27B0' },
+                { score: 59, label: '진취형', color: '#607D8B' },
+                { score: 96, label: '예술형', color: '#FF9800' }
+            ]);
+            window.__chartDrawn.jieun = true;
+        });
 
         // 질문 답변 관련 함수들
         function editAnswer(questionNumber) {
-            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const activePanel = document.querySelector('.tab-panel.active');
+            const questionItem = activePanel.querySelectorAll('.question-item')[questionNumber - 1];
             const answerDiv = questionItem.querySelector('.question-answer');
             const currentAnswer = answerDiv.textContent.replace('답변:', '').trim();
             
@@ -1316,7 +2227,8 @@
         }
 
         function updateAnswer(questionNumber) {
-            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const activePanel = document.querySelector('.tab-panel.active');
+            const questionItem = activePanel.querySelectorAll('.question-item')[questionNumber - 1];
             const textarea = questionItem.querySelector('textarea');
             const newAnswer = textarea.value.trim();
             
@@ -1330,7 +2242,8 @@
         }
 
         function cancelEdit(questionNumber) {
-            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const activePanel = document.querySelector('.tab-panel.active');
+            const questionItem = activePanel.querySelectorAll('.question-item')[questionNumber - 1];
             const answerDiv = questionItem.querySelector('.question-answer');
             // 원래 답변으로 복원 (실제로는 서버에서 가져와야 함)
             const originalAnswers = [
@@ -1342,7 +2255,8 @@
         }
 
         function saveAnswer(questionNumber) {
-            const questionItem = document.querySelector(`.question-item:nth-child(${questionNumber})`);
+            const activePanel = document.querySelector('.tab-panel.active');
+            const questionItem = activePanel.querySelectorAll('.question-item')[questionNumber - 1];
             const textarea = questionItem.querySelector('textarea');
             const answer = textarea.value.trim();
             
@@ -1369,10 +2283,11 @@
         }
 
         function updateProgress() {
-            const completedQuestions = document.querySelectorAll('.question-item.completed').length;
+            const activePanel = document.querySelector('.tab-panel.active');
+            const completedQuestions = activePanel.querySelectorAll('.question-item.completed').length;
             const totalQuestions = 10;
-            const progressElement = document.querySelector('.ai-settings h3 + div strong');
-            const progressDots = document.querySelector('.ai-settings h3 + div span');
+            const progressElement = activePanel.querySelector('.ai-settings h3 + div strong');
+            const progressDots = activePanel.querySelector('.ai-settings h3 + div span');
             
             progressElement.textContent = `완료도: ${completedQuestions}/${totalQuestions}`;
             
@@ -1437,6 +2352,51 @@
         document.addEventListener('DOMContentLoaded', function() {
             applyReliabilityColors();
         });
+
+        // 짧은소개 편집 기능
+        const __introOriginal = {};
+        function getIntroElements(key) {
+            const intro = document.getElementById(`intro-${key}`);
+            const panel = document.getElementById(`tab-${key}`) || intro.closest('.tab-panel');
+            const buttons = panel.querySelectorAll('.intro-actions .btn-intro');
+            return { intro, buttons };
+        }
+
+        function setIntroButtonsState(buttons, { editing }) {
+            const [editBtn, saveBtn, cancelBtn] = buttons;
+            if (!editBtn || !saveBtn || !cancelBtn) return;
+            editBtn.disabled = editing;
+            saveBtn.disabled = !editing;
+            cancelBtn.disabled = !editing;
+        }
+
+        function startIntroEdit(key) {
+            const { intro, buttons } = getIntroElements(key);
+            if (!intro) return;
+            __introOriginal[key] = intro.innerHTML;
+            intro.contentEditable = 'true';
+            intro.classList.add('editing');
+            setIntroButtonsState(buttons, { editing: true });
+            intro.focus();
+        }
+
+        function saveIntroEdit(key) {
+            const { intro, buttons } = getIntroElements(key);
+            if (!intro) return;
+            intro.contentEditable = 'false';
+            intro.classList.remove('editing');
+            setIntroButtonsState(buttons, { editing: false });
+            alert('짧은소개가 저장되었습니다.');
+        }
+
+        function cancelIntroEdit(key) {
+            const { intro, buttons } = getIntroElements(key);
+            if (!intro) return;
+            intro.innerHTML = __introOriginal[key] || intro.innerHTML;
+            intro.contentEditable = 'false';
+            intro.classList.remove('editing');
+            setIntroButtonsState(buttons, { editing: false });
+        }
     </script>
 </body>
 </html>
