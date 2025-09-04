@@ -10,7 +10,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         {/* 헤더 */}
         <div className="text-center text-gray-800 mb-12">
-          <h1 className="text-5xl font-bold mb-4">🤖 AI 기반 채용 플랫폼</h1>
+          <h1 className="text-5xl font-bold mb-4">VeriFit: AI Agent 기반 차세대 채용 스크리닝 플랫폼</h1>
           <p className="text-xl opacity-90">콜린웨이브 커머스플랫폼 프론트엔드 개발자 채용 데모</p>
         </div>
 
