@@ -81,22 +81,22 @@ export default function CandidatePage() {
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">📁</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">원스톱 프로필 관리</h3>
-              <p className="text-gray-600">자기소개서, 이력서, 포트폴리오, GitHub 링크 등을 업로드하면 나만의 AI 아바타가 생성됩니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>자기소개서, 이력서, 포트폴리오, GitHub 링크 등을 업로드하면 나만의 AI 아바타가 생성됩니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">🤖</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">AI 면접 자동화</h3>
-              <p className="text-gray-600">지원자AI가 기업의 모든 질문에 자동으로 응답하여 면접 준비 시간을 절약합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>지원자AI가 기업의 모든 질문에 자동으로 응답하여 면접 준비 시간을 절약합니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">객관적 평가</h3>
-              <p className="text-gray-600">AI가 감정이나 편견 없이 일관된 기준으로 평가하여 공정한 기회를 제공합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>AI가 감정이나 편견 없이 일관된 기준으로 평가하여 공정한 기회를 제공합니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">🧠</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">AI 기반 심층 분석</h3>
-              <p className="text-gray-600">행동 시뮬레이션과 적성검사를 통해 지원자의 특성과 잠재력 및 업무 적합성을 정확하게 파악합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>행동 시뮬레이션과 적성검사를 통해 지원자의 특성과 잠재력 및 업무 적합성을 정확하게 파악합니다.</p>
             </div>
           </div>
         </div>

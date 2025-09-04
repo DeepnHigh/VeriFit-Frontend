@@ -69,22 +69,22 @@ export default function CompanyPage() {
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">시간 절약</h3>
-              <p className="text-gray-600">이제 채용 공고만 등록하세요. 24시간 일하는 AI 면접관이 모든 지원자를 대상으로 서류 분석은 물론, Hard Skill과 Soft Skill을 아우르는 깊이 있는 면접을 진행합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>이제 채용 공고만 등록하세요. 24시간 일하는 AI 면접관이 모든 지원자를 대상으로 서류 분석은 물론, Hard Skill과 Soft Skill을 아우르는 깊이 있는 면접을 진행합니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">💰</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">비용 절감</h3>
-              <p className="text-gray-600">면접관AI가 대신 면접을 진행함으로써 기존 면접관에 투여된 인건비 절약이 가능합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>면접관AI가 대신 면접을 진행함으로써 기존 면접관에 투여된 인건비 절약이 가능합니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">객관적 평가</h3>
-              <p className="text-gray-600">AI가 감정이나 편견 없이 일관된 기준으로 모든 지원자를 평가합니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>AI가 감정이나 편견 없이 일관된 기준으로 모든 지원자를 평가합니다.</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-lg">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-semibold text-gray-800 mb-3">맞춤형 질문</h3>
-              <p className="text-gray-600">기업이 원하는 평가 기준과 질문을 설정하여 최적의 인재를 찾을 수 있습니다.</p>
+              <p className="text-gray-600 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>기업이 원하는 평가 기준과 질문을 설정하여 최적의 인재를 찾을 수 있습니다.</p>
             </div>
           </div>
         </div>

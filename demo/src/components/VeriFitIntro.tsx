@@ -170,13 +170,13 @@ const VeriFitIntro: React.FC = () => {
               </div>
             </div>
             <div className="space-y-3">
-              <div className="bg-blue-50 text-blue-800 rounded-xl p-4">
+              <div className="bg-blue-50 text-blue-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;React의 주요 특징과 장점에 대해 설명해주세요.&rdquo;
               </div>
-              <div className="bg-blue-50 text-blue-800 rounded-xl p-4">
+              <div className="bg-blue-50 text-blue-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;팀 프로젝트에서 의견 충돌이 발생했을 때 어떻게 해결하시나요?&rdquo;
               </div>
-              <div className="bg-blue-50 text-blue-800 rounded-xl p-4">
+              <div className="bg-blue-50 text-blue-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;성능 최적화 경험이 있다면 구체적인 사례를 들어주세요.&rdquo;
               </div>
             </div>
@@ -193,13 +193,13 @@ const VeriFitIntro: React.FC = () => {
               
             </div>
             <div className="space-y-3">
-              <div className="bg-orange-50 text-orange-800 rounded-xl p-4">
+              <div className="bg-orange-50 text-orange-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;React는 컴포넌트 기반 라이브러리로, 재사용성과 유지보수성이 뛰어납니다. Virtual DOM을 통해 성능도 최적화되어 있습니다.&rdquo;
               </div>
-              <div className="bg-orange-50 text-orange-800 rounded-xl p-4">
+              <div className="bg-orange-50 text-orange-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;먼저 상대방의 관점을 이해하려 노력하고, 객관적 데이터를 바탕으로 논의를 진행합니다.&rdquo;
               </div>
-              <div className="bg-orange-50 text-orange-800 rounded-xl p-4">
+              <div className="bg-orange-50 text-orange-800 rounded-xl p-4 text-left whitespace-normal break-words" style={{ wordBreak: 'keep-all' }}>
                 &ldquo;React.memo와 useMemo를 활용하여 불필요한 리렌더링을 방지한 경험이 있습니다.&rdquo;
               </div>
             </div>
@@ -293,7 +293,7 @@ const VeriFitIntro: React.FC = () => {
       {/* CTA 섹션 */}
       <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-2xl p-8 text-center shadow-2xl">
         <h2 className="text-3xl font-bold text-gray-800 mb-4">🚀 지금 시작하세요</h2>
-        <p className="text-lg text-gray-600 mb-8" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>AI 기반 채용 플랫폼으로 더 효율적이고 공정한 채용을 경험해보세요</p>
+        <p className="text-lg text-gray-600 mb-8" style={{ wordBreak: 'keep-all', wordWrap: 'break-word' }}>AI Agent 기반 채용 플랫폼으로 더 효율적이고 공정한 채용을 경험해보세요</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link 
             href="/candidate"
