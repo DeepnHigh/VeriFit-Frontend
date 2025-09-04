@@ -19,7 +19,7 @@ export default function Home() {
           <div className="relative">
             <div className="relative w-full pt-[100%] rounded-2xl shadow-lg overflow-hidden">
               <Image src={applicantPic} alt="applicant" fill className="object-cover" priority />
-              <div className="absolute inset-0 bg-white/40" />
+              <div className="absolute inset-0 bg-white/60" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center p-10">
               <Link
@@ -33,7 +33,7 @@ export default function Home() {
           <div className="relative">
             <div className="relative w-full pt-[100%] rounded-2xl shadow-lg overflow-hidden">
               <Image src={companyPic} alt="company" fill className="object-cover" priority />
-              <div className="absolute inset-0 bg-white/40" />
+              <div className="absolute inset-0 bg-white/60" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center p-10">
               <Link
