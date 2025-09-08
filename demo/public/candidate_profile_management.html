@@ -124,6 +124,58 @@
             border: 2px solid #e0e0e0;
         }
 
+        .profile-details {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            padding-bottom: 80px; /* 하단 버튼 공간 확보 */
+        }
+
+        /* 개인정보 액션 버튼을 컨테이너 우측 하단에 고정 */
+        .profile-details .intro-actions {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            margin: 0;
+        }
+
+        /* 개인정보 액션 버튼 크기 확대 */
+        .profile-details .intro-actions .btn-intro {
+            padding: 10px 14px;
+            font-size: 0.95rem;
+        }
+
+        .detail-group {
+            margin-bottom: 25px;
+        }
+
+        .detail-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .detail-value {
+            color: #333;
+            text-align: right;
+        }
+
         .profile-avatar {
             width: 120px;
             height: 120px;
@@ -245,7 +297,7 @@
 
         .upload-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -960,114 +1012,148 @@
                             <p>마지막 업데이트: 2025.08.29</p>
                         </div>
                     </div>
-
-                    <!-- 파일 업로드 섹션 -->
-                    <div class="upload-section">
-                        <h3>📁 포트폴리오 및 자료 업로드</h3>
-                        <div class="upload-grid">
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">📄</div>
-                                <div class="upload-title">자기소개서</div>
-                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">📄</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>자기소개서_콜린웨이브.pdf</h6>
-                                                <p>2025.08.15 업로드 • 2.3MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>📞 연락처</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">이메일</span>
+                                <span class="detail-value">lee.jieun@email.com</span>
                             </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">💼</div>
-                                <div class="upload-title">포트폴리오</div>
-                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">💼</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>포트폴리오_아뜰리에.pdf</h6>
-                                                <p>2025.08.20 업로드 • 15.7MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">🔗</div>
-                                <div class="upload-title">GitHub 링크</div>
-                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
-                                <button class="upload-btn" disabled>링크 추가</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">🔗</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>GitHub: github.com/leejieun</h6>
-                                                <p>2025.08.10 연결 • 15개 저장소</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📋</div>
-                                <div class="upload-title">이력서</div>
-                                <div class="upload-desc">최신 이력서 파일</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🏆</div>
-                                <div class="upload-title">수상 경력</div>
-                                <div class="upload-desc">수상 내역 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📜</div>
-                                <div class="upload-title">증명서</div>
-                                <div class="upload-desc">학력증명서, 경력증명서 등</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🎖️</div>
-                                <div class="upload-title">자격증</div>
-                                <div class="upload-desc">관련 자격증 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📖</div>
-                                <div class="upload-title">논문</div>
-                                <div class="upload-desc">발표 논문 및 연구 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="detail-item">
+                                <span class="detail-label">전화번호</span>
+                                <span class="detail-value">010-1234-5678</span>
                             </div>
                         </div>
-
-                        <!-- 하단 기타자료 섹션 -->
-                        <div class="upload-grid-bottom">
-                            <div class="upload-card">
-                                <div class="upload-icon">📚</div>
-                                <div class="upload-title">기타 자료</div>
-                                <div class="upload-desc">추가적인 경력 증명 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                        <div class="detail-group">
+                            <h3>🎓 학력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">최종학력</span>
+                                <span class="detail-value">서울대학교 컴퓨터공학과 졸업</span>
                             </div>
+                            <div class="detail-item">
+                                <span class="detail-label">졸업년도</span>
+                                <span class="detail-value">2022년</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>💼 경력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">총 경력</span>
+                                <span class="detail-value">2년 6개월</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">최근 직장</span>
+                                <span class="detail-value">테크스타트업</span>
+                            </div>
+                        </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="fillPersonalInfoFromDocuments('jieun')">업로드한 문서로 개인정보 채우기</button>
+                            <button class="btn-intro primary" onclick="startPersonalInfoEdit('jieun')">수정</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 파일 업로드 섹션 -->
+                <div class="upload-section">
+                    <h3>📁 포트폴리오 및 자료 업로드</h3>
+                    <div class="upload-grid">
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-title">자기소개서</div>
+                            <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">📄</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>자기소개서_콜린웨이브.pdf</h6>
+                                            <p>2025.08.15 업로드 • 2.3MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">💼</div>
+                            <div class="upload-title">포트폴리오</div>
+                            <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">💼</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>포트폴리오_아뜰리에.pdf</h6>
+                                            <p>2025.08.20 업로드 • 15.7MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">🔗</div>
+                            <div class="upload-title">GitHub 링크</div>
+                            <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                            <button class="upload-btn" disabled>링크 추가</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">🔗</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>GitHub: github.com/leejieun</h6>
+                                            <p>2025.08.10 연결 • 15개 저장소</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📋</div>
+                            <div class="upload-title">이력서</div>
+                            <div class="upload-desc">최신 이력서 파일</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🏆</div>
+                            <div class="upload-title">수상 경력</div>
+                            <div class="upload-desc">수상 내역 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📜</div>
+                            <div class="upload-title">증명서</div>
+                            <div class="upload-desc">학력증명서, 경력증명서 등</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🎖️</div>
+                            <div class="upload-title">자격증</div>
+                            <div class="upload-desc">관련 자격증 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📖</div>
+                            <div class="upload-title">논문</div>
+                            <div class="upload-desc">발표 논문 및 연구 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📚</div>
+                            <div class="upload-title">기타 자료</div>
+                            <div class="upload-desc">추가적인 경력 증명 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
                         </div>
                     </div>
                 </div>
@@ -1343,129 +1429,163 @@
                             <p>마지막 업데이트: 2025.08.27</p>
                         </div>
                     </div>
-
-                    <!-- 파일 업로드 섹션 -->
-                    <div class="upload-section">
-                        <h3>📁 포트폴리오 및 자료 업로드</h3>
-                        <div class="upload-grid">
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">📄</div>
-                                <div class="upload-title">자기소개서</div>
-                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">📄</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>자기소개서_프레스토.pdf</h6>
-                                                <p>2025.07.22 업로드 • 2.0MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>📞 연락처</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">이메일</span>
+                                <span class="detail-value">park.dev@email.com</span>
                             </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">💼</div>
-                                <div class="upload-title">포트폴리오</div>
-                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">💼</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>포트폴리오_커머스리뉴얼.pdf</h6>
-                                                <p>2025.08.01 업로드 • 12.4MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">🔗</div>
-                                <div class="upload-title">GitHub 링크</div>
-                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
-                                <button class="upload-btn" disabled>링크 추가</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">🔗</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>GitHub: github.com/parksangyoung</h6>
-                                                <p>2025.06.30 연결 • 28개 저장소</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">📋</div>
-                                <div class="upload-title">이력서</div>
-                                <div class="upload-desc">최신 이력서 파일</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">📋</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>이력서_박상영.pdf</h6>
-                                                <p>2025.08.18 업로드 • 1.8MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🎖️</div>
-                                <div class="upload-title">자격증</div>
-                                <div class="upload-desc">관련 자격증 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🏆</div>
-                                <div class="upload-title">수상 경력</div>
-                                <div class="upload-desc">수상 내역 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📜</div>
-                                <div class="upload-title">증명서</div>
-                                <div class="upload-desc">학력증명서, 경력증명서 등</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📖</div>
-                                <div class="upload-title">논문</div>
-                                <div class="upload-desc">발표 논문 및 연구 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="detail-item">
+                                <span class="detail-label">전화번호</span>
+                                <span class="detail-value">010-5678-1234</span>
                             </div>
                         </div>
-
-                        <!-- 하단 기타자료 섹션 -->
-                        <div class="upload-grid-bottom">
-                            <div class="upload-card">
-                                <div class="upload-icon">📚</div>
-                                <div class="upload-title">기타 자료</div>
-                                <div class="upload-desc">추가적인 경력 증명 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                        <div class="detail-group">
+                            <h3>🎓 학력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">최종학력</span>
+                                <span class="detail-value">KAIST 전산학부 졸업</span>
                             </div>
+                            <div class="detail-item">
+                                <span class="detail-label">졸업년도</span>
+                                <span class="detail-value">2019년</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>💼 경력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">총 경력</span>
+                                <span class="detail-value">5년</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">최근 직장</span>
+                                <span class="detail-value">오늘의 하우스</span>
+                            </div>
+                        </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="fillPersonalInfoFromDocuments('sangyoung')">업로드한 문서로 개인정보 채우기</button>
+                            <button class="btn-intro primary" onclick="startPersonalInfoEdit('sangyoung')">수정</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 파일 업로드 섹션 -->
+                <div class="upload-section">
+                    <h3>📁 포트폴리오 및 자료 업로드</h3>
+                    <div class="upload-grid">
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-title">자기소개서</div>
+                            <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">📄</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>자기소개서_프레스토.pdf</h6>
+                                            <p>2025.07.22 업로드 • 2.0MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">💼</div>
+                            <div class="upload-title">포트폴리오</div>
+                            <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">💼</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>포트폴리오_커머스리뉴얼.pdf</h6>
+                                            <p>2025.08.01 업로드 • 12.4MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">🔗</div>
+                            <div class="upload-title">GitHub 링크</div>
+                            <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                            <button class="upload-btn" disabled>링크 추가</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">🔗</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>GitHub: github.com/up_0</h6>
+                                            <p>2025.06.30 연결 • 28개 저장소</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">📋</div>
+                            <div class="upload-title">이력서</div>
+                            <div class="upload-desc">최신 이력서 파일</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">📋</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>이력서_박상영.pdf</h6>
+                                            <p>2025.08.18 업로드 • 1.8MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🎖️</div>
+                            <div class="upload-title">자격증</div>
+                            <div class="upload-desc">관련 자격증 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🏆</div>
+                            <div class="upload-title">수상 경력</div>
+                            <div class="upload-desc">수상 내역 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📜</div>
+                            <div class="upload-title">증명서</div>
+                            <div class="upload-desc">학력증명서, 경력증명서 등</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📖</div>
+                            <div class="upload-title">논문</div>
+                            <div class="upload-desc">발표 논문 및 연구 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📚</div>
+                            <div class="upload-title">기타 자료</div>
+                            <div class="upload-desc">추가적인 경력 증명 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
                         </div>
                     </div>
                 </div>
@@ -1718,122 +1838,160 @@
                         <div class="profile-intro">
                             React/TypeScript 중심으로 빠르게 성장 중인 프론트엔드 개발자입니다. 실제 사용자 문제를 데이터 기반으로 해결하는 데 관심이 많으며, 협업을 통해 더 좋은 제품을 만드는 과정을 즐깁니다.
                         </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="startIntroEdit('jiwon')">편집</button>
+                            <button class="btn-intro primary" onclick="saveIntroEdit('jiwon')" disabled>저장</button>
+                            <button class="btn-intro danger" onclick="cancelIntroEdit('jiwon')" disabled>취소</button>
+                        </div>
 
                         <div class="ai-status">
                             <h4>🤖 지원자AI 상태</h4>
                             <p>프로필 완성도: <strong>78%</strong></p>
                             <p>마지막 업데이트: 2025.08.25</p>
-                            <p style="margin-top: 8px; color:#2e7d32;">평가: 성장 가능성이 높은 중급 개발자, 학습 의지 우수</p>
                         </div>
                     </div>
-
-                    <!-- 파일 업로드 섹션 -->
-                    <div class="upload-section">
-                        <h3>📁 포트폴리오 및 자료 업로드</h3>
-                        <div class="upload-grid">
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">📄</div>
-                                <div class="upload-title">자기소개서</div>
-                                <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">📄</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>자기소개서_커머스플랫폼.pdf</h6>
-                                                <p>2025.08.05 업로드 • 1.9MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="profile-details">
+                        <div class="detail-group">
+                            <h3>📞 연락처</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">이메일</span>
+                                <span class="detail-value">kim.jiwon@email.com</span>
                             </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">💼</div>
-                                <div class="upload-title">포트폴리오</div>
-                                <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">💼</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>포트폴리오_사이드프로젝트.pdf</h6>
-                                                <p>2025.08.12 업로드 • 10.1MB</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card has-files">
-                                <div class="upload-icon">🔗</div>
-                                <div class="upload-title">GitHub 링크</div>
-                                <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
-                                <button class="upload-btn" disabled>링크 추가</button>
-                                <div class="upload-card-files">
-                                    <div class="upload-card-file-item">
-                                        <div class="upload-card-file-info">
-                                            <div class="upload-card-file-icon">🔗</div>
-                                            <div class="upload-card-file-details">
-                                                <h6>GitHub: github.com/kimjiwon-dev</h6>
-                                                <p>2025.07.10 연결 • 20개 저장소</p>
-                                            </div>
-                                        </div>
-                                        <div class="upload-card-file-actions">
-                                            <button class="btn-tiny btn-secondary">보기</button>
-                                            <button class="btn-tiny btn-danger">삭제</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📋</div>
-                                <div class="upload-title">이력서</div>
-                                <div class="upload-desc">최신 이력서 파일</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🏆</div>
-                                <div class="upload-title">수상 경력</div>
-                                <div class="upload-desc">수상 내역 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📜</div>
-                                <div class="upload-title">증명서</div>
-                                <div class="upload-desc">학력증명서, 경력증명서 등</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">🎖️</div>
-                                <div class="upload-title">자격증</div>
-                                <div class="upload-desc">관련 자격증 및 인증서</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
-                            </div>
-                            <div class="upload-card">
-                                <div class="upload-icon">📖</div>
-                                <div class="upload-title">논문</div>
-                                <div class="upload-desc">발표 논문 및 연구 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="detail-item">
+                                <span class="detail-label">전화번호</span>
+                                <span class="detail-value">010-9876-5432</span>
                             </div>
                         </div>
-
-                        <!-- 하단 기타자료 섹션 -->
-                        <div class="upload-grid-bottom">
-                            <div class="upload-card">
-                                <div class="upload-icon">📚</div>
-                                <div class="upload-title">기타 자료</div>
-                                <div class="upload-desc">추가적인 경력 증명 자료</div>
-                                <button class="upload-btn" disabled>파일 선택</button>
+                        <div class="detail-group">
+                            <h3>🎓 학력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">최종학력</span>
+                                <span class="detail-value">고려대학교 컴퓨터학과 졸업</span>
                             </div>
+                            <div class="detail-item">
+                                <span class="detail-label">졸업년도</span>
+                                <span class="detail-value">2021년</span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <h3>💼 경력</h3>
+                            <div class="detail-item">
+                                <span class="detail-label">총 경력</span>
+                                <span class="detail-value">3년</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">최근 직장</span>
+                                <span class="detail-value">스타트윗유</span>
+                            </div>
+                        </div>
+                        <div class="intro-actions">
+                            <button class="btn-intro" onclick="fillPersonalInfoFromDocuments('jiwon')">업로드한 문서로 개인정보 채우기</button>
+                            <button class="btn-intro primary" onclick="startPersonalInfoEdit('jiwon')">수정</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 파일 업로드 섹션 -->
+                <div class="upload-section">
+                    <h3>📁 포트폴리오 및 자료 업로드</h3>
+                    <div class="upload-grid">
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-title">자기소개서</div>
+                            <div class="upload-desc">기존 작성한 자기소개서들을 업로드하세요</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">📄</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>자기소개서_커머스플랫폼.pdf</h6>
+                                            <p>2025.08.05 업로드 • 1.9MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">💼</div>
+                            <div class="upload-title">포트폴리오</div>
+                            <div class="upload-desc">프로젝트 포트폴리오 PDF나 PPT</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">💼</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>포트폴리오_사이드프로젝트.pdf</h6>
+                                            <p>2025.08.12 업로드 • 10.1MB</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card has-files">
+                            <div class="upload-icon">🔗</div>
+                            <div class="upload-title">GitHub 링크</div>
+                            <div class="upload-desc">GitHub 프로필 및 주요 저장소</div>
+                            <button class="upload-btn" disabled>링크 추가</button>
+                            <div class="upload-card-files">
+                                <div class="upload-card-file-item">
+                                    <div class="upload-card-file-info">
+                                        <div class="upload-card-file-icon">🔗</div>
+                                        <div class="upload-card-file-details">
+                                            <h6>GitHub: github.com/kimjiwon-dev</h6>
+                                            <p>2025.07.10 연결 • 20개 저장소</p>
+                                        </div>
+                                    </div>
+                                    <div class="upload-card-file-actions">
+                                        <button class="btn-tiny btn-secondary">보기</button>
+                                        <button class="btn-tiny btn-danger">삭제</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📋</div>
+                            <div class="upload-title">이력서</div>
+                            <div class="upload-desc">최신 이력서 파일</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🏆</div>
+                            <div class="upload-title">수상 경력</div>
+                            <div class="upload-desc">수상 내역 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📜</div>
+                            <div class="upload-title">증명서</div>
+                            <div class="upload-desc">학력증명서, 경력증명서 등</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">🎖️</div>
+                            <div class="upload-title">자격증</div>
+                            <div class="upload-desc">관련 자격증 및 인증서</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📖</div>
+                            <div class="upload-title">논문</div>
+                            <div class="upload-desc">발표 논문 및 연구 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
+                        </div>
+                        <div class="upload-card">
+                            <div class="upload-icon">📚</div>
+                            <div class="upload-title">기타 자료</div>
+                            <div class="upload-desc">추가적인 경력 증명 자료</div>
+                            <button class="upload-btn" disabled>파일 선택</button>
                         </div>
                     </div>
                 </div>
