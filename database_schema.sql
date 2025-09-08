@@ -81,16 +81,10 @@ Table job_seeker_documents {
 Table job_seeker_ai_agents {
   id uuid [primary key, default: `uuid_generate_v4()`]
   job_seeker_id uuid [ref: > job_seekers.id, not null]
-  ai_agent_status enum('training', 'ready', 'error') [default: 'training'] // AI 에이전트 상태
   ai_agent_completion_percentage decimal(5,2) [default: 0.00] // AI 에이전트 완성도
-  last_ai_trained timestamp // 마지막 AI 학습 시간
-  total_ai_interviews integer [default: 0] // 총 AI 면접 횟수
-  average_ai_score decimal(5,2) // 평균 AI 평가 점수
   
   indexes {
     job_seeker_id
-    ai_agent_status
-    average_ai_score
   }
 }
 
@@ -258,57 +252,68 @@ Table applications {
 Table ai_evaluations {
   id uuid [primary key, default: `uuid_generate_v4()`]
   application_id uuid [ref: > applications.id, not null]
-  evaluation_type enum('hard_skill', 'soft_skill', 'overall') [not null]
-  skill_name varchar(100) [not null]
-  score decimal(5,2) [not null] // 0.00 ~ 100.00
-  max_score decimal(5,2) [default: 100.00]
-  confidence_level decimal(5,2) [default: 0.00] // AI 신뢰도 0.00 ~ 100.00
-  evaluation_reasoning text
+  // 순위 페이지
+  hard_score decimal(5,2) [not null] // 0.00 ~ 100.00
+  soft_score decimal(5,2) [not null] // 0.00 ~ 100.00
+  total_score decimal(5,2) [not null] // 0.00 ~ 100.00
+  ai_summary text [not null] // 총평
+  // 상세보기 페이지
+  hard_detail_scores jsonb // 하드 스킬 상세 분석 점수
+  soft_detail_scores jsonb // 소프트 스킬 상세 분석 점수
+  strengths_content text // 강점 - 내용
+  strengths_opinion text // 강점 - AI면접관 의견
+  strengths_evidence text // 강점 - 근거
+  concerns_content text // 우려사항 - 내용
+  concerns_opinion text // 우려사항 - AI면접관 의견
+  concerns_evidence text // 우려사항 - 근거
+  followup_content text // 후속검증 제안 - 내용
+  followup_opinion text // 후속검증 제안 - AI면접관 의견
+  followup_evidence text // 후속검증 제안 - 근거
+  final_opinion text // AI 면접관 최종 의견
   created_at timestamp [default: `now()`]
   
   indexes {
     application_id
-    evaluation_type
-    skill_name
-    score
   }
 }
 
-// AI 면접 질문-답변 테이블 (지원별)
-Table ai_interview_qa {
+// AI 면접(agent V/S agent) 질문-답변 채팅 (지원자별)
+Table ai_interview_messages {
   id uuid [primary key, default: `uuid_generate_v4()`]
   application_id uuid [ref: > applications.id, not null]
-  question_text text [not null]
-  answer_text text [not null]
-  question_category varchar(100)
-  question_type enum('technical', 'behavioral', 'situational', 'general') [default: 'general']
-  ai_generated boolean [default: false] // AI가 생성한 질문인지 여부
+  sender enum('interviewer_ai', 'candidate_ai') [not null] // 발화자
+  message_type enum('question', 'answer', 'system', 'other') [default: 'other']
+  content text [not null] // 메시지 본문
+  turn_number integer [not null] // 대화 턴 번호 (1=질문, 2=답변, 3=질문...)
+  highlight_turns jsonb // 하이라이트 턴 리스트 (예: [3,4,7,8])
   created_at timestamp [default: `now()`]
   
   indexes {
     application_id
-    question_category
-    question_type
+    (application_id, turn_number)
+    turn_number
+    highlight_turns
+    sender
     created_at
   }
 }
 
-Table ai_overall_reports {
+Table ai_overall_report {
   id uuid [primary key, default: `uuid_generate_v4()`]
-  application_id uuid [ref: > applications.id, not null]
-  overall_score decimal(5,2) [not null]
-  hard_skill_score decimal(5,2) [not null]
-  soft_skill_score decimal(5,2) [not null]
-  ai_summary text [not null]
-  strengths text
-  weaknesses text
-  recommendations text
-  generated_at timestamp [default: `now()`]
+  job_posting_id uuid [ref: > job_postings.id, not null]
+  // 채용 현황 통계 (계산 불가능한 값들만 저장)
+  total_applications integer [not null] // 총 지원자 수
+  ai_evaluated_count integer [not null] // AI 평가 완료 수  
+  ai_recommended_count integer [not null] // AI면접관 추천 수
+  // AI 분석 결과
+  hard_skill_evaluation jsonb [not null] // 하드스킬 평가 항목 및 내용
+  soft_skill_evaluation jsonb [not null] // 소프트스킬 평가 항목 및 내용
+  overall_review text [not null] // AI면접관 총평
+  created_at timestamp [default: `now()`]
   
   indexes {
-    application_id
-    overall_score
-    generated_at
+    job_posting_id
+    created_at
   }
 }
 
@@ -316,40 +321,40 @@ Table ai_overall_reports {
 // 시스템 관리
 // ==============================================
 
-Table system_settings {
-  id uuid [primary key, default: `uuid_generate_v4()`]
-  setting_key varchar(100) [unique, not null]
-  setting_value text [not null]
-  setting_type enum('string', 'number', 'boolean', 'json') [default: 'string']
-  description text
-  updated_at timestamp [default: `now()`]
+// Table system_settings {
+//   id uuid [primary key, default: `uuid_generate_v4()`]
+//   setting_key varchar(100) [unique, not null]
+//   setting_value text [not null]
+//   setting_type enum('string', 'number', 'boolean', 'json') [default: 'string']
+//   description text
+//   updated_at timestamp [default: `now()`]
   
-  indexes {
-    setting_key
-  }
-}
+//   indexes {
+//     setting_key
+//   }
+// }
 
-// 보안용
-Table audit_logs {
-  id uuid [primary key, default: `uuid_generate_v4()`]
-  user_id uuid [ref: > users.id]
-  action varchar(100) [not null]
-  resource_type varchar(50) [not null]
-  resource_id uuid
-  old_values jsonb
-  new_values jsonb
-  ip_address inet
-  user_agent text
-  created_at timestamp [default: `now()`]
+// // 보안용
+// Table audit_logs {
+//   id uuid [primary key, default: `uuid_generate_v4()`]
+//   user_id uuid [ref: > users.id]
+//   action varchar(100) [not null]
+//   resource_type varchar(50) [not null]
+//   resource_id uuid
+//   old_values jsonb
+//   new_values jsonb
+//   ip_address inet
+//   user_agent text
+//   created_at timestamp [default: `now()`]
   
-  indexes {
-    user_id
-    action
-    resource_type
-    resource_id
-    created_at
-  }
-}
+//   indexes {
+//     user_id
+//     action
+//     resource_type
+//     resource_id
+//     created_at
+//   }
+// }
 
 // ==============================================
 // 관계 설정 (컬럼 정의의 [ref: > ...]로 모두 지정됨)

@@ -103,8 +103,14 @@
             color: #4CAF50;
         }
 
+        .score.excellent { color: #25bb25; }
+        .score.good { color: #6aa6eb; }
+        .score.average { color: #FFA500; }
+        .score.poor { color: #ff5ac8; }
+        .score.very-poor { color: #FF0000; }
         @keyframes heartbeat { 0%,100%{transform:scale(1)} 18%{transform:scale(1.04)} 32%{transform:scale(1)} 46%{transform:scale(1.04)} 74%{transform:scale(1)} }
         .pulse-heart { animation: heartbeat 1.8s ease-in-out infinite; transform-origin: center; will-change: transform; }
+        .personality-table .score { color: #333 !important; }
     </style>
 </head>
 <body>
@@ -210,18 +216,19 @@
                     </div>
                 </div>
 
+                <!-- todo : 적성검사지를 big5로 변경 -->
                 <div class="ai-interview-section">
                     <h4>📊 적성검사 결과 분석</h4>
                     <div class="hexagon-container">
                         <div class="hexagon-chart">
                             <canvas id="hexagonChart" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="78">신뢰도: <span class="percent">78%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="71">신뢰도: <span class="percent">71%</span></span></div>
-                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="75">신뢰도: <span class="percent">75%</span></span></div>
-                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="68">신뢰도: <span class="percent">68%</span></span></div>
-                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="73">신뢰도: <span class="percent">73%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="80">신뢰도: <span class="percent">80%</span></span></div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score good">63점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score average">52점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score poor">29점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score average">48점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score good">61점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score good">70점</span></div>
                             </div>
                         </div>
                     </div>
@@ -233,46 +240,32 @@
                                     <tr>
                                         <th>적성 유형</th>
                                         <th>점수 (100점 만점)</th>
-                                        <th>AI면접관 신뢰도</th>
-                                        <th>신뢰도 측정 근거</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td><strong>현실형</strong><br>(실행/사물지향)</td>
-                                        <td>63점</td>
-                                        <td>78%</td>
-                                        <td>사이드 프로젝트 성과와 구체적 구현 설명이 일치</td>
+                                        <td><span class="score good">63점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
-                                        <td>52점</td>
-                                        <td>71%</td>
-                                        <td>문제 원인 파악 과정과 근거 제시 빈도에 근거</td>
+                                        <td><span class="score average">52점</span></td>
                                     </tr>
                                     <tr class="highlight-row">
                                         <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
-                                        <td>70점</td>
-                                        <td>80%</td>
-                                        <td>포트폴리오 UI/UX 결과물과 면접 답변의 일관성</td>
+                                        <td><span class="score good">70점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>사회형</strong><br>(협력/사람지향)</td>
-                                        <td>48점</td>
-                                        <td>68%</td>
-                                        <td>협업 경험은 있으나 역할 주도성 기록은 제한적</td>
+                                        <td><span class="score average">48점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>진취형</strong><br>(관리/과제지향)</td>
-                                        <td>61점</td>
-                                        <td>73%</td>
-                                        <td>작은 리딩 경험과 주도 제안 사례가 일부 확인</td>
+                                        <td><span class="score good">61점</span></td>
                                     </tr>
                                     <tr class="low-row">
                                         <td><strong>관습형</strong><br>(동조/자료지향)</td>
-                                        <td>29점</td>
-                                        <td>75%</td>
-                                        <td>자율적 시도 선호 경향, 컨벤션 준수 개선 의지 진술</td>
+                                        <td><span class="score poor">29점</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -478,7 +471,7 @@
         function applyReliabilityColors(){
             const els=document.querySelectorAll('.reliability');
             els.forEach(el=>{
-                const text=el.textContent||''; const m=text.match(/(\d+)%/);
+                const text=el.textContent||''; const m=text.match(/(\d+)점/);
                 const percent=m?parseInt(m[1]):parseInt(el.getAttribute('data-percent')||'0');
                 let cls='';
                 if(percent>=80) cls='excellent';

@@ -61,9 +61,6 @@
 
         /* 대시보드 화면 */
         .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
             margin-bottom: 30px;
         }
 
@@ -72,27 +69,38 @@
             border-radius: 10px;
             padding: 20px;
             border-left: 4px solid #4CAF50;
+            width: 100%;
         }
 
         .dashboard-card h4 {
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
         }
 
         .metric {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 10px;
+            text-align: center;
         }
 
         .metric-label {
             color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
         }
 
         .metric-value {
             font-weight: bold;
             color: #4CAF50;
+            font-size: 1.6rem;
         }
 
         /* 지원자 테이블 */
@@ -399,8 +407,13 @@
 
         /* 반응형 디자인 */
         @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
+            .metrics-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .dashboard-card {
+                padding: 15px;
             }
 
             .candidate-table {
@@ -437,53 +450,23 @@
                 <div class="dashboard-grid">
                     <div class="dashboard-card">
                         <h4>📊 채용 현황</h4>
-                        <div class="metric">
-                            <span class="metric-label">총 지원자</span>
-                            <span class="metric-value">156명</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">AI 평가 완료</span>
-                            <span class="metric-value">156명</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">평가율</span>
-                            <span class="metric-value">100%</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">AI면접관 추천</span>
-                            <span class="metric-value">12명</span>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h4>⏱️ 시간 절약</h4>
-                        <div class="metric">
-                            <span class="metric-label">기존 면접 시간</span>
-                            <span class="metric-value">약 40시간</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">AI 평가 시간</span>
-                            <span class="metric-value">약 2시간</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">시간 절약율</span>
-                            <span class="metric-value">95%</span>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <h4>💰 비용 절감</h4>
-                        <div class="metric">
-                            <span class="metric-label">면접관 인건비</span>
-                            <span class="metric-value">약 800만원</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">AI 평가 비용</span>
-                            <span class="metric-value">약 50만원</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-label">비용 절감율</span>
-                            <span class="metric-value">93.8%</span>
+                        <div class="metrics-container">
+                            <div class="metric">
+                                <span class="metric-label">총 지원자</span>
+                                <span class="metric-value">156명</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">AI 평가 완료</span>
+                                <span class="metric-value">156명</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">평가율</span>
+                                <span class="metric-value">100%</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">AI면접관 추천</span>
+                                <span class="metric-value">12명</span>
+                            </div>
                         </div>
                     </div>
                 </div>
