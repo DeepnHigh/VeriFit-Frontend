@@ -493,6 +493,12 @@
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
         }
+        .score.excellent { color: #25bb25; }
+        .score.good { color: #6aa6eb; }
+        .score.average { color: #FFA500; }
+        .score.poor { color: #ff5ac8; }
+        .score.very-poor { color: #FF0000; }
+        .personality-table .score { color: #333 !important; }
     </style>
 </head>
 <body>
@@ -617,65 +623,51 @@
                         <div class="hexagon-chart">
                             <canvas id="hexagonChart" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="85">신뢰도: <span class="percent">85%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="72">신뢰도: <span class="percent">72%</span></div>
-                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="91">신뢰도: <span class="percent">91%</span></span></div>
-                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="78">신뢰도: <span class="percent">78%</span></span></div>
-                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="83">신뢰도: <span class="percent">83%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="89">신뢰도: <span class="percent">89%</span></span></div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score good">67점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score average">45점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score poor">21점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score poor">33점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score average">59점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score excellent">96점</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 적성검사 점수 및 신뢰도 테이블 -->
+                    <!-- 적성검사 점수 테이블 -->
                     <div class="personality-table-section">
-                        <h5>📋 적성검사 점수 및 신뢰도 분석</h5>
+                        <h5>📋 적성검사 점수</h5>
                         <div class="personality-table">
                             <table>
                                 <thead>
                                     <tr>
                                         <th>적성 유형</th>
                                         <th>점수 (100점 만점)</th>
-                                        <th>AI면접관 신뢰도</th>
-                                        <th>신뢰도 측정 근거</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td><strong>현실형</strong><br>(실행/사물지향)</td>
-                                        <td>67점</td>
-                                        <td>85%</td>
-                                        <td>기술 부채 해결 경험과 구체적 성과 제시로 신뢰도 높음</td>
+                                        <td><span class="score good">67점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
-                                        <td>45점</td>
-                                        <td>72%</td>
-                                        <td>창의적 활동을 위한 도구로 활용하는 경향이 일관되게 나타남</td>
+                                        <td><span class="score average">45점</span></td>
                                     </tr>
                                     <tr class="highlight-row">
                                         <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
-                                        <td>96점</td>
-                                        <td>89%</td>
-                                        <td>UI/UX 포트폴리오와 면접 답변에서 창의성 일관성 확인</td>
+                                        <td><span class="score excellent">96점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>사회형</strong><br>(협력/사람지향)</td>
-                                        <td>33점</td>
-                                        <td>78%</td>
-                                        <td>과제 중심적 성향이 시뮬레이션과 면접에서 일치</td>
+                                        <td><span class="score poor">33점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>진취형</strong><br>(관리/과제지향)</td>
-                                        <td>59점</td>
-                                        <td>83%</td>
-                                        <td>보통 수준의 리더십 성향이 다양한 상황에서 확인됨</td>
+                                        <td><span class="score average">59점</span></td>
                                     </tr>
                                     <tr class="low-row">
                                         <td><strong>관습형</strong><br>(동조/자료지향)</td>
-                                        <td>21점</td>
-                                        <td>91%</td>
-                                        <td>프로세스 준수 관련 문제가 시뮬레이션과 면접에서 명확히 드러남</td>
+                                        <td><span class="score poor">21점</span></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -102,8 +102,14 @@
             font-weight: bold;
             color: #4CAF50;
         }
+        .score.excellent { color: #25bb25; }
+        .score.good { color: #6aa6eb; }
+        .score.average { color: #FFA500; }
+        .score.poor { color: #ff5ac8; }
+        .score.very-poor { color: #FF0000; }
         @keyframes heartbeat { 0%,100%{transform:scale(1)} 18%{transform:scale(1.04)} 32%{transform:scale(1)} 46%{transform:scale(1.04)} 74%{transform:scale(1)} }
         .pulse-heart { animation: heartbeat 1.8s ease-in-out infinite; transform-origin: center; will-change: transform; }
+        .personality-table .score { color: #333 !important; }
     </style>
 </head>
 <body>
@@ -216,12 +222,12 @@
                         <div class="hexagon-chart">
                             <canvas id="hexagonChart" width="400" height="400"></canvas>
                             <div class="hexagon-labels">
-                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="reliability" data-percent="82">신뢰도: <span class="percent">82%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="reliability" data-percent="74">신뢰도: <span class="percent">74%</span></span></div>
-                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="reliability" data-percent="69">신뢰도: <span class="percent">69%</span></span></div>
-                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="reliability" data-percent="76">신뢰도: <span class="percent">76%</span></span></div>
-                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="reliability" data-percent="85">신뢰도: <span class="percent">85%</span></span></div>
-                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="reliability" data-percent="70">신뢰도: <span class="percent">70%</span></span></div>
+                                <div class="hex-label" style="top: 4%; left: 36%;">현실형<br><span class="score good">72점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 67%;">탐구형<br><span class="score average">58점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 67%;">관습형<br><span class="score poor">35점</span></div>
+                                <div class="hex-label" style="top: 96%; left: 36%;">사회형<br><span class="score good">62점</span></div>
+                                <div class="hex-label" style="top: 75%; left: 5%;">진취형<br><span class="score excellent">81점</span></div>
+                                <div class="hex-label" style="top: 25%; left: 5%;">예술형<br><span class="score average">49점</span></div>
                             </div>
                         </div>
                     </div>
@@ -233,46 +239,32 @@
                                     <tr>
                                         <th>적성 유형</th>
                                         <th>점수 (100점 만점)</th>
-                                        <th>AI면접관 신뢰도</th>
-                                        <th>신뢰도 측정 근거</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td><strong>현실형</strong><br>(실행/사물지향)</td>
-                                        <td>72점</td>
-                                        <td>82%</td>
-                                        <td>실제 프로젝트 성능 개선 사례와 코드 품질 지표 일치</td>
+                                        <td><span class="score good">72점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>탐구형</strong><br>(사고/아이디어 지향)</td>
-                                        <td>58점</td>
-                                        <td>74%</td>
-                                        <td>리팩터링 제안과 원인 분석 답변에 근거</td>
+                                        <td><span class="score average">58점</span></td>
                                     </tr>
                                     <tr class="highlight-row">
                                         <td><strong>진취형</strong><br>(관리/과제지향)</td>
-                                        <td>81점</td>
-                                        <td>85%</td>
-                                        <td>의사결정 사례 및 리드 경험이 면접/시뮬 결과와 일치</td>
+                                        <td><span class="score excellent">81점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>사회형</strong><br>(협력/사람지향)</td>
-                                        <td>62점</td>
-                                        <td>76%</td>
-                                        <td>코드 리뷰 피드백 패턴과 커뮤니케이션 로그 근거</td>
+                                        <td><span class="score good">62점</span></td>
                                     </tr>
                                     <tr>
                                         <td><strong>예술형</strong><br>(창조/아이디어 지향)</td>
-                                        <td>49점</td>
-                                        <td>70%</td>
-                                        <td>UI 표현은 준수하나 구조화 선호로 창의 가중치 낮음</td>
+                                        <td><span class="score average">49점</span></td>
                                     </tr>
                                     <tr class="low-row">
                                         <td><strong>관습형</strong><br>(동조/자료지향)</td>
-                                        <td>35점</td>
-                                        <td>69%</td>
-                                        <td>유연한 접근 선호 기록 vs 표준 프로세스 선택 빈도</td>
+                                        <td><span class="score poor">35점</span></td>
                                     </tr>
                                 </tbody>
                             </table>
