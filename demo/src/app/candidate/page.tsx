@@ -7,7 +7,7 @@ export default function CandidatePage() {
       <div className="max-w-6xl mx-auto">
         {/* 헤더 */}
         <div className="text-center text-gray-800 mb-12">
-          <h1 className="text-5xl font-bold mb-4">👤 지원자 시작하기</h1>
+          <h1 className="text-5xl font-bold mb-4">👤 지원자 시작하기 (테스트 중)</h1>
           <p className="text-xl opacity-90">AI 기반 채용 플랫폼에서 나만의 프로필을 만들어보세요</p>
         </div>
 
