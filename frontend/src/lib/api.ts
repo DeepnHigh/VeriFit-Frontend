@@ -12,8 +12,10 @@ const apiClient = axios.create({
 
 // 요청 인터셉터 - 토큰 추가
 apiClient.interceptors.request.use((config) => {
+  // 로그인 요청에는 토큰을 붙이지 않음
+  const isLoginRequest = (config.url || '').startsWith('/login')
   const token = localStorage.getItem('token');
-  if (token) {
+  if (token && !isLoginRequest) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
