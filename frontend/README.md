@@ -78,6 +78,21 @@ src/
 - **인증 API**: `/login`
 
 ## 개발 가이드
+```
+frontend/
+├── components/          # 재사용 가능한 UI 컴포넌트
+├── context/            # React Context 프로바이더들
+├── hooks/              # 커스텀 React 훅들
+├── lib/                # 유틸리티, API 클라이언트, 설정
+├── types/              # TypeScript 타입 정의
+├── styles/             # CSS, Tailwind 설정
+├── public/
+│   ├── images/         # 이미지 파일들
+│   └── icons/          # 아이콘 파일들
+└── src/
+    ├── app/            # App Router (기존)
+    └── lib/            # 기존 lib 폴더
+```    
 
 ### 새로운 페이지 추가
 

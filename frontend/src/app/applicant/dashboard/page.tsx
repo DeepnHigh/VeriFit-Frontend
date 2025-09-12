@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Header from '../../../../components/Header'
+import Button from '../../../../components/Button'
 
 type HexPoint = { score: number; label: string; color: string }
 
@@ -33,14 +35,7 @@ export default function ApplicantDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-2xl font-bold text-black">지원자 프로필 관리</Link>
-            <div className="text-sm text-black">데모 레이아웃</div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
@@ -100,8 +95,8 @@ export default function ApplicantDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2 absolute right-5 bottom-5">
-                  <button onClick={() => simulateRequest('개인정보 채우기')} className="px-3 py-2 rounded-md text-sm bg-gray-100 text-black cursor-pointer">업로드한 문서로 개인정보 채우기</button>
-                  <button onClick={() => simulateRequest('개인정보 수정')} className="px-3 py-2 rounded-md text-sm text-white bg-violet-600 cursor-pointer">수정</button>
+                  <Button onClick={() => simulateRequest('개인정보 채우기')} variant="secondary" size="sm">업로드한 문서로 개인정보 채우기</Button>
+                  <Button onClick={() => simulateRequest('개인정보 수정')} variant="primary" size="sm">수정</Button>
                 </div>
               </div>
             </div>
@@ -192,8 +187,8 @@ export default function ApplicantDashboard() {
                 </li>
               </ul>
               <div className="flex justify-center gap-3 mt-6">
-                <button onClick={() => simulateRequest('프로필 저장')} className="px-4 py-2 rounded-lg bg-green-600 text-black cursor-pointer">💾 프로필 저장</button>
-                <Link href="/applicant/qna" onClick={(e) => { e.preventDefault(); simulateRequest('Q&A 관리') }} className="px-4 py-2 rounded-lg bg-indigo-600 text-black cursor-pointer">Q&A 관리</Link>
+                <Button onClick={() => simulateRequest('프로필 저장')} variant="success" size="md">💾 프로필 저장</Button>
+                <Link href="/applicant/qna" onClick={(e) => { e.preventDefault(); simulateRequest('Q&A 관리') }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white cursor-pointer">Q&A 관리</Link>
               </div>
             </section>
         </section>
