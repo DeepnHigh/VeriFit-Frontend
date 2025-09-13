@@ -66,7 +66,7 @@ const { big5Data, hasCompletedTest } = useAptitudeData()
 const { uploadItems } = useUploadItems()
 const { questions, completedCount, totalCount } = useQuestions()
 const { simulateRequest } = useSimulateRequest()
-const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
 const [userFiles, setUserFiles] = useState<UserFiles | null>(null)
 const [loading, setLoading] = useState(true)
@@ -237,7 +237,7 @@ const handleUploadSuccess = () => {
     fetchUserFiles()
   }
 
-useEffect(() => {
+  useEffect(() => {
     console.log('🎯 === 컴포넌트 마운트 ===')
     console.log('ApplicantDashboard 컴포넌트가 마운트되었습니다!')
     
@@ -415,217 +415,384 @@ useEffect(() => {
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">💼</div>
                   <div className="font-semibold text-black mb-1">포트폴리오</div>
-                  <div className="text-sm text-black mb-3">portfolio 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.portfolio && userFiles.portfolio.length > 0 ? (
-                      userFiles.portfolio.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('portfolio', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.portfolio.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('portfolio', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('portfolio', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('포트폴리오 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="portfolio"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* GitHub 링크 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">🔗</div>
                   <div className="font-semibold text-black mb-1">GitHub 링크</div>
-                  <div className="text-sm text-black mb-3">github.txt 파일</div>
-                  <div className="space-y-2 mb-3">
+                  <div className="text-sm text-gray-600 mb-3">GitHub 저장소 링크가 포함된 텍스트 파일을 업로드하세요</div>
+                  
+                  {/* GitHub 링크 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.github && userFiles.github.length > 0 ? (
-                      userFiles.github.map((link, index) => (
-                        <div key={index} className="text-xs">
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {link}
-                          </a>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.github.map((link, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block"
+                                title={link}
+                              >
+                                {link}
+                              </a>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('github', 'github.txt')}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="링크 파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">링크 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 GitHub 링크가 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('GitHub 링크 추가')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    링크 추가
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="github"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="GitHub 링크 파일 업로드"
+                  />
                 </div>
 
                 {/* 이력서 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">📋</div>
                   <div className="font-semibold text-black mb-1">이력서</div>
-                  <div className="text-sm text-black mb-3">resume 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.resume && userFiles.resume.length > 0 ? (
-                      userFiles.resume.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('resume', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.resume.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('resume', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('resume', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('이력서 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="resume"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* 수상 경력 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">🏆</div>
                   <div className="font-semibold text-black mb-1">수상 경력</div>
-                  <div className="text-sm text-black mb-3">award 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.award && userFiles.award.length > 0 ? (
-                      userFiles.award.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('award', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.award.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('award', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('award', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('수상 경력 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="award"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* 증명서 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">📜</div>
                   <div className="font-semibold text-black mb-1">증명서</div>
-                  <div className="text-sm text-black mb-3">certificate 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.certificate && userFiles.certificate.length > 0 ? (
-                      userFiles.certificate.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('certificate', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.certificate.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('certificate', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('certificate', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('증명서 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="certificate"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* 자격증 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">🎖️</div>
                   <div className="font-semibold text-black mb-1">자격증</div>
-                  <div className="text-sm text-black mb-3">qualification 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.qualification && userFiles.qualification.length > 0 ? (
-                      userFiles.qualification.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('qualification', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.qualification.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('qualification', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('qualification', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('자격증 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="qualification"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* 논문 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">📖</div>
                   <div className="font-semibold text-black mb-1">논문</div>
-                  <div className="text-sm text-black mb-3">paper 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.paper && userFiles.paper.length > 0 ? (
-                      userFiles.paper.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('paper', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.paper.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('paper', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('paper', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                    </button>
+                  </div>
+                ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('논문 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="paper"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
 
                 {/* 기타 자료 */}
                 <div className="bg-white rounded-lg p-4 border">
                   <div className="text-2xl mb-2">📚</div>
                   <div className="font-semibold text-black mb-1">기타 자료</div>
-                  <div className="text-sm text-black mb-3">other 폴더</div>
-                  <div className="space-y-2 mb-3">
+                  
+                  {/* 파일 목록 표시 */}
+                  <div className="mb-3">
                     {userFiles?.other && userFiles.other.length > 0 ? (
-                      userFiles.other.map((file, index) => (
-                        <div key={index} className="text-xs">
-                          <button
-                            onClick={() => handleFileDownload('other', file.name)}
-                            className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                          >
-                            {file.name}
-                          </button>
-                          <div className="text-gray-500">({(file.size / 1024).toFixed(1)}KB)</div>
-                        </div>
-                      ))
+                      <div className="space-y-2">
+                        {userFiles.other.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
+                            <div className="flex-1 min-w-0">
+                              <button
+                                onClick={() => handleFileDownload('other', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
+                              >
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleFileDelete('other', file.name)}
+                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                              title="파일 삭제"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <div className="text-xs text-gray-500">파일 없음</div>
+                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
+                        업로드된 파일이 없습니다
+                      </div>
                     )}
                   </div>
-                  <button onClick={() => simulateRequest('기타 자료 업로드')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">
-                    파일 선택
-                  </button>
+                  
+                  <FileUploadButton
+                    userId={localStorage.getItem('userId') || ''}
+                    documentType="other"
+                    onUploadSuccess={handleUploadSuccess}
+                    buttonText="파일 선택"
+                  />
                 </div>
               </div>
             </section>
@@ -640,30 +807,30 @@ useEffect(() => {
               </div>
               {hasCompletedTest ? (
                 <>
-                  <div className="flex justify-center">
-                    <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
-                  </div>
+              <div className="flex justify-center">
+                <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
+              </div>
                   {/* Big5 점수 표 */}
-                  <div className="mt-6 overflow-x-auto">
-                    <table className="w-full text-sm border rounded-lg overflow-hidden">
-                      <thead>
-                        <tr className="bg-green-600 text-black">
+              <div className="mt-6 overflow-x-auto">
+                <table className="w-full text-sm border rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-green-600 text-black">
                           <th className="text-left p-3 text-black">성격 차원</th>
-                          <th className="text-left p-3 text-black">점수</th>
+                      <th className="text-left p-3 text-black">점수</th>
                           <th className="text-left p-3 text-black">설명</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                    </tr>
+                  </thead>
+                  <tbody>
                         {big5Data.map((p) => (
-                          <tr key={p.label}>
-                            <td className="p-3 text-black"><b>{p.label}</b></td>
-                            <td className="p-3 text-black">{p.score}점</td>
+                      <tr key={p.label}>
+                        <td className="p-3 text-black"><b>{p.label}</b></td>
+                        <td className="p-3 text-black">{p.score}점</td>
                             <td className="p-3 text-black text-xs">{p.description}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
                 </>
               ) : (
                 <div className="text-center py-12">
@@ -701,7 +868,7 @@ useEffect(() => {
               <ul className="space-y-3 text-sm">
                 {questions.map((question) => (
                   <li key={question.id} className="bg-white border rounded-lg p-4">
-                    <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                       <div className="font-semibold text-black">Q{question.id}. {question.text}</div>
                       <span className={`text-xs px-2 py-1 rounded ${
                         question.status === 'completed' 
@@ -710,8 +877,8 @@ useEffect(() => {
                       }`}>
                         {question.status === 'completed' ? '완료' : '미완료'}
                       </span>
-                    </div>
-                  </li>
+                  </div>
+                </li>
                 ))}
               </ul>
               <div className="flex justify-center gap-3 mt-6">

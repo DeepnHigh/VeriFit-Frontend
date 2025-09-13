@@ -415,6 +415,18 @@ export const api = {
       });
       return response.data;
     },
+
+    // GitHub 링크 파일 업로드
+    uploadGithub: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'github');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/github`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
   },
 };
 
