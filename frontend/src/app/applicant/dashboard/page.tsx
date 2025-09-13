@@ -1,37 +1,20 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Header from '../../../../components/Header'
 import Button from '../../../../components/Button'
-
-type HexPoint = { score: number; label: string; color: string }
-
-const HEX_DATA: HexPoint[] = [
-  { score: 67, label: '현실형', color: '#4CAF50' },
-  { score: 45, label: '탐구형', color: '#2196F3' },
-  { score: 21, label: '관습형', color: '#f44336' },
-  { score: 33, label: '사회형', color: '#9C27B0' },
-  { score: 59, label: '진취형', color: '#607D8B' },
-  { score: 96, label: '예술형', color: '#FF9800' }
-]
+import { usePentagonChart } from '../../../../hooks/useHexagonChart'
+import { useSimulateRequest } from '../../../../hooks/useSimulateRequest'
+import { useUploadItems } from '../../../../hooks/useUploadItems'
+import { useAptitudeData } from '../../../../hooks/useAptitudeData'
+import { useQuestions } from '../../../../hooks/useQuestions'
 
 export default function ApplicantDashboard() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-
-  useEffect(() => {
-    if (canvasRef.current) {
-      drawHexagonChart(canvasRef.current, HEX_DATA)
-    }
-  }, [])
-
-  const simulateRequest = (actionLabel: string) => {
-    console.log(`[simulate] ${actionLabel} 버튼 클릭 - 빈 URL 요청 시도`)
-    // 실제 요청 예시 (주석 처리)
-    // fetch('')
-    //   .then(() => console.log('요청 완료'))
-    //   .catch(() => console.log('요청 실패'))
-  }
+  const { big5Data, hasCompletedTest } = useAptitudeData()
+  const { uploadItems } = useUploadItems()
+  const { questions, completedCount, totalCount } = useQuestions()
+  const { simulateRequest } = useSimulateRequest()
+  const canvasRef = usePentagonChart(big5Data)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -105,17 +88,7 @@ export default function ApplicantDashboard() {
             <section className="bg-gray-50 rounded-xl p-6 border mb-8">
               <h3 className="text-black font-semibold mb-4">📁 포트폴리오 및 자료 업로드</h3>
               <div className="grid md:grid-cols-3 gap-4">
-                {[
-                  { title: '자기소개서', icon: '📄', cta: '파일 선택' },
-                  { title: '포트폴리오', icon: '💼', cta: '파일 선택' },
-                  { title: 'GitHub 링크', icon: '🔗', cta: '링크 추가' },
-                  { title: '이력서', icon: '📋', cta: '파일 선택' },
-                  { title: '수상 경력', icon: '🏆', cta: '파일 선택' },
-                  { title: '증명서', icon: '📜', cta: '파일 선택' },
-                  { title: '자격증', icon: '🎖️', cta: '파일 선택' },
-                  { title: '논문', icon: '📖', cta: '파일 선택' },
-                  { title: '기타 자료', icon: '📚', cta: '파일 선택' },
-                ].map((item) => (
+                {uploadItems.map((item) => (
                   <div key={item.title} className="bg-white rounded-lg p-4 border">
                     <div className="text-2xl mb-2">{item.icon}</div>
                     <div className="font-semibold text-black mb-1">{item.title}</div>
@@ -128,34 +101,64 @@ export default function ApplicantDashboard() {
               </div>
             </section>
 
-            {/* 적성검사 결과 */}
+            {/* Big5 성격검사 결과 */}
             <section className="rounded-xl p-6 border mb-8 bg-white">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-black font-semibold">📊 적성검사 결과 분석</h3>
-                <button onClick={() => simulateRequest('적성검사 다시하기')} className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer">🔄 적성검사 다시하기</button>
+                <h3 className="text-black font-semibold">🧠 Big5 성격검사 결과 분석</h3>
+                <Link href="/applicant/big5-test" className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer hover:bg-green-700 transition-colors">
+                  {hasCompletedTest ? '🔄 성격검사 다시하기' : '🧠 성격검사 시작하기'}
+                </Link>
               </div>
-              <div className="flex justify-center">
-                <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
-              </div>
-              {/* 간단 점수 표 */}
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full text-sm border rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-green-600 text-black">
-                      <th className="text-left p-3 text-black">적성 유형</th>
-                      <th className="text-left p-3 text-black">점수</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {HEX_DATA.map((p) => (
-                      <tr key={p.label}>
-                        <td className="p-3 text-black"><b>{p.label}</b></td>
-                        <td className="p-3 text-black">{p.score}점</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              {hasCompletedTest ? (
+                <>
+                  <div className="flex justify-center">
+                    <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
+                  </div>
+                  {/* Big5 점수 표 */}
+                  <div className="mt-6 overflow-x-auto">
+                    <table className="w-full text-sm border rounded-lg overflow-hidden">
+                      <thead>
+                        <tr className="bg-green-600 text-black">
+                          <th className="text-left p-3 text-black">성격 차원</th>
+                          <th className="text-left p-3 text-black">점수</th>
+                          <th className="text-left p-3 text-black">설명</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {big5Data.map((p) => (
+                          <tr key={p.label}>
+                            <td className="p-3 text-black"><b>{p.label}</b></td>
+                            <td className="p-3 text-black">{p.score}점</td>
+                            <td className="p-3 text-black text-xs">{p.description}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🧠</div>
+                  <h4 className="text-xl font-semibold text-gray-700 mb-2">성격검사를 시작해보세요!</h4>
+                  <p className="text-gray-500 mb-6">Big5 성격검사를 통해 당신의 성격을 분석하고<br/>더 정확한 AI 프로필을 만들어보세요.</p>
+                  <Link href="/applicant/big5-test" className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    🚀 성격검사 시작하기
+                  </Link>
+                </div>
+              )}
+              {/* Big5 해석 섹션 - 검사 완료 후에만 표시 */}
+              {hasCompletedTest && (
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <h4 className="font-semibold text-black mb-2">📋 성격 분석 해석</h4>
+                  <div className="text-sm text-black space-y-1">
+                    <p><strong>개방성:</strong> 경험에 대한 개방성은 상상력이 풍부하고 창의적인 사람들과 현실적이고 전통적인 사람들을 구별하는 인지 스타일의 차원을 설명합니다.</p>
+                    <p><strong>성실성:</strong> 성실성은 우리가 충동을 어떻게 통제하고, 조절하며, 지시하는지를 다룹니다.</p>
+                    <p><strong>외향성:</strong> 외향성은 외부 세계와의 두드러진 관여로 표시됩니다.</p>
+                    <p><strong>우호성:</strong> 우호성은 협력과 사회적 조화에 대한 관심의 개인 차이를 반영합니다. 우호적인 개인은 다른 사람들과 잘 지내는 것을 중요하게 생각합니다</p>
+                    <p><strong>신경성:</strong> 신경증은 부정적인 감정을 경험하는 경향을 나타냅니다.(낮을수록 안정적)</p>
+                  </div>
+                </div>
+              )}
             </section>
 
             {/* AI 학습 질문 섹션 요약 */}
@@ -163,28 +166,24 @@ export default function ApplicantDashboard() {
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-black font-semibold">🤖 AI 학습을 위한 질문 답변</h3>
                 <div className="text-sm text-black text-right">
-                  <b>0/10</b>
+                  <b>{completedCount}/{totalCount}</b>
                 </div>
               </div>
               <ul className="space-y-3 text-sm">
-                <li className="bg-white border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-black">Q1. 자신의 가장 큰 강점과 약점은 무엇인가요?</div>
-                    <span className="text-xs px-2 py-1 rounded bg-green-600 text-black">완료</span>
-                  </div>
-                </li>
-                <li className="bg-white border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-black">Q2. 이직을 고려하는 이유는 무엇인가요?</div>
-                    <span className="text-xs px-2 py-1 rounded bg-green-600 text-black">완료</span>
-                  </div>
-                </li>
-                <li className="bg-white border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="font-semibold text-black">Q3. 팀워크에서 본인의 역할은 무엇인가요?</div>
-                    <span className="text-xs px-2 py-1 rounded bg-orange-500 text-black">미완료</span>
-                  </div>
-                </li>
+                {questions.map((question) => (
+                  <li key={question.id} className="bg-white border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-black">Q{question.id}. {question.text}</div>
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        question.status === 'completed' 
+                          ? 'bg-green-600 text-black' 
+                          : 'bg-orange-500 text-black'
+                      }`}>
+                        {question.status === 'completed' ? '완료' : '미완료'}
+                      </span>
+                    </div>
+                  </li>
+                ))}
               </ul>
               <div className="flex justify-center gap-3 mt-6">
                 <Button onClick={() => simulateRequest('프로필 저장')} variant="success" size="md">💾 프로필 저장</Button>
@@ -195,69 +194,4 @@ export default function ApplicantDashboard() {
       </main>
     </div>
   )
-}
-
-function drawHexagonChart(canvas: HTMLCanvasElement, data: HexPoint[]) {
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-  const centerX = canvas.width / 2
-  const centerY = canvas.height / 2
-  const radius = 150
-
-  // 등고선
-  for (let level = 1; level <= 5; level++) {
-    const currentRadius = (radius * level) / 5
-    ctx.beginPath()
-    for (let i = 0; i < 6; i++) {
-      const angle = (i * Math.PI) / 3 - Math.PI / 2
-      const x = centerX + currentRadius * Math.cos(angle)
-      const y = centerY + currentRadius * Math.sin(angle)
-      if (i === 0) ctx.moveTo(x, y)
-      else ctx.lineTo(x, y)
-    }
-    ctx.closePath()
-    ctx.strokeStyle = '#e0e0e0'
-    ctx.lineWidth = 1
-    ctx.stroke()
-  }
-
-  // 외곽
-  ctx.beginPath()
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3 - Math.PI / 2
-    const x = centerX + radius * Math.cos(angle)
-    const y = centerY + radius * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.strokeStyle = '#ddd'
-  ctx.lineWidth = 2
-  ctx.stroke()
-
-  // 데이터 영역
-  ctx.beginPath()
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3 - Math.PI / 2
-    const scoreRadius = (radius * data[i].score) / 100
-    const x = centerX + scoreRadius * Math.cos(angle)
-    const y = centerY + scoreRadius * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(76, 175, 80, 0.3)'
-  ctx.fill()
-  ctx.strokeStyle = '#4CAF50'
-  ctx.lineWidth = 3
-  ctx.stroke()
-
-  // 중심점
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI)
-  ctx.fillStyle = '#4CAF50'
-  ctx.fill()
-  ctx.strokeStyle = '#2E7D32'
-  ctx.lineWidth = 2
-  ctx.stroke()
 }
