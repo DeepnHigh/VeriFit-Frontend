@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Header from '../../../../components/Header'
 import Button from '../../../../components/Button'
@@ -65,15 +66,15 @@ const { big5Data, hasCompletedTest } = useAptitudeData()
 const { uploadItems } = useUploadItems()
 const { questions, completedCount, totalCount } = useQuestions()
 const { simulateRequest } = useSimulateRequest()
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [userFiles, setUserFiles] = useState<UserFiles | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [filesLoading, setFilesLoading] = useState(false)
-  const [error, setError] = useState('')
+const canvasRef = useRef<HTMLCanvasElement | null>(null)
+const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+const [userFiles, setUserFiles] = useState<UserFiles | null>(null)
+const [loading, setLoading] = useState(true)
+const [filesLoading, setFilesLoading] = useState(false)
+const [error, setError] = useState('')
 
-  // 사용자 프로필 데이터 가져오기
-  const fetchUserProfile = async () => {
+// 사용자 프로필 데이터 가져오기
+const fetchUserProfile = async () => {
     console.log('🚀 === API 호출 시작 ===')
     console.log('현재 시간:', new Date().toLocaleString())
     
@@ -146,8 +147,8 @@ const { simulateRequest } = useSimulateRequest()
     }
   }
 
-  // 사용자 파일 목록 가져오기
-  const fetchUserFiles = async () => {
+// 사용자 파일 목록 가져오기
+const fetchUserFiles = async () => {
     console.log('📁 === 파일 목록 조회 시작 ===')
     
     try {
@@ -185,8 +186,8 @@ const { simulateRequest } = useSimulateRequest()
     }
   }
 
-  // 파일 다운로드 함수
-  const handleFileDownload = async (fileType: string, fileName: string) => {
+// 파일 다운로드 함수
+const handleFileDownload = async (fileType: string, fileName: string) => {
     try {
       const userId = localStorage.getItem('userId')
       if (!userId) return
@@ -203,8 +204,8 @@ const { simulateRequest } = useSimulateRequest()
     }
   }
 
-  // 파일 삭제 함수
-  const handleFileDelete = async (fileType: string, fileName: string) => {
+// 파일 삭제 함수
+const handleFileDelete = async (fileType: string, fileName: string) => {
     if (!confirm(`"${fileName}" 파일을 삭제하시겠습니까?`)) {
       return
     }
@@ -230,13 +231,13 @@ const { simulateRequest } = useSimulateRequest()
     }
   }
 
-  // 파일 업로드 성공 후 파일 목록 새로고침
-  const handleUploadSuccess = () => {
+// 파일 업로드 성공 후 파일 목록 새로고침
+const handleUploadSuccess = () => {
     console.log('🔄 파일 업로드 성공 - 파일 목록 새로고침')
     fetchUserFiles()
   }
 
-  useEffect(() => {
+useEffect(() => {
     console.log('🎯 === 컴포넌트 마운트 ===')
     console.log('ApplicantDashboard 컴포넌트가 마운트되었습니다!')
     
@@ -249,14 +250,6 @@ const { simulateRequest } = useSimulateRequest()
       drawHexagonChart(canvasRef.current, HEX_DATA)
     }
   }, [])
-
-  const simulateRequest = (actionLabel: string) => {
-    console.log(`[simulate] ${actionLabel} 버튼 클릭 - 빈 URL 요청 시도`)
-    // 실제 요청 예시 (주석 처리)
-    // fetch('')
-    //   .then(() => console.log('요청 완료'))
-    //   .catch(() => console.log('요청 실패'))
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
