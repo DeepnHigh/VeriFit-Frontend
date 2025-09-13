@@ -7,7 +7,7 @@ import { api } from '@/lib/api'
 import { formatDate } from '@/lib/utils'
 
 export default function CompanyDashboard() {
-  const [jobPostings, setJobPostings] = useState<any[]>([])
+  const [jobPostings, setJobPostings] = useState<unknown[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -27,7 +27,7 @@ export default function CompanyDashboard() {
     try {
       const postings = await api.company.getJobPostings()
       setJobPostings(postings)
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('채용공고를 불러오는데 실패했습니다.')
     } finally {
       setLoading(false)

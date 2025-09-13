@@ -34,7 +34,7 @@ export default function LoginPage() {
         // 기본적으로 지원자 페이지로 이동
         router.push('/applicant/dashboard')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(err.response?.data?.message || '로그인에 실패했습니다.')
     } finally {
       setLoading(false)

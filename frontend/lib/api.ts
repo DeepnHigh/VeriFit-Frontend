@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// API 기본 설정
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'; // Updated to 8001
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -10,9 +9,8 @@ const apiClient = axios.create({
   },
 });
 
-// 요청 인터셉터 - 토큰 추가
+// 요청 인터셉터 - JWT 토큰 자동 추가
 apiClient.interceptors.request.use((config) => {
-  // 로그인 요청에는 토큰을 붙이지 않음
   const isLoginRequest = (config.url || '').startsWith('/login')
   const token = localStorage.getItem('token');
   if (token && !isLoginRequest) {
@@ -21,7 +19,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터 - 에러 처리
+// 응답 인터셉터 - 401 에러 시 자동 로그아웃
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -34,78 +32,6 @@ apiClient.interceptors.response.use(
 );
 
 // 타입 정의
-export interface Applicant {
-  user_id: string;
-  name: string;
-  email: string;
-  phone: string;
-  bio?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ApplicantInfo {
-  name: string;
-  email: string;
-  phone: string;
-  address?: string;
-  education?: string;
-  experience?: string;
-}
-
-export interface Document {
-  document_id: string;
-  user_id: string;
-  filename: string;
-  file_type: string;
-  file_size: number;
-  upload_date: string;
-}
-
-export interface AptitudeTest {
-  user_id: string;
-  test_type: string;
-  scores: Record<string, number>;
-  interpretation: string;
-  submitted_at: string;
-}
-
-export interface BehaviorTest {
-  user_id: string;
-  test_results: Record<string, any>;
-  submitted_at: string;
-}
-
-export interface OwnQnA {
-  question_id: string;
-  user_id: string;
-  question: string;
-  answer: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface JobPosting {
-  job_postings_id: string;
-  title: string;
-  description: string;
-  requirements: string[];
-  ai_criteria: Record<string, any>;
-  status: 'active' | 'closed';
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Interview {
-  applications_id: string;
-  job_postings_id: string;
-  user_id: string;
-  overall_report: any;
-  ai_evaluations: any;
-  conversation_highlights: any[];
-  created_at: string;
-}
-
 export interface LoginRequest {
   email: string;
   password: string;
@@ -113,17 +39,98 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  user_type: 'job_seeker' | 'company';
+  user_type: string;
   user_id: string;
 }
 
-// API 함수들
+export interface ApplicantInfo {
+  full_name: string;
+  phone: string;
+  email: string;
+  bio: string;
+  total_experience_years: number;
+  company_name: string;
+  education_level: string;
+  university: string;
+  major: string;
+  graduation_year: number;
+  location: string;
+}
+
+export interface JobPosting {
+  id: string;
+  title: string;
+  company_name: string;
+  location: string;
+  salary_min: number;
+  salary_max: number;
+  description: string;
+  requirements: string;
+  benefits: string;
+  deadline: string;
+  status: 'active' | 'closed';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Application {
+  id: string;
+  job_postings_id: string;
+  job_seeker_id: string;
+  status: 'pending' | 'reviewing' | 'accepted' | 'rejected';
+  applied_at: string;
+  job_posting: JobPosting;
+}
+
+export interface Interview {
+  id: string;
+  applications_id: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Conversation {
+  id: string;
+  interview_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+export interface Report {
+  id: string;
+  interview_id: string;
+  overall_score: number;
+  technical_score: number;
+  communication_score: number;
+  problem_solving_score: number;
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+  created_at: string;
+}
+
+// 파일 업로드 관련 타입
+export interface FileUploadResponse {
+  success: boolean;
+  message: string;
+  file_url: string;
+  file_name: string;
+  file_size: number;
+  mime_type: string;
+}
+
+// 파일 삭제 관련 타입
+export interface FileDeleteResponse {
+  success: boolean;
+  message: string;
+}
+
 export const api = {
-  // 로그인
+  // 인증 관련 API
   login: async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await apiClient.post('/login', data);
-    
-    // 백엔드 응답 형식에 맞춰 변환
     const backendResponse = response.data;
     return {
       token: backendResponse.access_token,
@@ -134,49 +141,49 @@ export const api = {
 
   // 지원자 관련 API
   applicant: {
-    // 지원자 마이페이지
+    // 지원자 프로필 조회
     getProfile: async (user_id: string) => {
       const response = await apiClient.get(`/applicants/${user_id}`);
       return response.data;
     },
 
-    // 짧은소개 등록
+    // 지원자 짧은소개 등록
     createBio: async (user_id: string, bio: string) => {
       const response = await apiClient.post(`/applicants/bio/${user_id}`, { bio });
       return response.data;
     },
 
-    // 짧은소개 수정
+    // 지원자 짧은소개 수정
     updateBio: async (user_id: string, bio: string) => {
       const response = await apiClient.put(`/applicants/bio/${user_id}`, { bio });
       return response.data;
     },
 
-    // 기본정보 등록
+    // 지원자 기본정보 등록
     createInfo: async (user_id: string, info: ApplicantInfo) => {
       const response = await apiClient.post(`/applicants/info/${user_id}`, info);
       return response.data;
     },
 
-    // 기본정보 수정
+    // 지원자 기본정보 수정
     updateInfo: async (user_id: string, info: ApplicantInfo) => {
       const response = await apiClient.put(`/applicants/info/${user_id}`, info);
       return response.data;
     },
 
-    // 파싱 생성
+    // 지원자 파싱 생성
     createParse: async (user_id: string) => {
       const response = await apiClient.get(`/applicants/parses/${user_id}`);
       return response.data;
     },
 
-    // 파싱 컨펌 및 저장
-    confirmParse: async (user_id: string, data: any) => {
+    // 지원자 파싱 컨펌 및 저장
+    confirmParse: async (user_id: string, data: unknown) => {
       const response = await apiClient.put(`/applicants/parses/${user_id}`, data);
       return response.data;
     },
 
-    // 적성검사 제출
+    // 지원자 적성검사 제출
     submitAptitudeTest: async (user_id: string, testData: FormData) => {
       const response = await apiClient.post(`/aptitudes/${user_id}`, testData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -184,7 +191,7 @@ export const api = {
       return response.data;
     },
 
-    // 행동검사 제출
+    // 지원자 행동검사 제출
     submitBehaviorTest: async (user_id: string, testData: FormData) => {
       const response = await apiClient.post(`/behaviors/${user_id}`, testData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -192,20 +199,20 @@ export const api = {
       return response.data;
     },
 
-    // 질문답변 생성
+    // 지원자 질문답변 생성
     createOwnQnA: async (user_id: string, question_id: string, data: { question: string; answer: string }) => {
       const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, data);
       return response.data;
     },
 
-    // 질문답변 수정
+    // 지원자 질문답변 수정
     updateOwnQnA: async (user_id: string, data: { question: string; answer: string }) => {
       const response = await apiClient.put(`/own-qnas/${user_id}`, data);
       return response.data;
     },
   },
 
-  // 문서 관련 API
+  // 지원자 문서 관련 API
   documents: {
     // 파일 업로드
     upload: async (user_id: string, file: File) => {
@@ -217,72 +224,195 @@ export const api = {
       return response.data;
     },
 
-    // 파일 개별 조회
-    get: async (document_id: string) => {
-      const response = await apiClient.get(`/docs/${document_id}`);
+    // 파일 목록 조회
+    getFiles: async (user_id: string) => {
+      const response = await apiClient.get(`/docs/${user_id}`);
       return response.data;
     },
 
-    // 파일 개별 삭제
-    delete: async (document_id: string) => {
-      const response = await apiClient.delete(`/docs/${document_id}`);
+    // 파일 삭제
+    deleteFile: async (user_id: string, file_id: string) => {
+      const response = await apiClient.delete(`/docs/${user_id}/${file_id}`);
       return response.data;
     },
   },
 
   // 기업 관련 API
   company: {
-    // 채용관리 페이지
+    // 기업 채용관리 페이지
     getJobPostings: async () => {
       const response = await apiClient.get('/job-postings');
       return response.data;
     },
 
-    // 구인공고 생성
+    // 기업 구인공고 생성
     createJobPosting: async (data: Partial<JobPosting>) => {
       const response = await apiClient.post('/job-postings', data);
       return response.data;
     },
 
-    // 구인공고 조회
+    // 기업 구인공고 조회
     getJobPosting: async (job_postings_id: string) => {
       const response = await apiClient.get(`/job-postings/${job_postings_id}`);
       return response.data;
     },
 
-    // 공고마감
+    // 기업 공고마감
     closeJobPosting: async (job_postings_id: string) => {
       const response = await apiClient.put(`/job-postings/${job_postings_id}`, { status: 'closed' });
       return response.data;
     },
 
-    // 질의응답 및 리포트 생성
+    // 기업 질의응답 및 리포트 생성
     createInterview: async (job_postings_id: string) => {
       const response = await apiClient.post(`/interviews/${job_postings_id}`);
       return response.data;
     },
 
-    // 채용현황 페이지
+    // 기업 채용현황 페이지
     getInterviewStatus: async (job_postings_id: string) => {
       const response = await apiClient.get(`/interviews/${job_postings_id}`);
       return response.data;
     },
 
-    // 개별리포트 조회
+    // 기업 개별리포트 조회
     getIndividualReport: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/${applications_id}`);
       return response.data;
     },
 
-    // AI 면접 대화 전체 조회
+    // 기업 AI 면접 대화 전체 조회
     getConversation: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/conversations/${applications_id}`);
       return response.data;
     },
 
-    // 지원자 프로필 조회
+    // 기업 지원자 프로필 조회
     getApplicantProfile: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/profiles/${applications_id}`);
+      return response.data;
+    },
+  },
+
+  // S3 파일 관리
+  s3: {
+    // 사용자별 파일 목록 조회
+    getUserFiles: async (user_id: string) => {
+      const response = await apiClient.get(`/s3/files/${user_id}`);
+      return response.data;
+    },
+
+    // 파일 다운로드 URL 생성
+    getDownloadUrl: async (user_id: string, file_type: string, file_name: string) => {
+      const response = await apiClient.get(`/s3/download/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+
+    // GitHub 링크 파일 내용 조회
+    getGithubLinks: async (user_id: string) => {
+      const response = await apiClient.get(`/s3/github/${user_id}`);
+      return response.data;
+    },
+
+    // 파일 삭제
+    deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<FileDeleteResponse> => {
+      const response = await apiClient.delete(`/s3/delete/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+
+    // 자기소개서 파일 업로드
+    uploadCoverLetter: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'cover_letter');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/cover_letter`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 포트폴리오 파일 업로드
+    uploadPortfolio: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'portfolio');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/portfolio`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 이력서 파일 업로드
+    uploadResume: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'resume');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/resume`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 수상 경력 파일 업로드
+    uploadAward: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'award');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/award`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 증명서 파일 업로드
+    uploadCertificate: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'certificate');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/certificate`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 자격증 파일 업로드
+    uploadQualification: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'qualification');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/qualification`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 논문 파일 업로드
+    uploadPaper: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'paper');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/paper`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 기타 자료 파일 업로드
+    uploadOther: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'other');
+      
+      const response = await apiClient.post(`/s3/upload/${user_id}/other`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return response.data;
     },
   },
