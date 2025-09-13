@@ -5,7 +5,7 @@ import { api, FileUploadResponse } from '../../lib/api'
 
 interface FileUploadButtonProps {
   userId: string
-  documentType: 'cover_letter' | 'portfolio' | 'resume' | 'award' | 'certificate' | 'qualification' | 'paper' | 'other'
+  documentType: 'cover_letter' | 'portfolio' | 'resume' | 'award' | 'certificate' | 'qualification' | 'paper' | 'other' | 'github'
   onUploadSuccess: () => void
   buttonText?: string
   className?: string
@@ -82,6 +82,9 @@ export default function FileUploadButton({
           break
         case 'other':
           uploadResponse = await api.s3.uploadOther(userId, file)
+          break
+        case 'github':
+          uploadResponse = await api.s3.uploadGithub(userId, file)
           break
         default:
           throw new Error('지원하지 않는 문서 타입입니다.')
