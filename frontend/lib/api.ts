@@ -111,6 +111,22 @@ export interface Report {
   created_at: string;
 }
 
+// AI 학습 질문 관련 타입
+export interface AILearningQuestion {
+  id: string;
+  question_category: string;
+  question_text: string;
+  display_order: number;
+}
+
+export interface AILearningResponse {
+  id: string;
+  job_seeker_id: string;
+  question_id: string;
+  answer_text: string;
+  response_date: string;
+}
+
 // 파일 업로드 관련 타입
 export interface FileUploadResponse {
   success: boolean;
@@ -208,6 +224,24 @@ export const api = {
     // 지원자 질문답변 수정
     updateOwnQnA: async (user_id: string, data: { question: string; answer: string }) => {
       const response = await apiClient.put(`/own-qnas/${user_id}`, data);
+      return response.data;
+    },
+
+    // AI 학습 질문 목록 조회
+    getAILearningQuestions: async () => {
+      const response = await apiClient.get('/own-qnas/questions');
+      return response.data;
+    },
+
+    // 사용자별 AI 학습 질문 답변 조회 (own-qnas API 활용)
+    getAILearningResponses: async (user_id: string) => {
+      const response = await apiClient.get(`/own-qnas/${user_id}`);
+      return response.data;
+    },
+
+    // AI 학습 질문 답변 저장/수정
+    saveAILearningResponse: async (user_id: string, question_id: string, answer: string) => {
+      const response = await apiClient.post(`/ai-learning-responses/${user_id}/${question_id}`, { answer });
       return response.data;
     },
   },
