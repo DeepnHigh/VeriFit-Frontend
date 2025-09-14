@@ -64,7 +64,7 @@ export default function ApplicantDashboard() {
 
 const { big5Data, hasCompletedTest } = useAptitudeData()
 const { uploadItems } = useUploadItems()
-const { questions, completedCount, totalCount, loading: questionsLoading, error: questionsError } = useQuestions()
+const { questions, completedCount, totalCount, loading: questionsLoading, error: questionsError, saveAnswer } = useQuestions()
 const { simulateRequest } = useSimulateRequest()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -72,6 +72,8 @@ const [userFiles, setUserFiles] = useState<UserFiles | null>(null)
 const [loading, setLoading] = useState(true)
 const [filesLoading, setFilesLoading] = useState(false)
 const [error, setError] = useState('')
+const [answers, setAnswers] = useState<Record<string, string>>({})
+const [savingAnswers, setSavingAnswers] = useState<Record<string, boolean>>({})
 
 // 사용자 프로필 데이터 가져오기
 const fetchUserProfile = async () => {
@@ -235,6 +237,36 @@ const handleFileDelete = async (fileType: string, fileName: string) => {
 const handleUploadSuccess = () => {
     console.log('🔄 파일 업로드 성공 - 파일 목록 새로고침')
     fetchUserFiles()
+  }
+
+// 답변 저장 핸들러
+const handleSaveAnswer = async (questionId: string) => {
+    const answer = answers[questionId]
+    if (!answer || answer.trim() === '') {
+      alert('답변을 입력해주세요.')
+      return
+    }
+
+    setSavingAnswers(prev => ({ ...prev, [questionId]: true }))
+    
+    try {
+      const result = await saveAnswer(questionId, answer.trim())
+      if (result.success) {
+        // 답변 저장 성공 시 로컬 상태에서 해당 답변 제거
+        setAnswers(prev => {
+          const newAnswers = { ...prev }
+          delete newAnswers[questionId]
+          return newAnswers
+        })
+      } else {
+        alert(result.error || '답변 저장에 실패했습니다.')
+      }
+    } catch (err) {
+      console.error('답변 저장 중 오류:', err)
+      alert('답변 저장 중 오류가 발생했습니다.')
+    } finally {
+      setSavingAnswers(prev => ({ ...prev, [questionId]: false }))
+    }
   }
 
   useEffect(() => {
@@ -880,12 +912,25 @@ const handleUploadSuccess = () => {
                 </div>
               )}
               
+              {/* AI 에이전트 학습 안내 */}
+              {!questionsLoading && !questionsError && (
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-5 mb-6">
+                  <h4 className="text-green-800 font-semibold mb-3 flex items-center">
+                    💡 AI 에이전트 학습 안내
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed text-sm" style={{ wordBreak: 'keep-all', whiteSpace: 'normal' }}>
+                    아래 질문들에 자세히 답변해주시면, 지원자AI가 더욱 정확하게 본인을 대변할 수 있습니다. 
+                    답변이 많을수록 AI가 본인의 성향, 경험, 가치관을 더 정확하게 파악하여 면접에서 더 자연스럽고 일관된 답변을 생성할 수 있습니다.
+                  </p>
+                </div>
+              )}
+              
               {/* 질문 목록 */}
               {!questionsLoading && !questionsError && (
-                <ul className="space-y-3 text-sm">
+                <ul className="space-y-4 text-sm">
                   {questions.map((question, index) => (
                     <li key={question.id} className="bg-white border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mb-3">
                         <div className="font-semibold text-black">Q{index + 1}. {question.text}</div>
                         <span className={`text-xs px-2 py-1 rounded ${
                           question.status === 'completed' 
@@ -895,10 +940,37 @@ const handleUploadSuccess = () => {
                           {question.status === 'completed' ? '완료' : '미완료'}
                         </span>
                       </div>
+                      
                       {/* 완료된 질문의 답변 미리보기 */}
                       {question.status === 'completed' && question.answer && (
-                        <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded p-2">
+                        <div className="mb-3 text-xs text-gray-600 bg-gray-50 rounded p-3">
                           <strong>답변:</strong> {question.answer.length > 100 ? `${question.answer.substring(0, 100)}...` : question.answer}
+                        </div>
+                      )}
+                      
+                      {/* 답변 입력 필드 (미완료 상태일 때만 표시) */}
+                      {question.status === 'pending' && (
+                        <div className="space-y-2">
+                          <textarea
+                            value={answers[question.id] || ''}
+                            onChange={(e) => setAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
+                            placeholder="이 질문에 대한 답변을 입력해주세요..."
+                            rows={3}
+                            className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                          />
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => handleSaveAnswer(question.id)}
+                              disabled={savingAnswers[question.id] || !answers[question.id]?.trim()}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                savingAnswers[question.id] || !answers[question.id]?.trim()
+                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                              }`}
+                            >
+                              {savingAnswers[question.id] ? '저장 중...' : '저장'}
+                            </button>
+                          </div>
                         </div>
                       )}
                     </li>

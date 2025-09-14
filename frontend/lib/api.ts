@@ -241,7 +241,7 @@ export const api = {
 
     // AI 학습 질문 답변 저장/수정
     saveAILearningResponse: async (user_id: string, question_id: string, answer: string) => {
-      const response = await apiClient.post(`/ai-learning-responses/${user_id}/${question_id}`, { answer });
+      const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, { answer });
       return response.data;
     },
   },

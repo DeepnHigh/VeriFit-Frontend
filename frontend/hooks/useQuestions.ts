@@ -66,11 +66,42 @@ export function useQuestions() {
   const completedCount = questions.filter(q => q.status === 'completed').length
   const totalCount = questions.length
 
+  // 답변 저장 함수
+  const saveAnswer = async (questionId: string, answer: string) => {
+    try {
+      const userId = localStorage.getItem('userId')
+      if (!userId) {
+        throw new Error('사용자 ID를 찾을 수 없습니다.')
+      }
+
+      // API 호출하여 답변 저장
+      await api.applicant.saveAILearningResponse(userId, questionId, answer)
+      
+      // 로컬 상태 업데이트
+      setQuestions(prevQuestions => 
+        prevQuestions.map(q => 
+          q.id === questionId 
+            ? { ...q, status: 'completed' as const, answer }
+            : q
+        )
+      )
+      
+      return { success: true }
+    } catch (err: unknown) {
+      console.error('답변 저장 실패:', err)
+      return { 
+        success: false, 
+        error: '답변 저장에 실패했습니다.' 
+      }
+    }
+  }
+
   return { 
     questions, 
     completedCount, 
     totalCount, 
     loading, 
-    error 
+    error,
+    saveAnswer
   }
 }
