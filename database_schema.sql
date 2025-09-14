@@ -93,7 +93,6 @@ Table big5_test_results {
   id uuid [primary key, default: `uuid_generate_v4()`]
   job_seeker_id uuid [ref: > job_seekers.id, not null]
   test_date timestamp [default: `now()`]
-  test_duration_minutes integer // 검사 소요 시간(분)
   
   // Big5 주요 차원 점수 (0-100 스케일)
   openness_score decimal(5,2) [not null] // 개방성 점수
@@ -120,12 +119,6 @@ Table big5_test_results {
   interpretations jsonb // 전문적인 해석 텍스트 (한국어/영어)
   raw_scores jsonb // 원본 점수 데이터
   
-  // 종합 분석
-  overall_analysis text // 종합 분석 결과
-  strengths text // 강점 분석
-  weaknesses text // 약점 분석
-  recommendations text // 추천사항
-  
   indexes {
     job_seeker_id
     test_date
@@ -142,12 +135,10 @@ Table big5_test_results {
 // AI 학습용 질문 템플릿 테이블
 Table ai_learning_questions {
   id uuid [primary key, default: `uuid_generate_v4()`]
-  question_category varchar(100) [not null] // 질문 카테고리
   question_text text [not null] // 질문 내용
   display_order integer [default: 0] // 표시 순서
   
   indexes {
-    question_category
     display_order
   }
 }

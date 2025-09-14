@@ -64,7 +64,7 @@ export default function ApplicantDashboard() {
 
 const { big5Data, hasCompletedTest } = useAptitudeData()
 const { uploadItems } = useUploadItems()
-const { questions, completedCount, totalCount } = useQuestions()
+const { questions, completedCount, totalCount, loading: questionsLoading, error: questionsError } = useQuestions()
 const { simulateRequest } = useSimulateRequest()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -865,22 +865,47 @@ const handleUploadSuccess = () => {
                   <b>{completedCount}/{totalCount}</b>
                 </div>
               </div>
-              <ul className="space-y-3 text-sm">
-                {questions.map((question) => (
-                  <li key={question.id} className="bg-white border rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                      <div className="font-semibold text-black">Q{question.id}. {question.text}</div>
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        question.status === 'completed' 
-                          ? 'bg-green-600 text-black' 
-                          : 'bg-orange-500 text-black'
-                      }`}>
-                        {question.status === 'completed' ? '완료' : '미완료'}
-                      </span>
-                  </div>
-                </li>
-                ))}
-              </ul>
+              
+              {/* 질문 로딩 상태 */}
+              {questionsLoading && (
+                <div className="flex justify-center items-center py-8">
+                  <div className="text-gray-600">질문 목록을 불러오는 중...</div>
+                </div>
+              )}
+              
+              {/* 질문 에러 상태 */}
+              {questionsError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <div className="text-red-800 text-sm">{questionsError}</div>
+                </div>
+              )}
+              
+              {/* 질문 목록 */}
+              {!questionsLoading && !questionsError && (
+                <ul className="space-y-3 text-sm">
+                  {questions.map((question, index) => (
+                    <li key={question.id} className="bg-white border rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold text-black">Q{index + 1}. {question.text}</div>
+                        <span className={`text-xs px-2 py-1 rounded ${
+                          question.status === 'completed' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-orange-500 text-white'
+                        }`}>
+                          {question.status === 'completed' ? '완료' : '미완료'}
+                        </span>
+                      </div>
+                      {/* 완료된 질문의 답변 미리보기 */}
+                      {question.status === 'completed' && question.answer && (
+                        <div className="mt-2 text-xs text-gray-600 bg-gray-50 rounded p-2">
+                          <strong>답변:</strong> {question.answer.length > 100 ? `${question.answer.substring(0, 100)}...` : question.answer}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
               <div className="flex justify-center gap-3 mt-6">
                 <Button onClick={() => simulateRequest('프로필 저장')} variant="success" size="md">💾 프로필 저장</Button>
                 <Link href="/applicant/qna" onClick={(e) => { e.preventDefault(); simulateRequest('Q&A 관리') }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white cursor-pointer">Q&A 관리</Link>
