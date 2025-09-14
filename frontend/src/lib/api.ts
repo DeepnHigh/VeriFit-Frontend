@@ -27,6 +27,27 @@ interface UserFiles {
   github?: S3File[]; // GitHub도 파일 객체로 처리
 }
 
+// 개인정보 추출 결과 타입
+interface PersonalInfo {
+  email?: string;
+  phone?: string;
+  education_level?: string;
+  university?: string;
+  major?: string;
+  graduation_year?: string;
+  total_experience_years?: number;
+  company_name?: string;
+}
+
+// 백엔드 응답 형식
+interface PersonalInfoResponse {
+  success: boolean;
+  personal_info: PersonalInfo;
+  extracted_text_length: number;
+  processed_files: string[];
+  message: string;
+}
+
 
 // API 기본 설정
 const API_BASE_URL = (typeof window !== 'undefined' && (window as any).env?.NEXT_PUBLIC_API_URL) || 'http://localhost:8000';
@@ -221,7 +242,7 @@ export const api = {
     },
 
     // 파싱 생성
-    createParse: async (user_id: string) => {
+    createParse: async (user_id: string): Promise<PersonalInfoResponse> => {
       const response = await apiClient.get(`/applicants/parses/${user_id}`);
       return response.data;
     },
