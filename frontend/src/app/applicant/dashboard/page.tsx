@@ -239,6 +239,51 @@ const handleUploadSuccess = () => {
     fetchUserFiles()
   }
 
+// 개인정보 추출 함수
+const extractPersonalInfo = async () => {
+  try {
+    const userId = localStorage.getItem('userId')
+    
+    if (!userId) {
+      alert('사용자 ID를 찾을 수 없습니다.')
+      return
+    }
+
+    const response = await api.applicant.createParse(userId)
+
+    // 응답에서 personal_info 추출
+    const personalInfo = response.personal_info
+    
+    // 추출된 정보로 프로필 업데이트
+    if (userProfile && response.success) {
+      const updatedProfile = {
+        ...userProfile,
+        email: personalInfo.email || userProfile.email,
+        phone: personalInfo.phone || userProfile.phone,
+        education_level: personalInfo.education_level || userProfile.education_level,
+        university: personalInfo.university || userProfile.university,
+        major: personalInfo.major || userProfile.major,
+        graduation_year: personalInfo.graduation_year || userProfile.graduation_year,
+        total_experience_years: personalInfo.total_experience_years || userProfile.total_experience_years,
+        company_name: personalInfo.company_name || userProfile.company_name,
+      }
+      
+      setUserProfile(updatedProfile)
+      alert(`개인정보가 성공적으로 추출되었습니다!\n처리된 파일: ${response.processed_files.length}개`)
+    } else {
+      alert(`개인정보 추출 실패: ${response.message}`)
+    }
+
+  } catch (err: unknown) {
+    // 404 에러인 경우 백엔드 API 미구현으로 간주
+    if ((err as any)?.response?.status === 404) {
+      alert('개인정보 추출 기능이 아직 구현되지 않았습니다.\n백엔드 개발자에게 문의해주세요.')
+    } else {
+      alert('개인정보 추출에 실패했습니다. 다시 시도해주세요.')
+    }
+  }
+}
+
 // 답변 저장 핸들러
 const handleSaveAnswer = async (questionId: string) => {
     const answer = answers[questionId]
@@ -375,11 +420,10 @@ const handleSaveAnswer = async (questionId: string) => {
                   <div className="divide-y text-sm">
                     <div className="flex justify-between py-2"><span className="font-medium text-black">총 경력</span><span className="text-black">{userProfile.total_experience_years ? `${userProfile.total_experience_years}년` : '-'}</span></div>
                     <div className="flex justify-between py-2"><span className="font-medium text-black">최근 직장</span><span className="text-black">{userProfile.company_name || '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">위치</span><span className="text-black">{userProfile.location || '-'}</span></div>
                   </div>
                 </div>
                 <div className="flex gap-2 absolute right-5 bottom-5">
-                  <Button onClick={() => simulateRequest('개인정보 채우기')} variant="secondary" size="sm">업로드한 문서로 개인정보 채우기</Button>
+                  <Button onClick={extractPersonalInfo} variant="secondary" size="sm">업로드한 문서로 개인정보 채우기</Button>
                   <Button onClick={() => simulateRequest('개인정보 수정')} variant="primary" size="sm">수정</Button>
                 </div>
               </div>
