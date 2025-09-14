@@ -57,7 +57,7 @@ interface UserFiles {
   portfolio: S3File[]
   qualification: S3File[]
   resume: S3File[]
-  github: string[] // GitHub 링크 배열
+  github: S3File[] // GitHub 파일 배열
 }
 
 export default function ApplicantDashboard() {
@@ -501,23 +501,24 @@ const handleSaveAnswer = async (questionId: string) => {
                   <div className="mb-3">
                     {userFiles?.github && userFiles.github.length > 0 ? (
                       <div className="space-y-2">
-                        {userFiles.github.map((link, index) => (
+                        {userFiles.github.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
                             <div className="flex-1 min-w-0">
-                              <a
-                                href={link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block"
-                                title={link}
+                              <button
+                                onClick={() => handleFileDownload('github', file.name)}
+                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
+                                title={file.name}
                               >
-                                {link}
-                              </a>
+                                {file.name}
+                              </button>
+                              <div className="text-gray-500 text-xs">
+                                {(file.size / 1024).toFixed(1)}KB
+                              </div>
                             </div>
                             <button
-                              onClick={() => handleFileDelete('github', 'github.txt')}
+                              onClick={() => handleFileDelete('github', file.name)}
                               className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="링크 파일 삭제"
+                              title="파일 삭제"
                             >
                               ×
                             </button>
@@ -526,7 +527,7 @@ const handleSaveAnswer = async (questionId: string) => {
                       </div>
                     ) : (
                       <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 GitHub 링크가 없습니다
+                        업로드된 GitHub 링크 파일이 없습니다
                       </div>
                     )}
                   </div>
@@ -945,7 +946,7 @@ const handleSaveAnswer = async (questionId: string) => {
                       {question.status === 'completed' && question.answer && (
                         <div className="mb-3 text-xs text-gray-600 bg-gray-50 rounded p-3">
                           <strong>답변:</strong> {question.answer.length > 100 ? `${question.answer.substring(0, 100)}...` : question.answer}
-                        </div>
+                  </div>
                       )}
                       
                       {/* 답변 입력 필드 (미완료 상태일 때만 표시) */}
@@ -970,12 +971,12 @@ const handleSaveAnswer = async (questionId: string) => {
                             >
                               {savingAnswers[question.id] ? '저장 중...' : '저장'}
                             </button>
-                          </div>
-                        </div>
+                  </div>
+                  </div>
                       )}
-                    </li>
+                </li>
                   ))}
-                </ul>
+              </ul>
               )}
               
               <div className="flex justify-center gap-3 mt-6">

@@ -1,5 +1,33 @@
 import axios from 'axios';
 
+// 타입 정의
+interface FileUploadResponse {
+  success: boolean;
+  message: string;
+  file_url?: string;
+  file_name?: string;
+}
+
+interface S3File {
+  name: string;
+  size: number;
+  lastModified: string;
+  downloadUrl: string;
+}
+
+interface UserFiles {
+  cover_letter?: S3File[];
+  portfolio?: S3File[];
+  resume?: S3File[];
+  award?: S3File[];
+  certificate?: S3File[];
+  qualification?: S3File[];
+  paper?: S3File[];
+  other?: S3File[];
+  github?: S3File[]; // GitHub도 파일 객체로 처리
+}
+
+
 // API 기본 설정
 const API_BASE_URL = (typeof window !== 'undefined' && (window as any).env?.NEXT_PUBLIC_API_URL) || 'http://localhost:8000';
 
@@ -338,6 +366,126 @@ export const api = {
     // Big5 검사 결과 삭제
     deleteTestResult: async (id: string) => {
       const response = await apiClient.delete(`/big5-test-results/${id}`);
+      return response.data;
+    },
+  },
+
+  // 파일 관리 (백엔드 API와 매칭)
+  files: {
+    // 사용자별 파일 목록 조회 (백엔드: /s3/files/{user_id})
+    getUserFiles: async (user_id: string) => {
+      const response = await apiClient.get(`/s3/files/${user_id}`);
+      return response.data;
+    },
+
+    // 파일 다운로드 URL 생성
+    getDownloadUrl: async (user_id: string, file_type: string, file_name: string) => {
+      const response = await apiClient.get(`/s3/download/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+
+    // 파일 삭제
+    deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<{ success: boolean; message: string }> => {
+      const response = await apiClient.delete(`/s3/delete/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+
+    // 자기소개서 파일 업로드
+    uploadCoverLetter: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'cover_letter');
+      const response = await apiClient.post(`/s3/upload/${user_id}/cover_letter`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 포트폴리오 파일 업로드
+    uploadPortfolio: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'portfolio');
+      const response = await apiClient.post(`/s3/upload/${user_id}/portfolio`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 이력서 파일 업로드
+    uploadResume: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'resume');
+      const response = await apiClient.post(`/s3/upload/${user_id}/resume`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 수상 경력 파일 업로드
+    uploadAward: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'award');
+      const response = await apiClient.post(`/s3/upload/${user_id}/award`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 증명서 파일 업로드
+    uploadCertificate: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'certificate');
+      const response = await apiClient.post(`/s3/upload/${user_id}/certificate`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 자격증 파일 업로드
+    uploadQualification: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'qualification');
+      const response = await apiClient.post(`/s3/upload/${user_id}/qualification`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 논문 파일 업로드
+    uploadPaper: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'paper');
+      const response = await apiClient.post(`/s3/upload/${user_id}/paper`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // 기타 자료 파일 업로드
+    uploadOther: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'other');
+      const response = await apiClient.post(`/s3/upload/${user_id}/other`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data;
+    },
+
+    // GitHub 링크 파일 업로드
+    uploadGithub: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'github');
+      const response = await apiClient.post(`/s3/upload/${user_id}/github`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       return response.data;
     },
   },
