@@ -18,6 +18,7 @@ export default function Header({ title = "지원자 프로필 관리", subtitle 
               width={400}
               height={100}
               className="h-18 w-auto"
+              priority
             />
           </Link>
           <div className="text-sm text-black">{subtitle}</div>
