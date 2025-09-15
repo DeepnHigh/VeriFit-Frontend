@@ -314,13 +314,13 @@ export const api = {
     },
 
     // 사용자별 AI 학습 질문 답변 조회
-    getAILearningResponses: async (user_id: string) => {
+    getAILearningAnswers: async (user_id: string) => {
       const response = await apiClient.get(`/own-qnas/${user_id}`);
       return response.data;
     },
 
     // AI 학습 질문 답변 저장/수정
-    saveAILearningResponse: async (user_id: string, question_id: string, answer: string) => {
+    saveAILearningAnswer: async (user_id: string, question_id: string, answer: string) => {
       const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, { answer });
       return response.data;
     },
