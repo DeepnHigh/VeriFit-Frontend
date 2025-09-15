@@ -68,7 +68,17 @@ const { questions, completedCount, totalCount, loading: questionsLoading, error:
 const { simulateRequest } = useSimulateRequest()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-const [userFiles, setUserFiles] = useState<UserFiles | null>(null)
+const [userFiles, setUserFiles] = useState<UserFiles>({
+  award: [],
+  certificate: [],
+  cover_letter: [],
+  other: [],
+  paper: [],
+  portfolio: [],
+  qualification: [],
+  resume: [],
+  github: []
+})
 const [loading, setLoading] = useState(true)
 const [filesLoading, setFilesLoading] = useState(false)
 const [error, setError] = useState('')
@@ -446,7 +456,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.cover_letter && userFiles.cover_letter.length > 0 ? (
+                    {userFiles.cover_letter && userFiles.cover_letter.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.cover_letter.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -494,7 +504,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.portfolio && userFiles.portfolio.length > 0 ? (
+                    {userFiles.portfolio && userFiles.portfolio.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.portfolio.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -543,7 +553,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* GitHub 링크 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.github && userFiles.github.length > 0 ? (
+                    {userFiles.github && userFiles.github.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.github.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -591,7 +601,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.resume && userFiles.resume.length > 0 ? (
+                    {userFiles.resume && userFiles.resume.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.resume.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -639,7 +649,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.award && userFiles.award.length > 0 ? (
+                    {userFiles.award && userFiles.award.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.award.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -687,7 +697,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.certificate && userFiles.certificate.length > 0 ? (
+                    {userFiles.certificate && userFiles.certificate.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.certificate.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -735,7 +745,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.qualification && userFiles.qualification.length > 0 ? (
+                    {userFiles.qualification && userFiles.qualification.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.qualification.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -783,7 +793,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.paper && userFiles.paper.length > 0 ? (
+                    {userFiles.paper && userFiles.paper.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.paper.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -831,7 +841,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   
                   {/* 파일 목록 표시 */}
                   <div className="mb-3">
-                    {userFiles?.other && userFiles.other.length > 0 ? (
+                    {userFiles.other && userFiles.other.length > 0 ? (
                       <div className="space-y-2">
                         {userFiles.other.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
@@ -997,7 +1007,7 @@ const handleSaveAnswer = async (questionId: string) => {
                       {question.status === 'pending' && (
                         <div className="space-y-2">
                           <textarea
-                            value={answers[question.id] || ''}
+                            value={typeof answers[question.id] === 'string' ? answers[question.id] : ''}
                             onChange={(e) => setAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
                             placeholder="이 질문에 대한 답변을 입력해주세요..."
                             rows={3}
@@ -1006,9 +1016,9 @@ const handleSaveAnswer = async (questionId: string) => {
                           <div className="flex justify-end">
                             <button
                               onClick={() => handleSaveAnswer(question.id)}
-                              disabled={savingAnswers[question.id] || !answers[question.id]?.trim()}
+                              disabled={savingAnswers[question.id] || !(typeof answers[question.id] === 'string' && answers[question.id].trim())}
                               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                savingAnswers[question.id] || !answers[question.id]?.trim()
+                                savingAnswers[question.id] || !(typeof answers[question.id] === 'string' && answers[question.id].trim())
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-blue-600 text-white hover:bg-blue-700'
                               }`}
