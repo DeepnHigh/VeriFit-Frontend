@@ -84,6 +84,8 @@ const [filesLoading, setFilesLoading] = useState(false)
 const [error, setError] = useState('')
 const [answers, setAnswers] = useState<Record<string, string>>({})
 const [savingAnswers, setSavingAnswers] = useState<Record<string, boolean>>({})
+const [editingAnswers, setEditingAnswers] = useState<Record<string, boolean>>({})
+const [editedAnswers, setEditedAnswers] = useState<Record<string, string>>({})
 
 // 사용자 프로필 데이터 가져오기
 const fetchUserProfile = async () => {
@@ -273,7 +275,9 @@ const extractPersonalInfo = async () => {
         education_level: personalInfo.education_level || userProfile.education_level,
         university: personalInfo.university || userProfile.university,
         major: personalInfo.major || userProfile.major,
-        graduation_year: personalInfo.graduation_year || userProfile.graduation_year,
+        graduation_year: (typeof personalInfo.graduation_year === 'string'
+          ? (parseInt(personalInfo.graduation_year, 10) || userProfile.graduation_year)
+          : (personalInfo.graduation_year ?? userProfile.graduation_year)),
         total_experience_years: personalInfo.total_experience_years || userProfile.total_experience_years,
         company_name: personalInfo.company_name || userProfile.company_name,
       }
@@ -318,6 +322,52 @@ const handleSaveAnswer = async (questionId: string) => {
       }
     } catch (err) {
       console.error('답변 저장 중 오류:', err)
+      alert('답변 저장 중 오류가 발생했습니다.')
+    } finally {
+      setSavingAnswers(prev => ({ ...prev, [questionId]: false }))
+    }
+  }
+
+  // 완료된 답변 수정 시작
+  const handleStartEditAnswer = (questionId: string, currentAnswer: string) => {
+    setEditingAnswers(prev => ({ ...prev, [questionId]: true }))
+    setEditedAnswers(prev => ({ ...prev, [questionId]: currentAnswer || '' }))
+  }
+
+  // 완료된 답변 수정 취소
+  const handleCancelEditAnswer = (questionId: string) => {
+    setEditingAnswers(prev => ({ ...prev, [questionId]: false }))
+    setEditedAnswers(prev => {
+      const next = { ...prev }
+      delete next[questionId]
+      return next
+    })
+  }
+
+  // 완료된 답변 수정 저장
+  const handleUpdateAnswer = async (questionId: string) => {
+    const newAnswer = editedAnswers[questionId]
+    if (!newAnswer || newAnswer.trim() === '') {
+      alert('답변을 입력해주세요.')
+      return
+    }
+
+    setSavingAnswers(prev => ({ ...prev, [questionId]: true }))
+
+    try {
+      const result = await saveAnswer(questionId, newAnswer.trim())
+      if (result.success) {
+        setEditingAnswers(prev => ({ ...prev, [questionId]: false }))
+        setEditedAnswers(prev => {
+          const next = { ...prev }
+          delete next[questionId]
+          return next
+        })
+      } else {
+        alert(result.error || '답변 저장에 실패했습니다.')
+      }
+    } catch (err) {
+      console.error('답변 수정 중 오류:', err)
       alert('답변 저장 중 오류가 발생했습니다.')
     } finally {
       setSavingAnswers(prev => ({ ...prev, [questionId]: false }))
@@ -996,11 +1046,44 @@ const handleSaveAnswer = async (questionId: string) => {
                         </span>
                       </div>
                       
-                      {/* 완료된 질문의 답변 미리보기 */}
-                      {question.status === 'completed' && question.answer && (
-                        <div className="mb-3 text-xs text-gray-600 bg-gray-50 rounded p-3">
-                          <strong>답변:</strong> {question.answer.length > 100 ? `${question.answer.substring(0, 100)}...` : question.answer}
-                  </div>
+                      {/* 완료된 질문의 답변 - 데모 UI와 동일한 편집 컨트롤 */}
+                      {question.status === 'completed' && (
+                        <div className="mb-3">
+                          {!editingAnswers[question.id] ? (
+                            <div className="text-xs text-gray-600 bg-gray-50 rounded p-3 flex items-start justify-between gap-3">
+                              <div className="flex-1 whitespace-pre-wrap break-words">
+                                <strong>답변:</strong> {question.answer || '-'}
+                              </div>
+                              <div className="shrink-0 flex gap-2">
+                                <button
+                                  onClick={() => handleStartEditAnswer(question.id, question.answer || '')}
+                                  className="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700"
+                                >수정</button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-gray-50 rounded p-3">
+                              <textarea
+                                value={editedAnswers[question.id] || ''}
+                                onChange={(e) => setEditedAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
+                                placeholder="답변을 입력해주세요..."
+                                rows={3}
+                                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black mb-2"
+                              />
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  onClick={() => handleCancelEditAnswer(question.id)}
+                                  className="px-3 py-1 rounded-lg text-xs font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                >취소</button>
+                                <button
+                                  onClick={() => handleUpdateAnswer(question.id)}
+                                  disabled={savingAnswers[question.id] || !(editedAnswers[question.id] && editedAnswers[question.id].trim())}
+                                  className={`px-3 py-1 rounded-lg text-xs font-medium ${savingAnswers[question.id] || !(editedAnswers[question.id] && editedAnswers[question.id].trim()) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                                >{savingAnswers[question.id] ? '저장 중...' : '저장'}</button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       )}
                       
                       {/* 답변 입력 필드 (미완료 상태일 때만 표시) */}
@@ -1013,7 +1096,11 @@ const handleSaveAnswer = async (questionId: string) => {
                             rows={3}
                             className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                           />
-                          <div className="flex justify-end">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => setAnswers(prev => ({ ...prev, [question.id]: '' }))}
+                              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+                            >취소</button>
                             <button
                               onClick={() => handleSaveAnswer(question.id)}
                               disabled={savingAnswers[question.id] || !(typeof answers[question.id] === 'string' && answers[question.id].trim())}
@@ -1025,8 +1112,8 @@ const handleSaveAnswer = async (questionId: string) => {
                             >
                               {savingAnswers[question.id] ? '저장 중...' : '저장'}
                             </button>
-                  </div>
-                  </div>
+                          </div>
+                        </div>
                       )}
                 </li>
                   ))}
@@ -1044,6 +1131,8 @@ const handleSaveAnswer = async (questionId: string) => {
     </div>
   )
 }
+
+// 하단 중복 정의 제거됨 (컴포넌트 내부로 이동)
 
 function drawHexagonChart(canvas: HTMLCanvasElement, data: HexPoint[]) {
   const ctx = canvas.getContext('2d')
