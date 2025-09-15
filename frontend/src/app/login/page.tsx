@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { api } from '@/lib/api'
+import { api, getApiBaseUrl } from '@/lib/api'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -19,17 +19,7 @@ export default function LoginPage() {
 
     try {
       console.log('로그인 시도:', { email, password })
-      // API URL 동적으로 가져오기
-      const getApiUrl = () => {
-        if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
-        if (typeof window !== 'undefined') {
-          const hostname = window.location.hostname;
-          if (hostname === '14.39.95.228') return 'http://14.39.95.228:8000';
-          if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:8000';
-        }
-        return 'http://14.39.95.228:8000';
-      };
-      console.log('API URL:', getApiUrl())
+      console.log('API URL:', getApiBaseUrl())
       const response = await api.login({ email, password })
       localStorage.setItem('token', response.token)
       localStorage.setItem('userType', response.user_type)
