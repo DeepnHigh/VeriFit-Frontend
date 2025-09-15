@@ -51,28 +51,19 @@ interface PersonalInfoResponse {
 
 // API URL 동적 선택 함수
 export const getApiBaseUrl = () => {
-  // 환경변수가 설정되어 있으면 우선 사용
+  // 1) 환경변수 우선
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  
-  // 브라우저 환경에서 현재 호스트 확인
+
+  // 2) 브라우저 호스트 기준으로 백엔드 포트만 8000으로 맞춤
   if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    
-    // 외부 IP에서 접근하는 경우
-    if (hostname === '14.39.95.228') {
-      return 'http://14.39.95.228:8000';
-    }
-    
-    // localhost에서 접근하는 경우
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:8000';
-    }
+    const hostname = window.location.hostname; // ex) 192.168.0.21, localhost
+    return `http://${hostname}:8000`;
   }
-  
-  // 기본값 (외부 IP)
-  return 'http://14.39.95.228:8000';
+
+  // 3) 서버 사이드 기본값
+  return 'http://localhost:8000';
 };
 
 // API 기본 설정
