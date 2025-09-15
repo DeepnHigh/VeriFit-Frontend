@@ -306,6 +306,24 @@ export const api = {
       const response = await apiClient.put(`/own-qnas/${user_id}`, data);
       return response.data;
     },
+
+    // AI 학습 질문 목록 조회
+    getAILearningQuestions: async () => {
+      const response = await apiClient.get('/own-qnas/questions');
+      return response.data;
+    },
+
+    // 사용자별 AI 학습 질문 답변 조회
+    getAILearningResponses: async (user_id: string) => {
+      const response = await apiClient.get(`/own-qnas/${user_id}`);
+      return response.data;
+    },
+
+    // AI 학습 질문 답변 저장/수정
+    saveAILearningResponse: async (user_id: string, question_id: string, answer: string) => {
+      const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, { answer });
+      return response.data;
+    },
   },
 
   // 문서 관련 API
@@ -533,6 +551,85 @@ export const api = {
       const response = await apiClient.post(`/s3/upload/${user_id}/github`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      return response.data;
+    },
+  },
+
+  // 호환성을 위한 s3 별칭 (기존 코드에서 api.s3.* 사용 중)
+  s3: {
+    getUserFiles: async (user_id: string) => {
+      const response = await apiClient.get(`/s3/files/${user_id}`);
+      return response.data;
+    },
+    getDownloadUrl: async (user_id: string, file_type: string, file_name: string) => {
+      const response = await apiClient.get(`/s3/download/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+    deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<{ success: boolean; message: string }> => {
+      const response = await apiClient.delete(`/s3/delete/${user_id}/${file_type}/${file_name}`);
+      return response.data;
+    },
+    uploadCoverLetter: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'cover_letter');
+      const response = await apiClient.post(`/s3/upload/${user_id}/cover_letter`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadPortfolio: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'portfolio');
+      const response = await apiClient.post(`/s3/upload/${user_id}/portfolio`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadResume: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'resume');
+      const response = await apiClient.post(`/s3/upload/${user_id}/resume`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadAward: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'award');
+      const response = await apiClient.post(`/s3/upload/${user_id}/award`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadCertificate: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'certificate');
+      const response = await apiClient.post(`/s3/upload/${user_id}/certificate`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadQualification: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'qualification');
+      const response = await apiClient.post(`/s3/upload/${user_id}/qualification`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadPaper: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'paper');
+      const response = await apiClient.post(`/s3/upload/${user_id}/paper`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadOther: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'other');
+      const response = await apiClient.post(`/s3/upload/${user_id}/other`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    },
+    uploadGithub: async (user_id: string, file: File): Promise<FileUploadResponse> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('document_type', 'github');
+      const response = await apiClient.post(`/s3/upload/${user_id}/github`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       return response.data;
     },
   },

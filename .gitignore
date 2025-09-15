@@ -43,4 +43,5 @@ ecosystem.config.js
 next-env.d.ts
 
 frontend/logs/*
+
 ecosystem.config.js
