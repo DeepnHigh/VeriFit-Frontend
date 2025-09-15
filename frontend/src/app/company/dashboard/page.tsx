@@ -7,7 +7,7 @@ import { api } from '@/lib/api'
 import { formatDate } from '@/lib/utils'
 
 export default function CompanyDashboard() {
-  const [jobPostings, setJobPostings] = useState<unknown[]>([])
+  const [jobPostings, setJobPostings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const router = useRouter()

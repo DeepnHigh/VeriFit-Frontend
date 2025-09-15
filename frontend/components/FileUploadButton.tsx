@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { api, FileUploadResponse } from '../../lib/api'
+import { api, FileUploadResponse } from '@/lib/api'
 
 interface FileUploadButtonProps {
   userId: string

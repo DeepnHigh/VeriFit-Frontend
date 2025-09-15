@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import Header from '../../../../components/Header'
-import Button from '../../../../components/Button'
+import Header from '@/components/Header'
+import Button from '@/components/Button'
 import FileUploadButton from '@/components/FileUploadButton'
-import { api } from '../../../../lib/api'
+import { api } from '@/lib/api'
 import { usePentagonChart } from '../../../../hooks/useHexagonChart'
 import { useSimulateRequest } from '../../../../hooks/useSimulateRequest'
 import { useUploadItems } from '../../../../hooks/useUploadItems'

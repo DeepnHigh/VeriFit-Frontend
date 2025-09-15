@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '../../../../components/Header'
-import Button from '../../../../components/Button'
+import Header from '@/components/Header'
+import Button from '@/components/Button'
 import { useBig5Questions, Big5Result } from '../../../../hooks/useBig5Questions'
-import api, { Big5TestResult } from '../../../../lib/api'
+import apiClient, { Big5TestResult, api as apiMethods } from '@/lib/api'
 
 export default function Big5TestPage() {
   const router = useRouter()
@@ -60,7 +60,7 @@ export default function Big5TestPage() {
       }
 
       // API 호출로 결과 저장
-      await api.big5.saveTestResult(testResult)
+      await apiMethods.big5.saveTestResult(testResult)
       
       // 로컬 스토리지에도 백업 저장
       localStorage.setItem('big5Result', JSON.stringify(result))
@@ -155,7 +155,7 @@ export default function Big5TestPage() {
                       <div className="mt-4">
                         <h5 className={`font-semibold text-${color}-800 mb-3`}>세부 특성 분석</h5>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {interpretation.facets.map((facet, facetIndex) => (
+                          {interpretation.facets.map((facet: any, facetIndex: number) => (
                             <div key={facetIndex} className={`p-3 bg-white rounded border border-${color}-200`}>
                               <div className="flex items-center justify-between mb-2">
                                 <h6 className={`font-medium text-${color}-800 text-sm`}>{facet.title}</h6>
