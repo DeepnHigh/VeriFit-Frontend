@@ -1,6 +1,82 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'; // Updated to 8001
+// 타입 정의
+interface FileUploadResponse {
+  success: boolean;
+  message: string;
+  file_url?: string;
+  file_name?: string;
+}
+
+interface S3File {
+  name: string;
+  size: number;
+  lastModified: string;
+  downloadUrl: string;
+}
+
+interface UserFiles {
+  cover_letter?: S3File[];
+  portfolio?: S3File[];
+  resume?: S3File[];
+  award?: S3File[];
+  certificate?: S3File[];
+  qualification?: S3File[];
+  paper?: S3File[];
+  other?: S3File[];
+  github?: S3File[]; // GitHub도 파일 객체로 처리
+}
+
+// 개인정보 추출 결과 타입
+interface PersonalInfo {
+  email?: string;
+  phone?: string;
+  education_level?: string;
+  university?: string;
+  major?: string;
+  graduation_year?: string;
+  total_experience_years?: number;
+  company_name?: string;
+}
+
+// 백엔드 응답 형식
+interface PersonalInfoResponse {
+  success: boolean;
+  personal_info: PersonalInfo;
+  extracted_text_length: number;
+  processed_files: string[];
+  message: string;
+}
+
+
+// API URL 동적 선택 함수
+export const getApiBaseUrl = () => {
+  // 환경변수가 설정되어 있으면 우선 사용
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // 브라우저 환경에서 현재 호스트 확인
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // 외부 IP에서 접근하는 경우
+    if (hostname === '14.39.95.228') {
+      return 'http://14.39.95.228:8000';
+    }
+    
+    // localhost에서 접근하는 경우
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000';
+    }
+  }
+  
+  // 기본값 (외부 IP)
+  return 'http://14.39.95.228:8000';
+};
+
+// API 기본 설정
+const API_BASE_URL = getApiBaseUrl();
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -9,8 +85,9 @@ const apiClient = axios.create({
   },
 });
 
-// 요청 인터셉터 - JWT 토큰 자동 추가
+// 요청 인터셉터 - 토큰 추가
 apiClient.interceptors.request.use((config) => {
+  // 로그인 요청에는 토큰을 붙이지 않음
   const isLoginRequest = (config.url || '').startsWith('/login')
   const token = localStorage.getItem('token');
   if (token && !isLoginRequest) {
@@ -19,7 +96,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터 - 401 에러 시 자동 로그아웃
+// 응답 인터셉터 - 에러 처리
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -32,6 +109,106 @@ apiClient.interceptors.response.use(
 );
 
 // 타입 정의
+export interface Applicant {
+  user_id: string;
+  name: string;
+  email: string;
+  phone: string;
+  bio?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Big5TestResult {
+  id?: string;
+  job_seeker_id: string;
+  test_date?: string;
+  test_duration_minutes: number;
+  openness_score: number;
+  conscientiousness_score: number;
+  extraversion_score: number;
+  agreeableness_score: number;
+  neuroticism_score: number;
+  openness_level: string;
+  conscientiousness_level: string;
+  extraversion_level: string;
+  agreeableness_level: string;
+  neuroticism_level: string;
+  openness_facets: any;
+  conscientiousness_facets: any;
+  extraversion_facets: any;
+  agreeableness_facets: any;
+  neuroticism_facets: any;
+  interpretations: any;
+  raw_scores: any;
+  overall_analysis?: string;
+  strengths?: string;
+  weaknesses?: string;
+  recommendations?: string;
+}
+
+export interface ApplicantInfo {
+  name: string;
+  email: string;
+  phone: string;
+  address?: string;
+  education?: string;
+  experience?: string;
+}
+
+export interface Document {
+  document_id: string;
+  user_id: string;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  upload_date: string;
+}
+
+export interface AptitudeTest {
+  user_id: string;
+  test_type: string;
+  scores: Record<string, number>;
+  interpretation: string;
+  submitted_at: string;
+}
+
+export interface BehaviorTest {
+  user_id: string;
+  test_results: Record<string, any>;
+  submitted_at: string;
+}
+
+export interface OwnQnA {
+  question_id: string;
+  user_id: string;
+  question: string;
+  answer: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JobPosting {
+  job_postings_id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  ai_criteria: Record<string, any>;
+  status: 'active' | 'closed';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Interview {
+  applications_id: string;
+  job_postings_id: string;
+  user_id: string;
+  overall_report: any;
+  ai_evaluations: any;
+  conversation_highlights: any[];
+  created_at: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -39,114 +216,17 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  user_type: string;
+  user_type: 'job_seeker' | 'company';
   user_id: string;
 }
 
-export interface ApplicantInfo {
-  full_name: string;
-  phone: string;
-  email: string;
-  bio: string;
-  total_experience_years: number;
-  company_name: string;
-  education_level: string;
-  university: string;
-  major: string;
-  graduation_year: number;
-  location: string;
-}
-
-export interface JobPosting {
-  id: string;
-  title: string;
-  company_name: string;
-  location: string;
-  salary_min: number;
-  salary_max: number;
-  description: string;
-  requirements: string;
-  benefits: string;
-  deadline: string;
-  status: 'active' | 'closed';
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Application {
-  id: string;
-  job_postings_id: string;
-  job_seeker_id: string;
-  status: 'pending' | 'reviewing' | 'accepted' | 'rejected';
-  applied_at: string;
-  job_posting: JobPosting;
-}
-
-export interface Interview {
-  id: string;
-  applications_id: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Conversation {
-  id: string;
-  interview_id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-}
-
-export interface Report {
-  id: string;
-  interview_id: string;
-  overall_score: number;
-  technical_score: number;
-  communication_score: number;
-  problem_solving_score: number;
-  strengths: string[];
-  weaknesses: string[];
-  recommendations: string[];
-  created_at: string;
-}
-
-// AI 학습 질문 관련 타입
-export interface AILearningQuestion {
-  id: string;
-  question_category: string;
-  question_text: string;
-  display_order: number;
-}
-
-export interface AILearningResponse {
-  id: string;
-  job_seeker_id: string;
-  question_id: string;
-  answer_text: string;
-  response_date: string;
-}
-
-// 파일 업로드 관련 타입
-export interface FileUploadResponse {
-  success: boolean;
-  message: string;
-  file_url: string;
-  file_name: string;
-  file_size: number;
-  mime_type: string;
-}
-
-// 파일 삭제 관련 타입
-export interface FileDeleteResponse {
-  success: boolean;
-  message: string;
-}
-
+// API 함수들
 export const api = {
-  // 인증 관련 API
+  // 로그인
   login: async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await apiClient.post('/login', data);
+    
+    // 백엔드 응답 형식에 맞춰 변환
     const backendResponse = response.data;
     return {
       token: backendResponse.access_token,
@@ -157,49 +237,49 @@ export const api = {
 
   // 지원자 관련 API
   applicant: {
-    // 지원자 프로필 조회
+    // 지원자 마이페이지
     getProfile: async (user_id: string) => {
       const response = await apiClient.get(`/applicants/${user_id}`);
       return response.data;
     },
 
-    // 지원자 짧은소개 등록
+    // 짧은소개 등록
     createBio: async (user_id: string, bio: string) => {
       const response = await apiClient.post(`/applicants/bio/${user_id}`, { bio });
       return response.data;
     },
 
-    // 지원자 짧은소개 수정
+    // 짧은소개 수정
     updateBio: async (user_id: string, bio: string) => {
       const response = await apiClient.put(`/applicants/bio/${user_id}`, { bio });
       return response.data;
     },
 
-    // 지원자 기본정보 등록
+    // 기본정보 등록
     createInfo: async (user_id: string, info: ApplicantInfo) => {
       const response = await apiClient.post(`/applicants/info/${user_id}`, info);
       return response.data;
     },
 
-    // 지원자 기본정보 수정
+    // 기본정보 수정
     updateInfo: async (user_id: string, info: ApplicantInfo) => {
       const response = await apiClient.put(`/applicants/info/${user_id}`, info);
       return response.data;
     },
 
-    // 지원자 파싱 생성
-    createParse: async (user_id: string) => {
+    // 파싱 생성
+    createParse: async (user_id: string): Promise<PersonalInfoResponse> => {
       const response = await apiClient.get(`/applicants/parses/${user_id}`);
       return response.data;
     },
 
-    // 지원자 파싱 컨펌 및 저장
-    confirmParse: async (user_id: string, data: unknown) => {
+    // 파싱 컨펌 및 저장
+    confirmParse: async (user_id: string, data: any) => {
       const response = await apiClient.put(`/applicants/parses/${user_id}`, data);
       return response.data;
     },
 
-    // 지원자 적성검사 제출
+    // 적성검사 제출
     submitAptitudeTest: async (user_id: string, testData: FormData) => {
       const response = await apiClient.post(`/aptitudes/${user_id}`, testData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -207,7 +287,7 @@ export const api = {
       return response.data;
     },
 
-    // 지원자 행동검사 제출
+    // 행동검사 제출
     submitBehaviorTest: async (user_id: string, testData: FormData) => {
       const response = await apiClient.post(`/behaviors/${user_id}`, testData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -215,49 +295,20 @@ export const api = {
       return response.data;
     },
 
-    // 지원자 질문답변 생성
+    // 질문답변 생성
     createOwnQnA: async (user_id: string, question_id: string, data: { question: string; answer: string }) => {
       const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, data);
       return response.data;
     },
 
-    // 지원자 질문답변 수정
+    // 질문답변 수정
     updateOwnQnA: async (user_id: string, data: { question: string; answer: string }) => {
       const response = await apiClient.put(`/own-qnas/${user_id}`, data);
       return response.data;
     },
-
-    // AI 학습 질문 목록 조회
-    getAILearningQuestions: async () => {
-      console.log('🔍 AI 학습 질문 목록 조회 시작');
-      console.log('API Base URL:', apiClient.defaults.baseURL);
-      console.log('요청 URL:', '/own-qnas/questions');
-      console.log('전체 URL:', `${apiClient.defaults.baseURL}/own-qnas/questions`);
-      
-      try {
-        const response = await apiClient.get('/own-qnas/questions');
-        console.log('✅ AI 학습 질문 목록 조회 성공:', response.data);
-        return response.data;
-      } catch (error) {
-        console.error('❌ AI 학습 질문 목록 조회 실패:', error);
-        throw error;
-      }
-    },
-
-    // 사용자별 AI 학습 질문 답변 조회 (own-qnas API 활용)
-    getAILearningResponses: async (user_id: string) => {
-      const response = await apiClient.get(`/own-qnas/${user_id}`);
-      return response.data;
-    },
-
-    // AI 학습 질문 답변 저장/수정
-    saveAILearningResponse: async (user_id: string, question_id: string, answer: string) => {
-      const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, { answer });
-      return response.data;
-    },
   },
 
-  // 지원자 문서 관련 API
+  // 문서 관련 API
   documents: {
     // 파일 업로드
     upload: async (user_id: string, file: File) => {
@@ -269,79 +320,106 @@ export const api = {
       return response.data;
     },
 
-    // 파일 목록 조회
-    getFiles: async (user_id: string) => {
-      const response = await apiClient.get(`/docs/${user_id}`);
+    // 파일 개별 조회
+    get: async (document_id: string) => {
+      const response = await apiClient.get(`/docs/${document_id}`);
       return response.data;
     },
 
-    // 파일 삭제
-    deleteFile: async (user_id: string, file_id: string) => {
-      const response = await apiClient.delete(`/docs/${user_id}/${file_id}`);
+    // 파일 개별 삭제
+    delete: async (document_id: string) => {
+      const response = await apiClient.delete(`/docs/${document_id}`);
       return response.data;
     },
   },
 
   // 기업 관련 API
   company: {
-    // 기업 채용관리 페이지
+    // 채용관리 페이지
     getJobPostings: async () => {
       const response = await apiClient.get('/job-postings');
       return response.data;
     },
 
-    // 기업 구인공고 생성
+    // 구인공고 생성
     createJobPosting: async (data: Partial<JobPosting>) => {
       const response = await apiClient.post('/job-postings', data);
       return response.data;
     },
 
-    // 기업 구인공고 조회
+    // 구인공고 조회
     getJobPosting: async (job_postings_id: string) => {
       const response = await apiClient.get(`/job-postings/${job_postings_id}`);
       return response.data;
     },
 
-    // 기업 공고마감
+    // 공고마감
     closeJobPosting: async (job_postings_id: string) => {
       const response = await apiClient.put(`/job-postings/${job_postings_id}`, { status: 'closed' });
       return response.data;
     },
 
-    // 기업 질의응답 및 리포트 생성
+    // 질의응답 및 리포트 생성
     createInterview: async (job_postings_id: string) => {
       const response = await apiClient.post(`/interviews/${job_postings_id}`);
       return response.data;
     },
 
-    // 기업 채용현황 페이지
+    // 채용현황 페이지
     getInterviewStatus: async (job_postings_id: string) => {
       const response = await apiClient.get(`/interviews/${job_postings_id}`);
       return response.data;
     },
 
-    // 기업 개별리포트 조회
+    // 개별리포트 조회
     getIndividualReport: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/${applications_id}`);
       return response.data;
     },
 
-    // 기업 AI 면접 대화 전체 조회
+    // AI 면접 대화 전체 조회
     getConversation: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/conversations/${applications_id}`);
       return response.data;
     },
 
-    // 기업 지원자 프로필 조회
+    // 지원자 프로필 조회
     getApplicantProfile: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/profiles/${applications_id}`);
       return response.data;
     },
   },
 
-  // S3 파일 관리
-  s3: {
-    // 사용자별 파일 목록 조회
+  // Big5 성격검사 관련 API
+  big5: {
+    // Big5 검사 결과 저장
+    saveTestResult: async (result: Big5TestResult) => {
+      const response = await apiClient.post('/big5-test-results', result);
+      return response.data;
+    },
+
+    // Big5 검사 결과 조회
+    getTestResult: async (job_seeker_id: string) => {
+      const response = await apiClient.get(`/big5-test-results/${job_seeker_id}`);
+      return response.data;
+    },
+
+    // Big5 검사 결과 업데이트
+    updateTestResult: async (id: string, result: Partial<Big5TestResult>) => {
+      const response = await apiClient.put(`/big5-test-results/${id}`, result);
+      return response.data;
+    },
+
+    // Big5 검사 결과 삭제
+    deleteTestResult: async (id: string) => {
+      const response = await apiClient.delete(`/big5-test-results/${id}`);
+      return response.data;
+    },
+  },
+
+  // 파일 관리 (백엔드 API와 매칭)
+  files: {
+    // 사용자별 파일 목록 조회 (백엔드: /s3/files/{user_id})
     getUserFiles: async (user_id: string) => {
       const response = await apiClient.get(`/s3/files/${user_id}`);
       return response.data;
@@ -353,14 +431,8 @@ export const api = {
       return response.data;
     },
 
-    // GitHub 링크 파일 내용 조회
-    getGithubLinks: async (user_id: string) => {
-      const response = await apiClient.get(`/s3/github/${user_id}`);
-      return response.data;
-    },
-
     // 파일 삭제
-    deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<FileDeleteResponse> => {
+    deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<{ success: boolean; message: string }> => {
       const response = await apiClient.delete(`/s3/delete/${user_id}/${file_type}/${file_name}`);
       return response.data;
     },
@@ -370,7 +442,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'cover_letter');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/cover_letter`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -382,7 +453,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'portfolio');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/portfolio`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -394,7 +464,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'resume');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/resume`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -406,7 +475,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'award');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/award`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -418,7 +486,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'certificate');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/certificate`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -430,7 +497,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'qualification');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/qualification`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -442,7 +508,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'paper');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/paper`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -454,7 +519,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'other');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/other`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -466,7 +530,6 @@ export const api = {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('document_type', 'github');
-      
       const response = await apiClient.post(`/s3/upload/${user_id}/github`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
