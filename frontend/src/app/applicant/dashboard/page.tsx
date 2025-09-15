@@ -1122,7 +1122,7 @@ const handleSaveAnswer = async (questionId: string) => {
               
               <div className="flex justify-center gap-3 mt-6">
                 <Button onClick={() => simulateRequest('프로필 저장')} variant="success" size="md">💾 프로필 저장</Button>
-                <Link href="/applicant/qna" onClick={(e) => { e.preventDefault(); simulateRequest('Q&A 관리') }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white cursor-pointer">Q&A 관리</Link>
+                <Link href="/applicant/qna" prefetch={false} onClick={(e) => { e.preventDefault(); alert('Q&A 관리 페이지가 아직 준비되지 않았습니다.'); }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white cursor-pointer">Q&A 관리</Link>
               </div>
             </section>
         </section>
