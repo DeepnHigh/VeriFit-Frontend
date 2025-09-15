@@ -49,8 +49,34 @@ interface PersonalInfoResponse {
 }
 
 
+// API URL 동적 선택 함수
+export const getApiBaseUrl = () => {
+  // 환경변수가 설정되어 있으면 우선 사용
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // 브라우저 환경에서 현재 호스트 확인
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // 외부 IP에서 접근하는 경우
+    if (hostname === '14.39.95.228') {
+      return 'http://14.39.95.228:8000';
+    }
+    
+    // localhost에서 접근하는 경우
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000';
+    }
+  }
+  
+  // 기본값 (외부 IP)
+  return 'http://14.39.95.228:8000';
+};
+
 // API 기본 설정
-const API_BASE_URL = (typeof window !== 'undefined' && (window as any).env?.NEXT_PUBLIC_API_URL) || 'http://localhost:8000';
+const API_BASE_URL = getApiBaseUrl();
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
