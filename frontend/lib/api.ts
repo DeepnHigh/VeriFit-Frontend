@@ -229,8 +229,19 @@ export const api = {
 
     // AI 학습 질문 목록 조회
     getAILearningQuestions: async () => {
-      const response = await apiClient.get('/own-qnas/questions');
-      return response.data;
+      console.log('🔍 AI 학습 질문 목록 조회 시작');
+      console.log('API Base URL:', apiClient.defaults.baseURL);
+      console.log('요청 URL:', '/own-qnas/questions');
+      console.log('전체 URL:', `${apiClient.defaults.baseURL}/own-qnas/questions`);
+      
+      try {
+        const response = await apiClient.get('/own-qnas/questions');
+        console.log('✅ AI 학습 질문 목록 조회 성공:', response.data);
+        return response.data;
+      } catch (error) {
+        console.error('❌ AI 학습 질문 목록 조회 실패:', error);
+        throw error;
+      }
     },
 
     // 사용자별 AI 학습 질문 답변 조회 (own-qnas API 활용)
