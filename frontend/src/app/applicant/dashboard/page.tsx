@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import Button from '@/components/Button'
@@ -84,6 +84,26 @@ const { questions, completedCount, totalCount, loading: questionsLoading, error:
 const { simulateRequest } = useSimulateRequest()
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  // Big5 5각형 차트 데이터 및 캔버스 Ref (프로필의 big5_test_results 기반)
+  const big5ChartData = useMemo(() => {
+    const r = (userProfile as any)?.big5_test_results?.[0]
+    if (!r) return [] as any[]
+    const palette = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336']
+    const items = [
+      { label: '개방성', key: 'openness_score' },
+      { label: '성실성', key: 'conscientiousness_score' },
+      { label: '외향성', key: 'extraversion_score' },
+      { label: '우호성', key: 'agreeableness_score' },
+      { label: '신경성', key: 'neuroticism_score' },
+    ] as const
+    return items.map((it, idx) => ({
+      label: it.label,
+      score: Number(r[it.key] ?? 0),
+      color: palette[idx % palette.length],
+      description: ''
+    }))
+  }, [userProfile])
+  const big5CanvasRef = usePentagonChart(big5ChartData as any)
 const [userFiles, setUserFiles] = useState<UserFiles>({
   award: [],
   certificate: [],
@@ -239,7 +259,7 @@ const fetchUserProfile = async () => {
       }
 
       console.log('📡 API 호출 준비:')
-      console.log('  - API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+      console.log('  - API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001')
       console.log('  - 요청 URL:', '/applicants/${userId}')
       console.log('  - 토큰:', localStorage.getItem('token') ? '있음' : '없음')
       
@@ -514,11 +534,6 @@ const handleSaveAnswer = async (questionId: string) => {
     // 컴포넌트 마운트 시 사용자 프로필 데이터와 파일 목록 가져오기
     fetchUserProfile()
     fetchUserFiles()
-    
-    // 육각형 차트 그리기
-    if (canvasRef.current) {
-      drawHexagonChart(canvasRef.current, HEX_DATA)
-    }
   }, [])
 
   return (
@@ -1239,24 +1254,28 @@ const handleSaveAnswer = async (questionId: string) => {
               </div>
               {hasCompletedTest ? (
                 <>
-              <div className="flex justify-center">
-                <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
-              </div>
+              {big5ChartData.length === 5 ? (
+                <div className="flex justify-center">
+                  <canvas ref={big5CanvasRef} width={400} height={400} className="max-w-full" />
+                </div>
+              ) : (
+                <div className="text-center text-sm text-gray-500">Big5 결과가 아직 없습니다.</div>
+              )}
                   {/* Big5 점수 표 */}
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full text-sm border rounded-lg overflow-hidden">
+              <div className="mt-6 overflow-x-auto border-1 border-black rounded-lg">
+                <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-green-600 text-black">
-                          <th className="text-left p-3 text-black">성격 차원</th>
-                      <th className="text-left p-3 text-black">점수</th>
+                          <th className="text-left p-3 text-black w-24 min-w-24 border-r border-black border-dashed">성격 차원</th>
+                      <th className="text-left p-3 text-black w-16 min-w-16 border-r border-black border-dashed">점수</th>
                           <th className="text-left p-3 text-black">설명</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-black">
                         {big5Data.map((p) => (
                       <tr key={p.label}>
-                        <td className="p-3 text-black"><b>{p.label}</b></td>
-                        <td className="p-3 text-black">{p.score}점</td>
+                        <td className="p-3 text-black w-24 min-w-24 border-r border-black border-dashed"><b>{p.label}</b></td>
+                        <td className="p-3 text-black w-16 min-w-16 border-r border-black border-dashed">{p.score}점</td>
                             <td className="p-3 text-black text-xs">{p.description}</td>
                       </tr>
                     ))}
