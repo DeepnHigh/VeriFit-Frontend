@@ -60,6 +60,22 @@ interface UserFiles {
   github: S3File[] // GitHub 파일 배열
 }
 
+// 업데이트 페이로드 타입 (백엔드 스펙과 동일)
+type JobSeekerUpdatePayload = {
+  full_name?: string | null
+  phone?: string | null
+  email?: string | null
+  bio?: string | null
+  total_experience_years?: number | null
+  company_name?: string | null
+  education_level?: string | null
+  university?: string | null
+  major?: string | null
+  graduation_year?: number | null
+  location?: string | null
+  is_profile_public?: boolean | null
+}
+
 export default function ApplicantDashboard() {
 
 const { big5Data, hasCompletedTest } = useAptitudeData()
@@ -86,6 +102,114 @@ const [answers, setAnswers] = useState<Record<string, string>>({})
 const [savingAnswers, setSavingAnswers] = useState<Record<string, boolean>>({})
 const [editingAnswers, setEditingAnswers] = useState<Record<string, boolean>>({})
 const [editedAnswers, setEditedAnswers] = useState<Record<string, string>>({})
+const [extracting, setExtracting] = useState(false)
+const [extractStatus, setExtractStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+const [isEditing, setIsEditing] = useState(false)
+const [editForm, setEditForm] = useState<JobSeekerUpdatePayload>({})
+
+// 최종학력 표기 변환 맵
+const EDUCATION_LABELS: Record<string, string> = {
+  high_school: '고졸',
+  associate: '전문학사',
+  bachelor: '학사',
+  master: '석사',
+  phd: '박사',
+}
+
+const getEducationLabel = (value?: string | null) => {
+  if (!value) return '-'
+  return EDUCATION_LABELS[value] || value
+}
+
+const startEditProfile = () => {
+  if (!userProfile) return
+  setEditForm({
+    full_name: userProfile.full_name || '',
+    phone: userProfile.phone || '',
+    email: userProfile.email || '',
+    bio: userProfile.bio || '',
+    total_experience_years: userProfile.total_experience_years ?? null,
+    company_name: userProfile.company_name || '',
+    education_level: userProfile.education_level || '',
+    university: userProfile.university || '',
+    major: userProfile.major || '',
+    graduation_year: userProfile.graduation_year ?? null,
+    location: userProfile.location || '',
+  })
+  setIsEditing(true)
+}
+
+const handleEditChange = (field: keyof JobSeekerUpdatePayload, value: string) => {
+  setEditForm(prev => ({ ...prev, [field]: value }))
+}
+
+const handleEditNumberChange = (field: keyof JobSeekerUpdatePayload, value: string) => {
+  const parsed = value === '' ? null : Number.isNaN(Number(value)) ? null : parseInt(value, 10)
+  setEditForm(prev => ({ ...prev, [field]: parsed }))
+}
+
+const saveEditedProfile = async () => {
+  if (!userProfile) return
+  try {
+    const userId = localStorage.getItem('userId')
+    if (!userId) {
+      alert('사용자 ID를 찾을 수 없습니다.')
+      return
+    }
+
+    const payload: JobSeekerUpdatePayload = {
+      full_name: (editForm.full_name ?? '').toString(),
+      phone: (editForm.phone ?? '').toString(),
+      email: (editForm.email ?? '').toString(),
+      bio: (editForm.bio ?? '').toString(),
+      total_experience_years: editForm.total_experience_years ?? null,
+      company_name: (editForm.company_name ?? '').toString(),
+      education_level: (editForm.education_level ?? '').toString(),
+      university: (editForm.university ?? '').toString(),
+      major: (editForm.major ?? '').toString(),
+      graduation_year: editForm.graduation_year ?? null,
+      location: (editForm.location ?? '').toString(),
+    }
+
+    // 빈 문자열은 null로 변환하여 불필요한 덮어쓰기를 방지
+    Object.keys(payload).forEach((k) => {
+      const key = k as keyof JobSeekerUpdatePayload
+      if (typeof payload[key] === 'string' && (payload[key] as unknown as string).trim() === '') {
+        payload[key] = null
+      }
+    })
+
+    // 업데이트 API 호출 (PUT)
+    await api.applicant.updateInfo(userId, payload as any)
+
+    // 화면 상태 업데이트
+    setUserProfile({
+      ...userProfile,
+      full_name: payload.full_name ?? userProfile.full_name,
+      phone: payload.phone ?? userProfile.phone,
+      email: payload.email ?? userProfile.email,
+      bio: payload.bio ?? userProfile.bio,
+      total_experience_years: payload.total_experience_years ?? userProfile.total_experience_years,
+      company_name: payload.company_name ?? userProfile.company_name,
+      education_level: payload.education_level ?? userProfile.education_level,
+      university: payload.university ?? userProfile.university,
+      major: payload.major ?? userProfile.major,
+      graduation_year: payload.graduation_year ?? userProfile.graduation_year,
+      location: payload.location ?? userProfile.location,
+    })
+
+    setIsEditing(false)
+    alert('프로필이 저장되었습니다.')
+  } catch (err) {
+    console.error('프로필 저장 실패:', err)
+    alert('프로필 저장에 실패했습니다. 다시 시도해주세요.')
+  }
+}
+
+const cancelEditProfile = () => {
+  setIsEditing(false)
+  setEditForm({})
+}
 
 // 사용자 프로필 데이터 가져오기
 const fetchUserProfile = async () => {
@@ -254,10 +378,14 @@ const handleUploadSuccess = () => {
 // 개인정보 추출 함수
 const extractPersonalInfo = async () => {
   try {
+    setExtracting(true)
+    setExtractStatus('loading')
     const userId = localStorage.getItem('userId')
     
     if (!userId) {
       alert('사용자 ID를 찾을 수 없습니다.')
+      setExtractStatus('error')
+      setExtracting(false)
       return
     }
 
@@ -284,8 +412,10 @@ const extractPersonalInfo = async () => {
       
       setUserProfile(updatedProfile)
       alert(`개인정보가 성공적으로 추출되었습니다!\n처리된 파일: ${response.processed_files.length}개`)
+      setExtractStatus('success')
     } else {
       alert(`개인정보 추출 실패: ${response.message}`)
+      setExtractStatus('error')
     }
 
   } catch (err: unknown) {
@@ -295,6 +425,9 @@ const extractPersonalInfo = async () => {
     } else {
       alert('개인정보 추출에 실패했습니다. 다시 시도해주세요.')
     }
+    setExtractStatus('error')
+  } finally {
+    setExtracting(false)
   }
 }
 
@@ -428,8 +561,31 @@ const handleSaveAnswer = async (questionId: string) => {
                   {userProfile.full_name ? userProfile.full_name.charAt(0) : '사'}
                 </div>
                 <div className="text-center">
-                  <div className="text-xl font-bold text-black mb-1">{userProfile.full_name || '사용자'}</div>
-                  <div className="text-black mb-4">{userProfile.total_experience_years ? `${userProfile.total_experience_years}년 경력` : '경력 정보'}</div>
+                  <div className="text-xl font-bold text-black mb-1">
+                    {!isEditing ? (
+                      userProfile.full_name || '사용자'
+                    ) : (
+                      <input
+                        value={typeof editForm.full_name === 'string' ? editForm.full_name : ''}
+                        onChange={(e) => handleEditChange('full_name', e.target.value)}
+                        className="px-3 py-2 border rounded w-full text-black"
+                        placeholder="이름"
+                      />
+                    )}
+                  </div>
+                  <div className="text-black mb-4">
+                    {!isEditing ? (
+                      userProfile.total_experience_years ? `${userProfile.total_experience_years}년 경력` : '경력 정보'
+                    ) : (
+                      <input
+                        type="number"
+                        value={typeof editForm.total_experience_years === 'number' ? editForm.total_experience_years : (editForm.total_experience_years ?? '')}
+                        onChange={(e) => handleEditNumberChange('total_experience_years', e.target.value)}
+                        className="px-3 py-2 border rounded w-full text-black"
+                        placeholder="총 경력(년)"
+                      />
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-lg p-3 border">
@@ -443,13 +599,23 @@ const handleSaveAnswer = async (questionId: string) => {
                 </div>
                 
                 {/* 자기소개 (bio) 섹션 추가 */}
-                {userProfile.bio && (
-                  <div className="mt-4 rounded-lg p-4">
-                    <div className="text-sm text-black leading-relaxed" style={{ wordBreak: 'keep-all', whiteSpace: 'pre-wrap' }}>
-                      {userProfile.bio}
-                    </div>
-                  </div>
-                )}
+                <div className="mt-4 rounded-lg p-4">
+                  {!isEditing ? (
+                    userProfile.bio ? (
+                      <div className="text-sm text-black leading-relaxed" style={{ wordBreak: 'keep-all', whiteSpace: 'pre-wrap' }}>
+                        {userProfile.bio}
+                      </div>
+                    ) : null
+                  ) : (
+                    <textarea
+                      value={typeof editForm.bio === 'string' ? editForm.bio : ''}
+                      onChange={(e) => handleEditChange('bio', e.target.value)}
+                      rows={4}
+                      className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+                      placeholder="자기소개"
+                    />
+                  )}
+                </div>
                 
                 <div className="mt-4 rounded-lg p-4 bg-green-50">
                   <div className="font-semibold text-black mb-1">🤖 지원자AI 상태</div>
@@ -462,29 +628,158 @@ const handleSaveAnswer = async (questionId: string) => {
                 <div className="mb-4">
                   <h3 className="font-semibold text-black mb-2">📞 연락처</h3>
                   <div className="divide-y text-sm">
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">이메일</span><span className="text-black">{userProfile.email || '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">전화번호</span><span className="text-black">{userProfile.phone || '-'}</span></div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">이메일</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.email || '-'}</span>
+                      ) : (
+                        <input
+                          value={typeof editForm.email === 'string' ? editForm.email : ''}
+                          onChange={(e) => handleEditChange('email', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="이메일"
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">전화번호</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.phone || '-'}</span>
+                      ) : (
+                        <input
+                          value={typeof editForm.phone === 'string' ? editForm.phone : ''}
+                          onChange={(e) => handleEditChange('phone', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="전화번호"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="mb-4">
                   <h3 className="font-semibold text-black mb-2">🎓 학력</h3>
                   <div className="divide-y text-sm">
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">최종학력</span><span className="text-black">{userProfile.education_level || '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">대학교</span><span className="text-black">{userProfile.university || '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">전공</span><span className="text-black">{userProfile.major || '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">졸업년도</span><span className="text-black">{userProfile.graduation_year || '-'}</span></div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">최종학력</span>
+                      {!isEditing ? (
+                        <span className="text-black">{getEducationLabel(userProfile.education_level)}</span>
+                      ) : (
+                        <select
+                          value={typeof editForm.education_level === 'string' ? editForm.education_level : ''}
+                          onChange={(e) => handleEditChange('education_level', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black bg-white"
+                        >
+                          <option value="">선택</option>
+                          <option value="high_school">고졸</option>
+                          <option value="associate">전문학사</option>
+                          <option value="bachelor">학사</option>
+                          <option value="master">석사</option>
+                          <option value="phd">박사</option>
+                        </select>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">대학교</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.university || '-'}</span>
+                      ) : (
+                        <input
+                          value={typeof editForm.university === 'string' ? editForm.university : ''}
+                          onChange={(e) => handleEditChange('university', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="대학교"
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">전공</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.major || '-'}</span>
+                      ) : (
+                        <input
+                          value={typeof editForm.major === 'string' ? editForm.major : ''}
+                          onChange={(e) => handleEditChange('major', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="전공"
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">졸업년도</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.graduation_year || '-'}</span>
+                      ) : (
+                        <input
+                          type="number"
+                          value={typeof editForm.graduation_year === 'number' ? editForm.graduation_year : (editForm.graduation_year ?? '')}
+                          onChange={(e) => handleEditNumberChange('graduation_year', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="졸업년도"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="mb-2">
                   <h3 className="font-semibold text-black mb-2">💼 경력</h3>
                   <div className="divide-y text-sm">
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">총 경력</span><span className="text-black">{userProfile.total_experience_years ? `${userProfile.total_experience_years}년` : '-'}</span></div>
-                    <div className="flex justify-between py-2"><span className="font-medium text-black">최근 직장</span><span className="text-black">{userProfile.company_name || '-'}</span></div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">총 경력</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.total_experience_years ? `${userProfile.total_experience_years}년` : '-'}</span>
+                      ) : (
+                        <input
+                          type="number"
+                          value={typeof editForm.total_experience_years === 'number' ? editForm.total_experience_years : (editForm.total_experience_years ?? '')}
+                          onChange={(e) => handleEditNumberChange('total_experience_years', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="총 경력(년)"
+                        />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between py-2">
+                      <span className="font-medium text-black">최근 직장</span>
+                      {!isEditing ? (
+                        <span className="text-black">{userProfile.company_name || '-'}</span>
+                      ) : (
+                        <input
+                          value={typeof editForm.company_name === 'string' ? editForm.company_name : ''}
+                          onChange={(e) => handleEditChange('company_name', e.target.value)}
+                          className="px-3 py-1.5 border rounded w-60 text-black"
+                          placeholder="회사명"
+                        />
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex gap-2 absolute right-5 bottom-5">
-                  <Button onClick={extractPersonalInfo} variant="secondary" size="sm">업로드한 문서로 개인정보 채우기</Button>
-                  <Button onClick={() => simulateRequest('개인정보 수정')} variant="primary" size="sm">수정</Button>
+                <div className="flex flex-col items-end gap-1 absolute right-5 bottom-8">
+                  <div className="flex items-center gap-3">
+                    <Button onClick={extractPersonalInfo} variant="secondary" size="sm" disabled={extracting}>
+                      {extracting ? '추출 중...' : '업로드한 문서로 개인정보 채우기'}
+                    </Button>
+                    {(extractStatus === 'loading' || extractStatus === 'error') && (
+                      <div className="flex items-center gap-2">
+                        {extractStatus === 'loading' && (
+                          <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true"></span>
+                        )}
+                        <span className={`${extractStatus === 'loading' ? 'text-red-600' : 'text-red-600'} text-sm font-medium`}>
+                          {extractStatus === 'loading' && '페이지를 이동하거나 끄지 마세요!'}
+                          {extractStatus === 'error' && '실패했습니다. 다시 시도해 주세요.'}
+                        </span>
+                      </div>
+                    )}
+                    {!isEditing ? (
+                      <Button onClick={startEditProfile} variant="primary" size="sm">수정</Button>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Button onClick={saveEditedProfile} variant="success" size="sm">저장</Button>
+                        <Button onClick={cancelEditProfile} variant="secondary" size="sm">취소</Button>
+                      </div>
+                    )}
+                  </div>
+                  {extractStatus === 'success' && (
+                    <div className="text-green-600 text-sm font-medium">완료되었습니다</div>
+                  )}
                 </div>
               </div>
             </div>
