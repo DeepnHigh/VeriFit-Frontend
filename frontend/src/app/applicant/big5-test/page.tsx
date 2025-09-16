@@ -235,7 +235,7 @@ export default function Big5TestPage() {
                 <button
                   key={index}
                   onClick={() => handleAnswer(choice.score)}
-                  className="w-full p-4 text-left border rounded-lg hover:bg-gray-50 transition-colors"
+                  className="w-full p-4 text-left border rounded-lg hover:bg-blue-100 transition-colors text-black"
                 >
                   <span className="font-medium">{choice.text}</span>
                 </button>
