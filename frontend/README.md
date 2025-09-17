@@ -94,6 +94,40 @@ frontend/
     └── lib/            # 기존 lib 폴더
 ```    
 
+### Big5 개발 가이드
+📊 구조 관계:
+```
+Big5Section (전체 섹션)
+├── 헤더 + 버튼
+├── 검사 완료 시: Big5Result (결과 표시)
+└── 검사 미완료 시: 안내 메시지
+```
+💡 사용 예시:
+```
+// 대시보드에서 (버튼 포함, 완전한 섹션)
+<Big5Section
+  big5Data={big5Data}
+  big5ChartData={big5ChartData}
+  hasCompletedTest={hasCompletedTest}
+/>
+
+// 리포트 페이지에서 (순수 결과만)
+<Big5Result
+  big5Data={big5Data}
+  big5ChartData={big5ChartData}
+  showInterpretation={false}
+/>
+
+// 커스터마이징된 섹션
+<Big5Section
+  big5Data={big5Data}
+  big5ChartData={big5ChartData}
+  hasCompletedTest={hasCompletedTest}
+  showTestButton={false} // 버튼 숨김
+  testButtonHref="/custom-test" // 다른 링크
+/>
+```
+
 ### 새로운 페이지 추가
 
 1. `src/app/` 디렉토리에 새 폴더 생성

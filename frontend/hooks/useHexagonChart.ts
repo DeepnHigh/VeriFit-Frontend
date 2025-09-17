@@ -40,22 +40,24 @@ function drawPentagonChart(canvas: HTMLCanvasElement, data: Big5Point[]) {
   ctx.lineWidth = 2
   ctx.stroke()
 
-  // 데이터 영역 (5각형)
-  ctx.beginPath()
-  for (let i = 0; i < 5; i++) {
-    const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2
-    const scoreRadius = (radius * data[i].score) / 100
-    const x = centerX + scoreRadius * Math.cos(angle)
-    const y = centerY + scoreRadius * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
+  // 데이터 영역 (5각형) - 데이터 5개가 모두 있을 때만 그림
+  if (data && data.length >= 5) {
+    ctx.beginPath()
+    for (let i = 0; i < 5; i++) {
+      const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2
+      const scoreRadius = (radius * data[i].score) / 100
+      const x = centerX + scoreRadius * Math.cos(angle)
+      const y = centerY + scoreRadius * Math.sin(angle)
+      if (i === 0) ctx.moveTo(x, y)
+      else ctx.lineTo(x, y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = 'rgba(76, 175, 80, 0.3)'
+    ctx.fill()
+    ctx.strokeStyle = '#4CAF50'
+    ctx.lineWidth = 3
+    ctx.stroke()
   }
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(76, 175, 80, 0.3)'
-  ctx.fill()
-  ctx.strokeStyle = '#4CAF50'
-  ctx.lineWidth = 3
-  ctx.stroke()
 
   // 중심점
   ctx.beginPath()
@@ -66,19 +68,51 @@ function drawPentagonChart(canvas: HTMLCanvasElement, data: Big5Point[]) {
   ctx.lineWidth = 2
   ctx.stroke()
 
-  // 라벨 그리기
+  // 라벨과 점수를 분리해 표시
   ctx.font = '14px Arial'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   
   for (let i = 0; i < 5; i++) {
+    if (!data[i]) continue
     const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2
+    // 라벨 위치
     const labelRadius = radius + 30
-    const x = centerX + labelRadius * Math.cos(angle)
-    const y = centerY + labelRadius * Math.sin(angle)
+    const lx = centerX + labelRadius * Math.cos(angle)
+    const ly = centerY + labelRadius * Math.sin(angle)
+    // 데이터 지점 위치
+    const scoreRadius = (radius * data[i].score) / 100
+    const px = centerX + scoreRadius * Math.cos(angle)
+    const py = centerY + scoreRadius * Math.sin(angle)
     
+    // 라벨(항목명) 표시 - 바깥쪽
     ctx.fillStyle = data[i].color
-    ctx.fillText(data[i].label, x, y)
+    ctx.fillText(data[i].label, lx, ly)
+
+    // 데이터 지점 마커
+    ctx.beginPath()
+    ctx.arc(px, py, 3, 0, 2 * Math.PI)
+    ctx.fillStyle = data[i].color
+    ctx.fill()
+
+    // 점수 텍스트 - 마커에서 약간 바깥쪽으로 오프셋
+    const offset = 14
+    const sx = px + offset * Math.cos(angle)
+    const sy = py + offset * Math.sin(angle)
+    const scoreText = String(Math.round(data[i].score))
+    // 가독성을 위한 배경 박스
+    const paddingX = 6
+    const paddingY = 3
+    ctx.font = '12px Arial'
+    const metrics = ctx.measureText(scoreText)
+    const boxW = metrics.width + paddingX * 2
+    const boxH = 16
+    ctx.fillStyle = 'rgba(255,255,255,0.8)'
+    ctx.fillRect(sx - boxW / 2, sy - boxH / 2, boxW, boxH)
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)'
+    ctx.strokeRect(sx - boxW / 2, sy - boxH / 2, boxW, boxH)
+    ctx.fillStyle = '#111'
+    ctx.fillText(scoreText, sx, sy)
   }
 }
 

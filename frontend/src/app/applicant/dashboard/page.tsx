@@ -1,27 +1,19 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import Header from '@/components/Header'
 import Button from '@/components/Button'
-import FileUploadButton from '@/components/FileUploadButton'
+import PortfolioSection from '@/components/PortfolioSection'
+import Big5Section from '@/components/Big5Section'
+import QuestionsSection from '@/components/QuestionsSection'
 import { api } from '@/lib/api'
-import { usePentagonChart } from '../../../../hooks/useHexagonChart'
 import { useSimulateRequest } from '../../../../hooks/useSimulateRequest'
-import { useUploadItems } from '../../../../hooks/useUploadItems'
 import { useAptitudeData } from '../../../../hooks/useAptitudeData'
 import { useQuestions } from '../../../../hooks/useQuestions'
-
-type HexPoint = { score: number; label: string; color: string }
-
-const HEX_DATA: HexPoint[] = [
-  { score: 67, label: '현실형', color: '#4CAF50' },
-  { score: 45, label: '탐구형', color: '#2196F3' },
-  { score: 21, label: '관습형', color: '#f44336' },
-  { score: 33, label: '사회형', color: '#9C27B0' },
-  { score: 59, label: '진취형', color: '#607D8B' },
-  { score: 96, label: '예술형', color: '#FF9800' }
-]
+import { 
+  createBig5DataFromApi, 
+  createBig5ChartDataFromApi, 
+} from '../../../../data/big5Data'
 
 // 사용자 프로필 데이터 타입 정의
 interface UserProfile {
@@ -78,12 +70,29 @@ type JobSeekerUpdatePayload = {
 
 export default function ApplicantDashboard() {
 
-const { big5Data, hasCompletedTest } = useAptitudeData()
-const { uploadItems } = useUploadItems()
+const { big5Data: localStorageBig5Data, hasCompletedTest: localStorageHasCompletedTest } = useAptitudeData()
 const { questions, completedCount, totalCount, loading: questionsLoading, error: questionsError, saveAnswer } = useQuestions()
 const { simulateRequest } = useSimulateRequest()
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  // Big5 데이터 (API 기반)
+  const { big5Data, big5ChartData, hasCompletedTest } = useMemo(() => {
+    const apiResult = (userProfile as any)?.big5_test_results?.[0]
+    if (!apiResult) {
+      // API 데이터가 없으면 localStorage 데이터 사용
+      return {
+        big5Data: localStorageBig5Data,
+        big5ChartData: [],
+        hasCompletedTest: localStorageHasCompletedTest
+      }
+    }
+
+    // API 데이터로 Big5 결과 생성
+    return {
+      big5Data: createBig5DataFromApi(apiResult),
+      big5ChartData: createBig5ChartDataFromApi(apiResult),
+      hasCompletedTest: true
+    }
+  }, [userProfile, localStorageBig5Data, localStorageHasCompletedTest])
 const [userFiles, setUserFiles] = useState<UserFiles>({
   award: [],
   certificate: [],
@@ -239,7 +248,7 @@ const fetchUserProfile = async () => {
       }
 
       console.log('📡 API 호출 준비:')
-      console.log('  - API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+      console.log('  - API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001')
       console.log('  - 요청 URL:', '/applicants/${userId}')
       console.log('  - 토큰:', localStorage.getItem('token') ? '있음' : '없음')
       
@@ -514,11 +523,6 @@ const handleSaveAnswer = async (questionId: string) => {
     // 컴포넌트 마운트 시 사용자 프로필 데이터와 파일 목록 가져오기
     fetchUserProfile()
     fetchUserFiles()
-    
-    // 육각형 차트 그리기
-    if (canvasRef.current) {
-      drawHexagonChart(canvasRef.current, HEX_DATA)
-    }
   }, [])
 
   return (
@@ -785,711 +789,44 @@ const handleSaveAnswer = async (questionId: string) => {
             </div>
 
             {/* 포트폴리오 및 자료 섹션 */}
-            <section className="bg-gray-50 rounded-xl p-6 border mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-black font-semibold">📁 포트폴리오 및 자료</h3>
-                {filesLoading && (
-                  <div className="text-sm text-gray-600">파일 목록을 불러오는 중...</div>
-                )}
-              </div>
-              
-              <div className="grid md:grid-cols-3 gap-4">
-                {/* 자기소개서 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">📄</div>
-                  <div className="font-semibold text-black mb-1">자기소개서</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.cover_letter && userFiles.cover_letter.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.cover_letter.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('cover_letter', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('cover_letter', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="cover_letter"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 포트폴리오 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">💼</div>
-                  <div className="font-semibold text-black mb-1">포트폴리오</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.portfolio && userFiles.portfolio.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.portfolio.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('portfolio', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('portfolio', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="portfolio"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* GitHub 링크 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">🔗</div>
-                  <div className="font-semibold text-black mb-1">GitHub 링크</div>
-                  <div className="text-sm text-gray-600 mb-3">GitHub 저장소 링크가 포함된 텍스트 파일을 업로드하세요</div>
-                  
-                  {/* GitHub 링크 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.github && userFiles.github.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.github.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('github', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('github', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 GitHub 링크 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="github"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="GitHub 링크 파일 업로드"
-                  />
-                </div>
-
-                {/* 이력서 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">📋</div>
-                  <div className="font-semibold text-black mb-1">이력서</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.resume && userFiles.resume.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.resume.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('resume', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('resume', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="resume"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 수상 경력 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">🏆</div>
-                  <div className="font-semibold text-black mb-1">수상 경력</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.award && userFiles.award.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.award.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('award', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('award', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="award"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 증명서 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">📜</div>
-                  <div className="font-semibold text-black mb-1">증명서</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.certificate && userFiles.certificate.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.certificate.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('certificate', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('certificate', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="certificate"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 자격증 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">🎖️</div>
-                  <div className="font-semibold text-black mb-1">자격증</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.qualification && userFiles.qualification.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.qualification.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('qualification', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('qualification', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="qualification"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 논문 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">📖</div>
-                  <div className="font-semibold text-black mb-1">논문</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.paper && userFiles.paper.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.paper.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('paper', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('paper', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                    </button>
-                  </div>
-                ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="paper"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-
-                {/* 기타 자료 */}
-                <div className="bg-white rounded-lg p-4 border">
-                  <div className="text-2xl mb-2">📚</div>
-                  <div className="font-semibold text-black mb-1">기타 자료</div>
-                  
-                  {/* 파일 목록 표시 */}
-                  <div className="mb-3">
-                    {userFiles.other && userFiles.other.length > 0 ? (
-                      <div className="space-y-2">
-                        {userFiles.other.map((file, index) => (
-                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                            <div className="flex-1 min-w-0">
-                              <button
-                                onClick={() => handleFileDownload('other', file.name)}
-                                className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                                title={file.name}
-                              >
-                                {file.name}
-                              </button>
-                              <div className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)}KB
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleFileDelete('other', file.name)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                              title="파일 삭제"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-2">
-                        업로드된 파일이 없습니다
-                      </div>
-                    )}
-                  </div>
-                  
-                  <FileUploadButton
-                    userId={localStorage.getItem('userId') || ''}
-                    documentType="other"
-                    onUploadSuccess={handleUploadSuccess}
-                    buttonText="파일 선택"
-                  />
-                </div>
-              </div>
-            </section>
+            <PortfolioSection
+              userFiles={userFiles}
+              filesLoading={filesLoading}
+              userId={localStorage.getItem('userId') || ''}
+              onFileDownload={handleFileDownload}
+              onFileDelete={handleFileDelete}
+              onUploadSuccess={handleUploadSuccess}
+            />
 
             {/* Big5 성격검사 결과 */}
-            <section className="rounded-xl p-6 border mb-8 bg-white">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-black font-semibold">🧠 Big5 성격검사 결과 분석</h3>
-                <Link href="/applicant/big5-test" className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer hover:bg-green-700 transition-colors">
-                  {hasCompletedTest ? '🔄 성격검사 다시하기' : '🧠 성격검사 시작하기'}
-                </Link>
-              </div>
-              {hasCompletedTest ? (
-                <>
-              <div className="flex justify-center">
-                <canvas ref={canvasRef} width={400} height={400} className="max-w-full" />
-              </div>
-                  {/* Big5 점수 표 */}
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full text-sm border rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-green-600 text-black">
-                          <th className="text-left p-3 text-black">성격 차원</th>
-                      <th className="text-left p-3 text-black">점수</th>
-                          <th className="text-left p-3 text-black">설명</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                        {big5Data.map((p) => (
-                      <tr key={p.label}>
-                        <td className="p-3 text-black"><b>{p.label}</b></td>
-                        <td className="p-3 text-black">{p.score}점</td>
-                            <td className="p-3 text-black text-xs">{p.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-                </>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="text-6xl mb-4">🧠</div>
-                  <h4 className="text-xl font-semibold text-gray-700 mb-2">성격검사를 시작해보세요!</h4>
-                  <p className="text-gray-500 mb-6">Big5 성격검사를 통해 당신의 성격을 분석하고<br/>더 정확한 AI 프로필을 만들어보세요.</p>
-                  <Link href="/applicant/big5-test" className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                    🚀 성격검사 시작하기
-                  </Link>
-                </div>
-              )}
-              {/* Big5 해석 섹션 - 검사 완료 후에만 표시 */}
-              {hasCompletedTest && (
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-semibold text-black mb-2">📋 성격 분석 해석</h4>
-                  <div className="text-sm text-black space-y-1">
-                    <p><strong>개방성:</strong> 경험에 대한 개방성은 상상력이 풍부하고 창의적인 사람들과 현실적이고 전통적인 사람들을 구별하는 인지 스타일의 차원을 설명합니다.</p>
-                    <p><strong>성실성:</strong> 성실성은 우리가 충동을 어떻게 통제하고, 조절하며, 지시하는지를 다룹니다.</p>
-                    <p><strong>외향성:</strong> 외향성은 외부 세계와의 두드러진 관여로 표시됩니다.</p>
-                    <p><strong>우호성:</strong> 우호성은 협력과 사회적 조화에 대한 관심의 개인 차이를 반영합니다. 우호적인 개인은 다른 사람들과 잘 지내는 것을 중요하게 생각합니다</p>
-                    <p><strong>신경성:</strong> 신경증은 부정적인 감정을 경험하는 경향을 나타냅니다.(낮을수록 안정적)</p>
-                  </div>
-                </div>
-              )}
-            </section>
+            <Big5Section
+              big5Data={big5Data}
+              big5ChartData={big5ChartData}
+              hasCompletedTest={hasCompletedTest}
+            />
 
             {/* AI 학습 질문 섹션 요약 */}
-            <section className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border">
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-black font-semibold">🤖 AI 학습을 위한 질문 답변</h3>
-                <div className="text-sm text-black text-right">
-                  <b>{completedCount}/{totalCount}</b>
-                </div>
-              </div>
-              
-              {/* 질문 로딩 상태 */}
-              {questionsLoading && (
-                <div className="flex justify-center items-center py-8">
-                  <div className="text-gray-600">질문 목록을 불러오는 중...</div>
-                </div>
-              )}
-              
-              {/* 질문 에러 상태 */}
-              {questionsError && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                  <div className="text-red-800 text-sm">{questionsError}</div>
-                </div>
-              )}
-              
-              {/* AI 에이전트 학습 안내 */}
-              {!questionsLoading && !questionsError && (
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-5 mb-6">
-                  <h4 className="text-green-800 font-semibold mb-3 flex items-center">
-                    💡 AI 에이전트 학습 안내
-                  </h4>
-                  <p className="text-gray-700 leading-relaxed text-sm" style={{ wordBreak: 'keep-all', whiteSpace: 'normal' }}>
-                    아래 질문들에 자세히 답변해주시면, 지원자AI가 더욱 정확하게 본인을 대변할 수 있습니다. 
-                    답변이 많을수록 AI가 본인의 성향, 경험, 가치관을 더 정확하게 파악하여 면접에서 더 자연스럽고 일관된 답변을 생성할 수 있습니다.
-                  </p>
-                </div>
-              )}
-              
-              {/* 질문 목록 */}
-              {!questionsLoading && !questionsError && (
-                <ul className="space-y-4 text-sm">
-                  {questions.map((question, index) => (
-                    <li key={question.id} className="bg-white border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="font-semibold text-black">Q{index + 1}. {question.text}</div>
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          question.status === 'completed' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-orange-500 text-white'
-                        }`}>
-                          {question.status === 'completed' ? '완료' : '미완료'}
-                        </span>
-                      </div>
-                      
-                      {/* 완료된 질문의 답변 - 데모 UI와 동일한 편집 컨트롤 */}
-                      {question.status === 'completed' && (
-                        <div className="mb-3">
-                          {!editingAnswers[question.id] ? (
-                            <div className="text-xs text-gray-600 bg-gray-50 rounded p-3 flex items-start justify-between gap-3">
-                              <div className="flex-1 whitespace-pre-wrap break-words">
-                                <strong>답변:</strong> {question.answer || '-'}
-                              </div>
-                              <div className="shrink-0 flex gap-2">
-                                <button
-                                  onClick={() => handleStartEditAnswer(question.id, question.answer || '')}
-                                  className="px-2 py-1 bg-indigo-600 text-white rounded text-xs hover:bg-indigo-700"
-                                >수정</button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="bg-gray-50 rounded p-3">
-                              <textarea
-                                value={editedAnswers[question.id] || ''}
-                                onChange={(e) => setEditedAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
-                                placeholder="답변을 입력해주세요..."
-                                rows={3}
-                                className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black mb-2"
-                              />
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  onClick={() => handleCancelEditAnswer(question.id)}
-                                  className="px-3 py-1 rounded-lg text-xs font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
-                                >취소</button>
-                                <button
-                                  onClick={() => handleUpdateAnswer(question.id)}
-                                  disabled={savingAnswers[question.id] || !(editedAnswers[question.id] && editedAnswers[question.id].trim())}
-                                  className={`px-3 py-1 rounded-lg text-xs font-medium ${savingAnswers[question.id] || !(editedAnswers[question.id] && editedAnswers[question.id].trim()) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-                                >{savingAnswers[question.id] ? '저장 중...' : '저장'}</button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* 답변 입력 필드 (미완료 상태일 때만 표시) */}
-                      {question.status === 'pending' && (
-                        <div className="space-y-2">
-                          <textarea
-                            value={typeof answers[question.id] === 'string' ? answers[question.id] : ''}
-                            onChange={(e) => setAnswers(prev => ({ ...prev, [question.id]: e.target.value }))}
-                            placeholder="이 질문에 대한 답변을 입력해주세요..."
-                            rows={3}
-                            className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={() => setAnswers(prev => ({ ...prev, [question.id]: '' }))}
-                              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            >취소</button>
-                            <button
-                              onClick={() => handleSaveAnswer(question.id)}
-                              disabled={savingAnswers[question.id] || !(typeof answers[question.id] === 'string' && answers[question.id].trim())}
-                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                savingAnswers[question.id] || !(typeof answers[question.id] === 'string' && answers[question.id].trim())
-                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                  : 'bg-blue-600 text-white hover:bg-blue-700'
-                              }`}
-                            >
-                              {savingAnswers[question.id] ? '저장 중...' : '저장'}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                </li>
-                  ))}
-              </ul>
-              )}
-              
-              <div className="flex justify-center gap-3 mt-6">
-                <Button onClick={() => simulateRequest('프로필 저장')} variant="success" size="md">💾 프로필 저장</Button>
-                <Link href="/applicant/qna" prefetch={false} onClick={(e) => { e.preventDefault(); alert('Q&A 관리 페이지가 아직 준비되지 않았습니다.'); }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white cursor-pointer">Q&A 관리</Link>
-              </div>
-            </section>
+            <QuestionsSection
+              questions={questions}
+              completedCount={completedCount}
+              totalCount={totalCount}
+              questionsLoading={questionsLoading}
+              questionsError={questionsError}
+              answers={answers}
+              editingAnswers={editingAnswers}
+              editedAnswers={editedAnswers}
+              savingAnswers={savingAnswers}
+              onAnswerChange={(questionId, answer) => setAnswers(prev => ({ ...prev, [questionId]: answer }))}
+              onStartEditAnswer={handleStartEditAnswer}
+              onCancelEditAnswer={handleCancelEditAnswer}
+              onUpdateAnswer={handleUpdateAnswer}
+              onSaveAnswer={handleSaveAnswer}
+              onClearAnswer={(questionId) => setAnswers(prev => ({ ...prev, [questionId]: '' }))}
+              onSimulateRequest={simulateRequest}
+            />
         </section>
         )}
       </main>
     </div>
   )
-}
-
-// 하단 중복 정의 제거됨 (컴포넌트 내부로 이동)
-
-function drawHexagonChart(canvas: HTMLCanvasElement, data: HexPoint[]) {
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-  const centerX = canvas.width / 2
-  const centerY = canvas.height / 2
-  const radius = 150
-
-  // 등고선
-  for (let level = 1; level <= 5; level++) {
-    const currentRadius = (radius * level) / 5
-    ctx.beginPath()
-    for (let i = 0; i < 6; i++) {
-      const angle = (i * Math.PI) / 3 - Math.PI / 2
-      const x = centerX + currentRadius * Math.cos(angle)
-      const y = centerY + currentRadius * Math.sin(angle)
-      if (i === 0) ctx.moveTo(x, y)
-      else ctx.lineTo(x, y)
-    }
-    ctx.closePath()
-    ctx.strokeStyle = '#e0e0e0'
-    ctx.lineWidth = 1
-    ctx.stroke()
-  }
-
-  // 외곽
-  ctx.beginPath()
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3 - Math.PI / 2
-    const x = centerX + radius * Math.cos(angle)
-    const y = centerY + radius * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.strokeStyle = '#ddd'
-  ctx.lineWidth = 2
-  ctx.stroke()
-
-  // 데이터 영역
-  ctx.beginPath()
-  for (let i = 0; i < 6; i++) {
-    const angle = (i * Math.PI) / 3 - Math.PI / 2
-    const scoreRadius = (radius * data[i].score) / 100
-    const x = centerX + scoreRadius * Math.cos(angle)
-    const y = centerY + scoreRadius * Math.sin(angle)
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(76, 175, 80, 0.3)'
-  ctx.fill()
-  ctx.strokeStyle = '#4CAF50'
-  ctx.lineWidth = 3
-  ctx.stroke()
-
-  // 중심점
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI)
-  ctx.fillStyle = '#4CAF50'
-  ctx.fill()
-  ctx.strokeStyle = '#2E7D32'
-  ctx.lineWidth = 2
-  ctx.stroke()
 }

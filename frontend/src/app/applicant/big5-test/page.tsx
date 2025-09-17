@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Button from '@/components/Button'
 import { useBig5Questions, Big5Result } from '../../../../hooks/useBig5Questions'
-import apiClient, { Big5TestResult, api as apiMethods } from '@/lib/api'
+import apiClient, { Big5TestResult, api as apiMethods, getApiBaseUrl } from '@/lib/api'
 
 export default function Big5TestPage() {
   const router = useRouter()
@@ -34,8 +34,8 @@ export default function Big5TestPage() {
     try {
       // Big5 결과를 API 형식으로 변환
       const testResult: Big5TestResult = {
-        job_seeker_id: 'current-user-id', // 실제로는 로그인한 사용자 ID 사용
-        test_duration_minutes: Math.round((Date.now() - Date.now()) / 60000), // 실제로는 시작 시간 기록 필요
+        // TODO: job_seeker_id 수정 필요
+        job_seeker_id: typeof window !== 'undefined' ? (localStorage.getItem('userId') || '') : '',
         openness_score: result.openness,
         conscientiousness_score: result.conscientiousness,
         extraversion_score: result.extraversion,
@@ -53,14 +53,32 @@ export default function Big5TestPage() {
         neuroticism_facets: result.rawScores?.N?.facet || {},
         interpretations: result.interpretations,
         raw_scores: result.rawScores,
-        overall_analysis: 'Big5 성격검사 완료',
-        strengths: '강점 분석 결과',
-        weaknesses: '약점 분석 결과',
-        recommendations: '추천사항'
       }
 
       // API 호출로 결과 저장
-      await apiMethods.big5.saveTestResult(testResult)
+      if (!testResult.job_seeker_id) {
+        console.warn('로그인 사용자 ID를 찾을 수 없어 로컬 저장만 수행합니다.')
+      } else {
+        try {
+          console.log('🛰️ Big5 저장 요청 준비')
+          console.log('  - API Base URL:', getApiBaseUrl())
+          console.log('  - 요청 경로: /big5-test')
+          console.log('  - 토큰 존재:', !!localStorage.getItem('token'))
+          console.log('  - 요청 페이로드:', JSON.parse(JSON.stringify(testResult)))
+          await apiMethods.big5.saveTestResult(testResult)
+          console.log('✅ Big5 저장 요청 성공')
+        } catch (e) {
+          const err: any = e
+          console.error('❌ Big5 저장 요청 실패')
+          console.error('  - message:', err?.message)
+          console.error('  - response.status:', err?.response?.status)
+          console.error('  - response.data:', err?.response?.data)
+          console.error('  - request.url:', err?.config?.baseURL + (err?.config?.url || ''))
+          console.error('  - request.headers:', err?.config?.headers)
+          console.error('  - request.data:', err?.config?.data)
+          console.warn('백엔드 저장 실패, 로컬 백업만 진행합니다.')
+        }
+      }
       
       // 로컬 스토리지에도 백업 저장
       localStorage.setItem('big5Result', JSON.stringify(result))
@@ -118,63 +136,7 @@ export default function Big5TestPage() {
               </div>
             </div>
 
-            {/* 전문적인 해석 */}
-            <div className="space-y-6 mb-8">
-              <h3 className="text-xl font-semibold text-gray-900">📊 전문적인 성격 분석 해석</h3>
-              
-              {result.interpretations && result.interpretations.map((interpretation, index) => {
-                const colors = {
-                  'O': 'green',
-                  'C': 'blue', 
-                  'E': 'orange',
-                  'A': 'purple',
-                  'N': 'red'
-                }
-                const color = colors[interpretation.domain as keyof typeof colors] || 'gray'
-                
-                return (
-                  <div key={index} className={`p-6 bg-${color}-50 rounded-lg border`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className={`text-lg font-semibold text-${color}-800`}>
-                        {interpretation.title} ({result[interpretation.domain.toLowerCase() as keyof typeof result]}점)
-                      </h4>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium bg-${color}-200 text-${color}-800`}>
-                        {interpretation.scoreText === 'high' ? '높음' : 
-                         interpretation.scoreText === 'neutral' ? '보통' : 
-                         interpretation.scoreText === 'low' ? '낮음' : interpretation.scoreText}
-                      </span>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <p className={`text-sm text-${color}-700 mb-3`} dangerouslySetInnerHTML={{ __html: interpretation.shortDescription }} />
-                      <p className={`text-sm text-${color}-600`} dangerouslySetInnerHTML={{ __html: interpretation.text }} />
-                    </div>
-                    
-                    {/* 세부 특성 (Facets) */}
-                    {interpretation.facets && interpretation.facets.length > 0 && (
-                      <div className="mt-4">
-                        <h5 className={`font-semibold text-${color}-800 mb-3`}>세부 특성 분석</h5>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {interpretation.facets.map((facet: any, facetIndex: number) => (
-                            <div key={facetIndex} className={`p-3 bg-white rounded border border-${color}-200`}>
-                              <div className="flex items-center justify-between mb-2">
-                                <h6 className={`font-medium text-${color}-800 text-sm`}>{facet.title}</h6>
-                                <span className={`text-xs px-2 py-1 rounded bg-${color}-100 text-${color}-700`}>
-                                  {facet.scoreText === 'high' ? '높음' : 
-                                   facet.scoreText === 'neutral' ? '보통' : 
-                                   facet.scoreText === 'low' ? '낮음' : facet.scoreText}
-                                </span>
-                              </div>
-                              <p className={`text-xs text-${color}-600`} dangerouslySetInnerHTML={{ __html: facet.text }} />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
+            {/* 전문적인 해석 섹션은 대시보드에서만 표시합니다 */}
 
             {/* 액션 버튼 */}
             <div className="flex justify-center gap-4">

@@ -18,7 +18,7 @@ export interface Big5Result {
 
 
 export function useBig5Questions() {
-  const [questions] = useState<Big5Question[]>(BIG5_QUESTIONS)
+  const [questions] = useState<Big5Question[]>([...BIG5_QUESTIONS].sort((a, b) => a.num - b.num))
   const [answers, setAnswers] = useState<Big5Answer[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
@@ -66,6 +66,16 @@ export function useBig5Questions() {
       N: { total: 0, count: 0 }
     }
 
+    // 각 차원별 세부 특성(1~6 facet) 점수 집계
+    const initFacet = () => ({ total: 0, count: 0 })
+    const domainFacetScores: Record<'O'|'C'|'E'|'A'|'N', Record<number, { total: number; count: number }>> = {
+      O: { 1: initFacet(), 2: initFacet(), 3: initFacet(), 4: initFacet(), 5: initFacet(), 6: initFacet() },
+      C: { 1: initFacet(), 2: initFacet(), 3: initFacet(), 4: initFacet(), 5: initFacet(), 6: initFacet() },
+      E: { 1: initFacet(), 2: initFacet(), 3: initFacet(), 4: initFacet(), 5: initFacet(), 6: initFacet() },
+      A: { 1: initFacet(), 2: initFacet(), 3: initFacet(), 4: initFacet(), 5: initFacet(), 6: initFacet() },
+      N: { 1: initFacet(), 2: initFacet(), 3: initFacet(), 4: initFacet(), 5: initFacet(), 6: initFacet() },
+    }
+
     // 답변을 차원별로 집계
     allAnswers.forEach(answer => {
       const question = questions.find(q => q.id === answer.questionId)
@@ -73,6 +83,13 @@ export function useBig5Questions() {
         const domain = question.domain
         domainScores[domain].total += answer.score
         domainScores[domain].count += 1
+
+        // 세부 특성 집계
+        const facetIndex = Number(question.facet) as 1|2|3|4|5|6
+        if (facetIndex >= 1 && facetIndex <= 6) {
+          domainFacetScores[domain][facetIndex].total += answer.score
+          domainFacetScores[domain][facetIndex].count += 1
+        }
       }
     })
 
@@ -83,32 +100,47 @@ export function useBig5Questions() {
     const agreeableness = Math.round((domainScores.A.total / domainScores.A.count) * 20) || 0
     const neuroticism = Math.round((domainScores.N.total / domainScores.N.count) * 20) || 0
 
-    // rawScores 생성 (high/neutral/low 포함)
+    // rawScores 생성 (high/neutral/low 포함 + facet 세부 점수 0-100 스케일)
     const rawScores = {
       O: {
         score: domainScores.O.total,
         count: domainScores.O.count,
-        result: calculateBig5Result(domainScores.O.total, domainScores.O.count)
+        result: calculateBig5Result(domainScores.O.total, domainScores.O.count),
+        facet: Object.fromEntries(
+          Object.entries(domainFacetScores.O).map(([k, v]) => [k, Math.round(((v.total / (v.count || 1)) || 0) * 20)])
+        )
       },
       C: {
         score: domainScores.C.total,
         count: domainScores.C.count,
-        result: calculateBig5Result(domainScores.C.total, domainScores.C.count)
+        result: calculateBig5Result(domainScores.C.total, domainScores.C.count),
+        facet: Object.fromEntries(
+          Object.entries(domainFacetScores.C).map(([k, v]) => [k, Math.round(((v.total / (v.count || 1)) || 0) * 20)])
+        )
       },
       E: {
         score: domainScores.E.total,
         count: domainScores.E.count,
-        result: calculateBig5Result(domainScores.E.total, domainScores.E.count)
+        result: calculateBig5Result(domainScores.E.total, domainScores.E.count),
+        facet: Object.fromEntries(
+          Object.entries(domainFacetScores.E).map(([k, v]) => [k, Math.round(((v.total / (v.count || 1)) || 0) * 20)])
+        )
       },
       A: {
         score: domainScores.A.total,
         count: domainScores.A.count,
-        result: calculateBig5Result(domainScores.A.total, domainScores.A.count)
+        result: calculateBig5Result(domainScores.A.total, domainScores.A.count),
+        facet: Object.fromEntries(
+          Object.entries(domainFacetScores.A).map(([k, v]) => [k, Math.round(((v.total / (v.count || 1)) || 0) * 20)])
+        )
       },
       N: {
         score: domainScores.N.total,
         count: domainScores.N.count,
-        result: calculateBig5Result(domainScores.N.total, domainScores.N.count)
+        result: calculateBig5Result(domainScores.N.total, domainScores.N.count),
+        facet: Object.fromEntries(
+          Object.entries(domainFacetScores.N).map(([k, v]) => [k, Math.round(((v.total / (v.count || 1)) || 0) * 20)])
+        )
       }
     }
 
