@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useMemo } from 'react'
+import Link from 'next/link'
 import Header from '@/components/Header'
 import Button from '@/components/Button'
 import PortfolioSection from '@/components/PortfolioSection'
@@ -804,6 +805,24 @@ const handleSaveAnswer = async (questionId: string) => {
               big5ChartData={big5ChartData}
               hasCompletedTest={hasCompletedTest}
             />
+
+            {/* 행동평가 결과 분석 섹션 */}
+            <section className="rounded-xl p-6 border mb-8 bg-white">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-black font-semibold">🎯 행동평가 결과 분석</h3>
+                <Link href="/applicant/behavior-test" className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer hover:bg-green-700 transition-colors">
+                  행동검사 진행하기
+                </Link>
+              </div>
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🎯</div>
+                <h4 className="text-xl font-semibold text-gray-700 mb-2">행동검사를 시작해보세요!</h4>
+                <p className="text-gray-500 mb-6">행동평가를 통해 당신의 업무 스타일과 행동 패턴을 분석하고<br/>더 정확한 AI 프로필을 만들어보세요.</p>
+                <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
+                  <div className="text-gray-500 text-lg font-medium">행동검사 결과가 없습니다</div>
+                </div>
+              </div>
+            </section>
 
             {/* AI 학습 질문 섹션 요약 */}
             <QuestionsSection
