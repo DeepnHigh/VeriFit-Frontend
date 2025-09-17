@@ -59,15 +59,22 @@ export const getApiBaseUrl = () => {
   // 2) 브라우저 호스트 기준으로 백엔드 포트만 8000으로 맞춤
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname; // ex) 192.168.0.21, localhost
-    return `http://${hostname}:8000`;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+    if (isLocal) {
+      return `http://${hostname}:8000`;
+    }
+    // 로컬이 아닌 경우 외부 IP로 고정 (기본값으로 설정)
+    return 'http://14.39.95.228:8000';
   }
 
-  // 3) 서버 사이드 기본값
-  return 'http://localhost:8000';
+  // 3) 서버 사이드 기본값도 외부 IP로 변경
+  return 'http://14.39.95.228:8000';
 };
 
 // API 기본 설정
-const API_BASE_URL = getApiBaseUrl();
+const FALLBACK_API_BASE_URL = 'http://14.39.95.228:8000';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? FALLBACK_API_BASE_URL : getApiBaseUrl();
+const ENABLE_FALLBACK = (process.env.NEXT_PUBLIC_ENABLE_FALLBACK || 'false').toLowerCase() !== 'false' ? true : false;
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -87,14 +94,74 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터 - 에러 처리
+// 응답 인터셉터 - 에러 처리 및 폴백 재시도
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalConfig = error?.config || {};
+
+    // 인증 만료 처리
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+      return Promise.reject(error);
     }
+
+    // 네트워크/CORS류 오류로 응답이 없는 경우, 아직 폴백 재시도 안 했다면 1회 재시도
+    const isNetworkOrCorsError = !error?.response;
+    const alreadyRetried = (originalConfig as any)._retriedWithFallback === true;
+
+    // 요청의 실제 URL 계산 (baseURL + url 또는 절대 URL 그대로)
+    const rawUrl = (originalConfig.url || '') as string;
+    const hasAbsoluteUrl = /^https?:\/\//.test(rawUrl);
+    const baseURL = (originalConfig.baseURL || API_BASE_URL) as string;
+    const computedUrl = hasAbsoluteUrl ? rawUrl : `${baseURL}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+
+    // 이미 폴백으로 요청 중이면 재시도하지 않음
+    const isAlreadyFallbackTarget = computedUrl.startsWith(FALLBACK_API_BASE_URL);
+    if (!ENABLE_FALLBACK || isAlreadyFallbackTarget) {
+      return Promise.reject(error);
+    }
+
+    // localhost 계열로 나간 요청인지 판단
+    const isLocalHostRequest = /:\/\/localhost[:/]|:\/\/127\.0\.0\.1[:/]/.test(computedUrl) || /:\/\/0\.0\.0\.0[:/]/.test(computedUrl);
+
+    if (isNetworkOrCorsError && !alreadyRetried && (isLocalHostRequest || computedUrl.startsWith(API_BASE_URL))) {
+      try {
+        (originalConfig as any)._retriedWithFallback = true;
+        // 절대/상대 여부와 무관하게 호스트를 FALLBACK으로 교체
+        let pathOnly = rawUrl;
+        if (hasAbsoluteUrl) {
+          try {
+            const u = new URL(rawUrl);
+            pathOnly = `${u.pathname}${u.search || ''}`;
+          } catch {}
+        }
+        const fallbackUrl = `${FALLBACK_API_BASE_URL}${pathOnly.startsWith('/') ? '' : '/'}${pathOnly}`;
+        const method = (originalConfig.method || 'get').toLowerCase();
+        const headers = originalConfig.headers || {};
+        const data = originalConfig.data;
+
+        const retryResponse = await axios({
+          url: fallbackUrl,
+          method,
+          headers,
+          data,
+          withCredentials: originalConfig.withCredentials,
+          timeout: originalConfig.timeout,
+        });
+        if (typeof window !== 'undefined') {
+          try { console.warn('[api] Fallback 재시도 성공:', fallbackUrl); } catch {}
+        }
+        return retryResponse;
+      } catch (retryError) {
+        if (typeof window !== 'undefined') {
+          try { console.warn('[api] Fallback 재시도 실패'); } catch {}
+        }
+        return Promise.reject(retryError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -215,15 +282,31 @@ export interface LoginResponse {
 export const api = {
   // 로그인
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post('/login', data);
-    
-    // 백엔드 응답 형식에 맞춰 변환
-    const backendResponse = response.data;
-    return {
-      token: backendResponse.access_token,
-      user_type: backendResponse.user.user_type,
-      user_id: backendResponse.user.id,
-    };
+    try {
+      const response = await apiClient.post('/login', data);
+      const backendResponse = response.data;
+      return {
+        token: backendResponse.access_token,
+        user_type: backendResponse.user.user_type,
+        user_id: backendResponse.user.id,
+      };
+    } catch (error: any) {
+      // 네트워크/CORS/연결 거부 등으로 1차 실패 시 폴백 주소로 재시도
+      const isNetworkOrCorsError = !error?.response;
+      const alreadyOnFallback = (API_BASE_URL === FALLBACK_API_BASE_URL);
+      if (ENABLE_FALLBACK && isNetworkOrCorsError && !alreadyOnFallback) {
+        const response = await axios.post(`${FALLBACK_API_BASE_URL}/login`, data, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const backendResponse = response.data;
+        return {
+          token: backendResponse.access_token,
+          user_type: backendResponse.user.user_type,
+          user_id: backendResponse.user.id,
+        };
+      }
+      throw error;
+    }
   },
 
   // 지원자 관련 API

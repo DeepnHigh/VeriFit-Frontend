@@ -7,7 +7,7 @@ import Button from '@/components/Button'
 import PortfolioSection from '@/components/PortfolioSection'
 import Big5Section from '@/components/Big5Section'
 import QuestionsSection from '@/components/QuestionsSection'
-import { api } from '@/lib/api'
+import { api, getApiBaseUrl } from '@/lib/api'
 import { useSimulateRequest } from '../../../../hooks/useSimulateRequest'
 import { useAptitudeData } from '../../../../hooks/useAptitudeData'
 import { useQuestions } from '../../../../hooks/useQuestions'
@@ -249,7 +249,7 @@ const fetchUserProfile = async () => {
       }
 
       console.log('📡 API 호출 준비:')
-      console.log('  - API URL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001')
+      console.log('  - API URL:', getApiBaseUrl())
       console.log('  - 요청 URL:', '/applicants/${userId}')
       console.log('  - 토큰:', localStorage.getItem('token') ? '있음' : '없음')
       
