@@ -24,6 +24,11 @@ export default function LoginPage() {
       localStorage.setItem('token', response.token) 
       localStorage.setItem('userType', response.user_type)
       localStorage.setItem('userId', response.user_id)
+      if (response.company_name) {
+        localStorage.setItem('companyName', response.company_name)
+      } else {
+        localStorage.removeItem('companyName')
+      }
       
       // 사용자 타입에 따라 리다이렉트
       if (response.user_type === 'job_seeker') {

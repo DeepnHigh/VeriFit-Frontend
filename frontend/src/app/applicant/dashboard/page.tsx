@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
+import { logout } from '@/lib/auth'
 import Button from '@/components/Button'
 import PortfolioSection from '@/components/PortfolioSection'
 import Big5Section from '@/components/Big5Section'
@@ -528,7 +529,7 @@ const handleSaveAnswer = async (questionId: string) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header rightVariant="applicant" displayName={userProfile?.full_name || '사용자'} onLogout={() => logout('/')} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
