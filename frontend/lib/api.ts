@@ -315,6 +315,12 @@ export const api = {
       const response = await apiClient.post(`/own-qnas/${user_id}/${question_id}`, { answer });
       return response.data;
     },
+
+    // 행동평가 결과 텍스트 저장
+    saveBehaviorText: async (user_id: string, behavior_text: string) => {
+      const response = await apiClient.post(`/behavior/save/${user_id}`, { behavior_text });
+      return response.data;
+    },
   },
 
   // 문서 관련 API

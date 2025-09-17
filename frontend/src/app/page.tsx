@@ -18,13 +18,7 @@ export default function Home() {
               href="/login"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg"
             >
-              로그인
-            </Link>
-            <Link
-              href="/applicant"
-              className="bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-8 rounded-lg border-2 border-blue-600 transition-colors duration-200 shadow-lg"
-            >
-              지원자로 시작하기
+              지원자 로그인
             </Link>
             <Link
               href="/company"
