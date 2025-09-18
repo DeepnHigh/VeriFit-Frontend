@@ -118,10 +118,19 @@ export default function CreateJobPostingPage() {
         '프리랜서': 'contract',
       }
 
+      // 경력 요구사항을 position_level로 매핑 (백엔드 enum)
+      const positionLevelMap: Record<string, 'intern' | 'junior' | 'mid' | 'senior' | 'lead' | 'manager'> = {
+        '신입': 'junior',
+        '1-3년': 'mid',
+        '3-5년': 'senior',
+        '5년 이상': 'lead',
+      }
+
       const payload: any = {
         title: title.trim(),
         main_tasks: responsibilities.trim() ? responsibilities.trim() : '',
         requirements: requirementsArray,
+        preferred: preferences.trim() ? preferences.trim() : '',
         ai_criteria: aiCriteria,
         status: 'active',
       }
@@ -130,10 +139,14 @@ export default function CreateJobPostingPage() {
       const mappedEmployment = employmentTypeMap[employmentType]
       if (mappedEmployment) payload.employment_type = mappedEmployment
 
+      const mappedPositionLevel = positionLevelMap[experience]
+      if (mappedPositionLevel) payload.position_level = mappedPositionLevel
+
       if (salaryMin.trim() !== '') payload.salary_min = parseInt(salaryMin, 10)
       if (salaryMax.trim() !== '') payload.salary_max = parseInt(salaryMax, 10)
       if (applicationDeadline.trim() !== '') payload.application_deadline = applicationDeadline.trim()
       if (location.trim() !== '') payload.location = location.trim()
+      if (preferences.trim() !== '') payload.preferred = preferences.trim()
 
       // 디버그 로그
       try {
@@ -248,7 +261,7 @@ export default function CreateJobPostingPage() {
             </div>
             <div className="flex flex-col md:col-span-2">
               <label className="text-sm font-medium text-black mb-1">자격 요건</label>
-              <textarea value={qualifications} onChange={(e) => setQualifications(e.target.value)} placeholder="자격 요건을 입력하세요 (줄바꿈으로 구분)" className="border rounded px-3 py-2 min-h-28 text-black placeholder-gray-500" />
+              <textarea value={qualifications} onChange={(e) => setQualifications(e.target.value)} placeholder="자격 요건을 입력하세요" className="border rounded px-3 py-2 min-h-28 text-black placeholder-gray-500" />
             </div>
             <div className="flex flex-col md:col-span-2">
               <label className="text-sm font-medium text-black mb-1">우대사항</label>

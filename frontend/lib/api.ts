@@ -205,6 +205,7 @@ export interface LoginResponse {
   user_type: 'job_seeker' | 'company';
   user_id: string;
   company_name?: string;
+  user_name?: string;
 }
 
 // API 함수들
@@ -220,6 +221,7 @@ export const api = {
       user_type: backendResponse.user.user_type,
       user_id: backendResponse.user.id,
       company_name: backendResponse.company_name,
+      user_name: backendResponse.user?.name,
     };
   },
 
@@ -399,6 +401,33 @@ export const api = {
     // 지원자 프로필 조회
     getApplicantProfile: async (applications_id: string) => {
       const response = await apiClient.get(`/interviews/profiles/${applications_id}`);
+      return response.data;
+    },
+  },
+
+  // 지원(Applications) 관련 API
+  applications: {
+    // 지원 생성
+    create: async (job_posting_id: string, job_seeker_id: string) => {
+      const response = await apiClient.post('/applications', {
+        job_posting_id,
+        job_seeker_id,
+      })
+      return response.data
+    },
+
+    // (선택) 내 지원 목록 조회
+    listByJobSeeker: async (job_seeker_id: string) => {
+      const response = await apiClient.get(`/applications?job_seeker_id=${job_seeker_id}`)
+      return response.data
+    },
+  },
+
+  // 공개 공고 관련 API
+  public: {
+    // 모든 회사의 모든 공고 조회 (공개)
+    getAllJobPostings: async (includeClosed: boolean = false) => {
+      const response = await apiClient.get(`/public/job-postings?include_closed=${includeClosed}`);
       return response.data;
     },
   },

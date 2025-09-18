@@ -29,6 +29,15 @@ export default function LoginPage() {
       } else {
         localStorage.removeItem('companyName')
       }
+      // 지원자 이름 캐시 초기화 (백엔드에서 제공되면 저장)
+      try {
+        if (response.user_type === 'job_seeker') {
+          const userName = (response as any)?.user_name || (response as any)?.user?.name
+          if (userName) {
+            localStorage.setItem('applicantName', userName)
+          }
+        }
+      } catch (_) {}
       
       // 사용자 타입에 따라 리다이렉트
       if (response.user_type === 'job_seeker') {

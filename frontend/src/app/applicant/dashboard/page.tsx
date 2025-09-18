@@ -595,12 +595,12 @@ const handleSaveAnswer = async (questionId: string) => {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg">-</div>
-                    <div className="text-xs text-black">지원 공고</div>
+                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.application_count ?? ((userProfile as any)?.application_ids?.length ?? 0)}</div>
+                    <div className="text-xs text-black text-center">지원 공고</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg">-</div>
-                    <div className="text-xs text-black">AI 면접</div>
+                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.ai_interview_count ?? ((userProfile as any)?.ai_interview_ids?.length ?? 0)}</div>
+                    <div className="text-xs text-black text-center">AI 면접</div>
                   </div>
                 </div>
                 

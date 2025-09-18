@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import { logout } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import JobPostingDetail from '@/components/JobPostingDetail'
 
 export default function CompanyDashboard() {
   const [jobPostings, setJobPostings] = useState<any[]>([])
@@ -42,9 +43,6 @@ export default function CompanyDashboard() {
           : Array.isArray((postings as any)?.job_postings)
             ? (postings as any).job_postings
             : []
-      try {
-        console.log('🧰 정규화된 목록:', JSON.parse(JSON.stringify(normalized)))
-      } catch (_) {}
       setJobPostings(normalized)
     } catch (err: unknown) {
       setError('채용공고를 불러오는데 실패했습니다.')
@@ -283,7 +281,7 @@ export default function CompanyDashboard() {
                         상세보기
                       </button>
                       <Link
-                        href={`/company/interviews/${posting.id}`}
+                        href={`/company/interviews/${posting.id ?? posting.job_postings_id}`}
                         className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm"
                       >
                         채용현황
@@ -299,89 +297,22 @@ export default function CompanyDashboard() {
 
       {/* 상세 모달 */}
       {isDetailOpen && selectedPosting && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={closeDetail}></div>
-          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl mx-4">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
               <h2 className="text-xl font-bold text-black">📋 {selectedPosting.title}</h2>
               <button onClick={closeDetail} className="text-gray-600 hover:text-black text-2xl leading-none">×</button>
             </div>
-            <div className="p-6">
+            <div className="p-6 overflow-y-auto flex-1 rounded-b-xl">
               {detailLoading && (
                 <div className="mb-4 text-sm text-gray-600">상세 정보를 불러오는 중...</div>
               )}
               {detailError && (
                 <div className="mb-4 text-sm text-red-600">{detailError}</div>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">포지션명</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={selectedPosting.title || ''} />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">근무 형태</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={(selectedPosting.employment_type === 'full_time' ? '정규직' : selectedPosting.employment_type === 'part_time' ? '파트타임' : selectedPosting.employment_type === 'contract' ? '계약직' : selectedPosting.employment_type === 'internship' ? '인턴' : (selectedPosting.employment_type || '-'))} />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">연봉(최소)</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={typeof selectedPosting.salary_min === 'number' ? selectedPosting.salary_min : (selectedPosting.salary_min || '-') } />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">연봉(최대)</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={typeof selectedPosting.salary_max === 'number' ? selectedPosting.salary_max : (selectedPosting.salary_max || '-') } />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">공고 마감일</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={selectedPosting.application_deadline ? new Date(selectedPosting.application_deadline).toLocaleDateString() : '-'} />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-medium text-gray-600 mb-1">근무지</label>
-                  <input readOnly className="border rounded px-3 py-2 text-black bg-gray-50" value={selectedPosting.location || '-'} />
-                </div>
-                <div className="flex flex-col md:col-span-2">
-                  <label className="text-sm font-medium text-gray-600 mb-1">주요 업무</label>
-                  <textarea readOnly className="border rounded px-3 py-2 min-h-32 text-black bg-gray-50" value={selectedPosting.main_tasks || ''} />
-                </div>
-                <div className="flex flex-col md:col-span-2">
-                  <label className="text-sm font-medium text-gray-600 mb-1">자격 요건</label>
-                  <textarea readOnly className="border rounded px-3 py-2 min-h-32 text-black bg-gray-50" value={(Array.isArray(selectedPosting.requirements) ? selectedPosting.requirements.join('\n') : (selectedPosting.requirements || ''))} />
-                </div>
-                {selectedPosting.preferred && (
-                  <div className="flex flex-col md:col-span-2">
-                    <label className="text-sm font-medium text-gray-600 mb-1">우대사항</label>
-                    <textarea readOnly className="border rounded px-3 py-2 min-h-24 text-black bg-gray-50" value={selectedPosting.preferred || ''} />
-                  </div>
-                )}
-                {((selectedPosting.ai_criteria && (selectedPosting.ai_criteria.hard_skills || selectedPosting.ai_criteria.soft_skills)) || selectedPosting.evaluation_criteria) && (
-                  <div className="md:col-span-2">
-                    <h4 className="font-medium text-black mb-2">🤖 면접관AI 평가 기준</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-sm text-gray-600 mb-1">💻 하드 스킬</div>
-                        <div className="text-black text-sm">
-                          {(
-                            (selectedPosting.ai_criteria?.hard_skills) ||
-                            (selectedPosting.evaluation_criteria?.hard_skills) ||
-                            []
-                          ).join(', ')}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-gray-600 mb-1">🎭 소프트 스킬</div>
-                        <div className="text-black text-sm">
-                          {(
-                            (selectedPosting.ai_criteria?.soft_skills) ||
-                            (selectedPosting.evaluation_criteria?.soft_skills) ||
-                            []
-                          ).join(', ')}
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-xs text-gray-500">설정값은 공고 등록 시 확정되며, 이 화면에서는 변경할 수 없습니다.</p>
-                  </div>
-                )}
-              </div>
-              <div className="mt-6 flex justify-end">
+              <JobPostingDetail posting={selectedPosting} />
+              <div className="mt-6 flex justify-end flex-shrink-0">
                 <button onClick={closeDetail} className="px-5 py-2 rounded bg-gray-200 text-black hover:bg-gray-300">닫기</button>
               </div>
             </div>
