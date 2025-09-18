@@ -93,6 +93,25 @@ export default function CreateJobPostingPage() {
       alert('포지션명을 입력해주세요.')
       return
     }
+    // 연봉 유효성 검사
+    const hasMin = salaryMin.trim() !== ''
+    const hasMax = salaryMax.trim() !== ''
+    if (hasMin && hasMax) {
+      const minVal = parseInt(salaryMin, 10)
+      const maxVal = parseInt(salaryMax, 10)
+      if (Number.isNaN(minVal) || Number.isNaN(maxVal)) {
+        alert('연봉은 숫자로 입력해주세요.')
+        return
+      }
+      if (minVal > maxVal) {
+        alert('최소 연봉은 최대 연봉보다 클 수 없습니다.')
+        return
+      }
+      if (minVal < 0 || maxVal < 0) {
+        alert('연봉은 0 이상이어야 합니다.')
+        return
+      }
+    }
     setPublishing(true)
     try {
       // 사전 점검: 토큰 확인

@@ -280,12 +280,17 @@ export default function CompanyDashboard() {
                       >
                         상세보기
                       </button>
-                      <Link
-                        href={`/company/interviews/${posting.id ?? posting.job_postings_id}`}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm"
-                      >
-                        채용현황
-                      </Link>
+                      {(() => {
+                        const idForRoute = String((posting as any)?.id ?? '')
+                        return (
+                          <Link
+                            href={`/company/interviews/${idForRoute}`}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm"
+                          >
+                            채용현황
+                          </Link>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>
