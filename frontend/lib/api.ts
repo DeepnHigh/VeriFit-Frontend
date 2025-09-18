@@ -114,28 +114,23 @@ export interface Big5TestResult {
   id?: string;
   job_seeker_id: string;
   test_date?: string;
-  test_duration_minutes: number;
   openness_score: number;
   conscientiousness_score: number;
   extraversion_score: number;
   agreeableness_score: number;
   neuroticism_score: number;
-  openness_level: string;
-  conscientiousness_level: string;
-  extraversion_level: string;
-  agreeableness_level: string;
-  neuroticism_level: string;
-  openness_facets: any;
-  conscientiousness_facets: any;
-  extraversion_facets: any;
-  agreeableness_facets: any;
-  neuroticism_facets: any;
-  interpretations: any;
-  raw_scores: any;
-  overall_analysis?: string;
-  strengths?: string;
-  weaknesses?: string;
-  recommendations?: string;
+  openness_level: 'high' | 'neutral' | 'low';
+  conscientiousness_level: 'high' | 'neutral' | 'low';
+  extraversion_level: 'high' | 'neutral' | 'low';
+  agreeableness_level: 'high' | 'neutral' | 'low';
+  neuroticism_level: 'high' | 'neutral' | 'low';
+  openness_facets?: Record<string, any>;
+  conscientiousness_facets?: Record<string, any>;
+  extraversion_facets?: Record<string, any>;
+  agreeableness_facets?: Record<string, any>;
+  neuroticism_facets?: Record<string, any>;
+  interpretations?: Record<string, any>;
+  raw_scores?: Record<string, any>;
 }
 
 export interface ApplicantInfo {
@@ -209,6 +204,8 @@ export interface LoginResponse {
   token: string;
   user_type: 'job_seeker' | 'company';
   user_id: string;
+  company_name?: string;
+  user_name?: string;
 }
 
 // API 함수들
@@ -223,6 +220,8 @@ export const api = {
       token: backendResponse.access_token,
       user_type: backendResponse.user.user_type,
       user_id: backendResponse.user.id,
+      company_name: backendResponse.company_name,
+      user_name: backendResponse.user?.name,
     };
   },
 
@@ -359,7 +358,8 @@ export const api = {
     // 구인공고 생성
     createJobPosting: async (data: Partial<JobPosting>) => {
       const response = await apiClient.post('/job-postings', data);
-      return response.data;
+      // 백엔드 응답 형식: { message, data: { id, ... } }
+      return response.data?.data ?? response.data;
     },
 
     // 구인공고 조회
@@ -405,29 +405,56 @@ export const api = {
     },
   },
 
+  // 지원(Applications) 관련 API
+  applications: {
+    // 지원 생성
+    create: async (job_posting_id: string, job_seeker_id: string) => {
+      const response = await apiClient.post('/applications', {
+        job_posting_id,
+        job_seeker_id,
+      })
+      return response.data
+    },
+
+    // (선택) 내 지원 목록 조회
+    listByJobSeeker: async (job_seeker_id: string) => {
+      const response = await apiClient.get(`/applications?job_seeker_id=${job_seeker_id}`)
+      return response.data
+    },
+  },
+
+  // 공개 공고 관련 API
+  public: {
+    // 모든 회사의 모든 공고 조회 (공개)
+    getAllJobPostings: async (includeClosed: boolean = false) => {
+      const response = await apiClient.get(`/public/job-postings?include_closed=${includeClosed}`);
+      return response.data;
+    },
+  },
+
   // Big5 성격검사 관련 API
   big5: {
     // Big5 검사 결과 저장
     saveTestResult: async (result: Big5TestResult) => {
-      const response = await apiClient.post('/big5-test-results', result);
+      const response = await apiClient.post('/big5-test', result);
       return response.data;
     },
 
     // Big5 검사 결과 조회
     getTestResult: async (job_seeker_id: string) => {
-      const response = await apiClient.get(`/big5-test-results/${job_seeker_id}`);
+      const response = await apiClient.get(`/big5-test/${job_seeker_id}`);
       return response.data;
     },
 
     // Big5 검사 결과 업데이트
     updateTestResult: async (id: string, result: Partial<Big5TestResult>) => {
-      const response = await apiClient.put(`/big5-test-results/${id}`, result);
+      const response = await apiClient.put(`/big5-test/${id}`, result);
       return response.data;
     },
 
     // Big5 검사 결과 삭제
     deleteTestResult: async (id: string) => {
-      const response = await apiClient.delete(`/big5-test-results/${id}`);
+      const response = await apiClient.delete(`/big5-test/${id}`);
       return response.data;
     },
   },
