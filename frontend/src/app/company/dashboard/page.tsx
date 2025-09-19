@@ -2,15 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
 import Link from 'next/link'
 import { api } from '@/lib/api'
+import { logout } from '@/lib/auth'
 import { formatDate } from '@/lib/utils'
+import JobPostingDetail from '@/components/JobPostingDetail'
 
 export default function CompanyDashboard() {
   const [jobPostings, setJobPostings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const router = useRouter()
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [selectedPosting, setSelectedPosting] = useState<any | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [detailError, setDetailError] = useState('')
 
   useEffect(() => {
     const userType = localStorage.getItem('userType')
@@ -26,7 +33,17 @@ export default function CompanyDashboard() {
   const fetchJobPostings = async () => {
     try {
       const postings = await api.company.getJobPostings()
-      setJobPostings(postings)
+      try {
+        console.log('🛰️ GET /job-postings 응답 원본:', JSON.parse(JSON.stringify(postings)))
+      } catch (_) {}
+      const normalized = Array.isArray(postings)
+        ? postings
+        : Array.isArray((postings as any)?.data)
+          ? (postings as any).data
+          : Array.isArray((postings as any)?.job_postings)
+            ? (postings as any).job_postings
+            : []
+      setJobPostings(normalized)
     } catch (err: unknown) {
       setError('채용공고를 불러오는데 실패했습니다.')
     } finally {
@@ -34,11 +51,71 @@ export default function CompanyDashboard() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userType')
-    localStorage.removeItem('userId')
-    router.push('/')
+  const openDetail = async (posting: any) => {
+    setSelectedPosting(posting)
+    setIsDetailOpen(true)
+    setDetailError('')
+    setDetailLoading(true)
+    try {
+      const resp = await api.company.getJobPosting(posting.id)
+      try {
+        console.log('🛰️ GET /job-postings/{id} 응답 원본:', JSON.parse(JSON.stringify(resp)))
+      } catch (_) {}
+      const data = (resp as any)?.data ?? resp
+      try {
+        console.log('🧰 상세 정규화 데이터:', JSON.parse(JSON.stringify(data)))
+      } catch (_) {}
+      // 평가 기준 정규화: ai_criteria 또는 evaluation_criteria 사용
+      const aiCriteria = (data as any)?.ai_criteria || (data as any)?.evaluation_criteria || null
+      setSelectedPosting({ ...posting, ...data, ai_criteria: aiCriteria })
+    } catch (e) {
+      setDetailError('상세 정보를 불러오지 못했습니다.')
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
+  const closeDetail = () => {
+    setIsDetailOpen(false)
+    setSelectedPosting(null)
+    setDetailError('')
+    setDetailLoading(false)
+  }
+
+  const handleLogout = () => logout('/')
+
+  const mapEmploymentType = (value?: string | null) => {
+    if (!value) return '-'
+    switch (value) {
+      case 'full_time': return '정규직'
+      case 'part_time': return '파트타임'
+      case 'contract': return '계약직'
+      case 'internship': return '인턴'
+      default: return value
+    }
+  }
+
+  const mapPositionLevel = (value?: string | null) => {
+    if (!value) return '-'
+    const map: Record<string, string> = {
+      intern: '인턴',
+      junior: '신입/주니어',
+      mid: '중급',
+      senior: '시니어',
+      lead: '리드',
+      manager: '매니저',
+    }
+    return map[value] || value
+  }
+
+  const formatSalaryRange = (min?: number | null, max?: number | null) => {
+    const hasMin = typeof min === 'number'
+    const hasMax = typeof max === 'number'
+    if (!hasMin && !hasMax) return '-'
+    const fmt = (n: number) => `${n.toLocaleString()}만원`
+    if (hasMin && hasMax) return `${fmt(min as number)} ~ ${fmt(max as number)}`
+    if (hasMin) return `${fmt(min as number)} ~ -`
+    return `- ~ ${fmt(max as number)}`
   }
 
   if (loading) {
@@ -71,26 +148,7 @@ export default function CompanyDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-blue-600">
-                VeriFit
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">기업 관리자님</span>
-              <button
-                onClick={handleLogout}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
-              >
-                로그아웃
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header rightVariant="company" onLogout={handleLogout} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -109,7 +167,7 @@ export default function CompanyDashboard() {
         </div>
 
         {/* 통계 카드 */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -118,7 +176,7 @@ export default function CompanyDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">총 채용공고</p>
+                <p className="text-sm font-medium text-gray-600">총 공고</p>
                 <p className="text-2xl font-semibold text-gray-900">{jobPostings.length}</p>
               </div>
             </div>
@@ -132,9 +190,9 @@ export default function CompanyDashboard() {
                 </svg>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">진행중인 공고</p>
+                <p className="text-sm font-medium text-gray-600">진행중 공고</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {jobPostings.filter(p => p.status === 'active').length}
+                  {jobPostings.filter(p => p.is_active === true).length}
                 </p>
               </div>
             </div>
@@ -150,22 +208,8 @@ export default function CompanyDashboard() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">마감된 공고</p>
                 <p className="text-2xl font-semibold text-gray-900">
-                  {jobPostings.filter(p => p.status === 'closed').length}
+                  {jobPostings.filter(p => p.is_active === false).length}
                 </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">총 지원자</p>
-                <p className="text-2xl font-semibold text-gray-900">-</p>
               </div>
             </div>
           </div>
@@ -196,35 +240,57 @@ export default function CompanyDashboard() {
           ) : (
             <div className="divide-y divide-gray-200">
               {jobPostings.map((posting) => (
-                <div key={posting.job_postings_id} className="px-6 py-4">
+                <div key={posting.id} className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-medium text-gray-900">{posting.title}</h3>
-                      <p className="mt-1 text-sm text-gray-500 line-clamp-2">{posting.description}</p>
-                      <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                        <span>작성일: {formatDate(posting.created_at)}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          posting.status === 'active' 
+                      <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-700">
+                        <span className="inline-flex items-center">
+                          <span className="text-gray-500 mr-1">고용형태</span>
+                          <span className="font-medium">{mapEmploymentType(posting.employment_type)}</span>
+                        </span>
+                        <span className="inline-flex items-center">
+                          <span className="text-gray-500 mr-1">경력</span>
+                          <span className="font-medium">{mapPositionLevel(posting.position_level)}</span>
+                        </span>
+                        <span className="inline-flex items-center">
+                          <span className="text-gray-500 mr-1">급여</span>
+                          <span className="font-medium">{formatSalaryRange(posting.salary_min, posting.salary_max)}</span>
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                          posting.is_active === true 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {posting.status === 'active' ? '진행중' : '마감'}
+                          {posting.is_active === true ? '진행중' : '마감'}
                         </span>
+                      </div>
+                      {/* main_tasks 요약은 목록에서 비표시 */}
+                      <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
+                        <span>작성일: {formatDate(posting.created_at)}</span>
+                        {posting.application_deadline && (
+                          <span>마감일: {formatDate(posting.application_deadline)}</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Link
-                        href={`/company/job-postings/${posting.job_postings_id}`}
+                      <button
+                        onClick={() => openDetail(posting)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
                       >
                         상세보기
-                      </Link>
-                      <Link
-                        href={`/company/interviews/${posting.job_postings_id}`}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm"
-                      >
-                        채용현황
-                      </Link>
+                      </button>
+                      {(() => {
+                        const idForRoute = String((posting as any)?.id ?? '')
+                        return (
+                          <Link
+                            href={`/company/interviews/${idForRoute}`}
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm"
+                          >
+                            채용현황
+                          </Link>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -233,6 +299,31 @@ export default function CompanyDashboard() {
           )}
         </div>
       </div>
+
+      {/* 상세 모달 */}
+      {isDetailOpen && selectedPosting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={closeDetail}></div>
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0">
+              <h2 className="text-xl font-bold text-black">📋 {selectedPosting.title}</h2>
+              <button onClick={closeDetail} className="text-gray-600 hover:text-black text-2xl leading-none">×</button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1 rounded-b-xl">
+              {detailLoading && (
+                <div className="mb-4 text-sm text-gray-600">상세 정보를 불러오는 중...</div>
+              )}
+              {detailError && (
+                <div className="mb-4 text-sm text-red-600">{detailError}</div>
+              )}
+              <JobPostingDetail posting={selectedPosting} />
+              <div className="mt-6 flex justify-end flex-shrink-0">
+                <button onClick={closeDetail} className="px-5 py-2 rounded bg-gray-200 text-black hover:bg-gray-300">닫기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

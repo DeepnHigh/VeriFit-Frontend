@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
+import { logout } from '@/lib/auth'
 import Button from '@/components/Button'
 import { useBig5Questions, Big5Result } from '../../../../hooks/useBig5Questions'
 import apiClient, { Big5TestResult, api as apiMethods, getApiBaseUrl } from '@/lib/api'
@@ -103,7 +104,7 @@ export default function Big5TestPage() {
   if (isCompleted && result) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Header rightVariant="applicant" onLogout={() => logout('/')} />
         
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="bg-white rounded-xl p-8 border shadow-sm">
@@ -164,7 +165,7 @@ export default function Big5TestPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header rightVariant="applicant" onLogout={() => logout('/')} />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-xl p-8 border shadow-sm">

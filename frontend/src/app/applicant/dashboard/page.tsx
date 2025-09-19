@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
+import { logout } from '@/lib/auth'
 import Button from '@/components/Button'
 import PortfolioSection from '@/components/PortfolioSection'
 import Big5Section from '@/components/Big5Section'
@@ -528,7 +529,7 @@ const handleSaveAnswer = async (questionId: string) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header rightVariant="applicant" displayName={userProfile?.full_name || '사용자'} onLogout={() => logout('/')} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
@@ -594,12 +595,12 @@ const handleSaveAnswer = async (questionId: string) => {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg">-</div>
-                    <div className="text-xs text-black">지원 공고</div>
+                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.application_count ?? ((userProfile as any)?.application_ids?.length ?? 0)}</div>
+                    <div className="text-xs text-black text-center">지원 공고</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg">-</div>
-                    <div className="text-xs text-black">AI 면접</div>
+                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.ai_interview_count ?? ((userProfile as any)?.ai_interview_ids?.length ?? 0)}</div>
+                    <div className="text-xs text-black text-center">AI 면접</div>
                   </div>
                 </div>
                 
