@@ -12,7 +12,8 @@ module.exports = {
         NODE_OPTIONS: '--dns-result-order=ipv4first',
         BACKEND_HOST: process.env.BACKEND_HOST || 'localhost',
         BACKEND_PORT: process.env.BACKEND_PORT || 8000,
-        NEXT_PUBLIC_API_URL: `http://${process.env.BACKEND_HOST || 'localhost'}:${process.env.BACKEND_PORT || 8000}`
+        NEXT_PUBLIC_API_URL_1: 'http://192.168.0.21:8000',
+        NEXT_PUBLIC_API_URL_2: 'http://14.39.95.228:8000'
       },
       env_production: {
         NODE_ENV: 'production',
@@ -21,7 +22,8 @@ module.exports = {
         NODE_OPTIONS: '--dns-result-order=ipv4first',
         BACKEND_HOST: process.env.BACKEND_HOST || 'localhost',
         BACKEND_PORT: process.env.BACKEND_PORT || 8000,
-        NEXT_PUBLIC_API_URL: `http://${process.env.BACKEND_HOST || 'localhost'}:${process.env.BACKEND_PORT || 8000}`
+        NEXT_PUBLIC_API_URL_1: 'http://192.168.0.21:8000',
+        NEXT_PUBLIC_API_URL_2: 'http://14.39.95.228:8000'
       },
       instances: 1,
       autorestart: true,
