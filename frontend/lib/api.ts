@@ -49,25 +49,74 @@ interface PersonalInfoResponse {
 }
 
 
+// API URL 설정
+const STORAGE_KEY = 'verifit_api_url';
+
+// 환경변수에서 API URL 목록 가져오기
+const getApiUrlList = (): string[] => {
+  const urls: string[] = [];
+  
+  // 환경변수에서 API URL들을 순서대로 가져오기
+  let i = 1;
+  while (process.env[`NEXT_PUBLIC_API_URL_${i}`]) {
+    urls.push(process.env[`NEXT_PUBLIC_API_URL_${i}`]!);
+    i++;
+  }
+  
+  // 환경변수가 없으면 기본값들 사용
+  if (urls.length === 0) {
+    urls.push('http://192.168.0.21:8000');
+    urls.push('http://14.39.95.228:8000');
+  }
+  
+  return urls;
+};
+
 // API URL 동적 선택 함수
-export const getApiBaseUrl = () => {
-  // 1) 환경변수 우선
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-
-  // 2) 브라우저 호스트 기준으로 백엔드 포트만 8000으로 맞춤
+export const getApiBaseUrl = (): string => {
+  // 1) 브라우저에서 저장된 성공한 API URL 우선 사용
   if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname; // ex) 192.168.0.21, localhost
-    return `http://${hostname}:8000`;
+    const savedUrl = localStorage.getItem(STORAGE_KEY);
+    if (savedUrl) {
+      console.log('[API] localStorage에서 저장된 API URL 사용:', savedUrl);
+      return savedUrl;
+    }
   }
 
-  // 3) 서버 사이드 기본값
-  return 'http://localhost:8000';
+  // 2) 환경변수에서 첫 번째 URL 사용
+  const urlList = getApiUrlList();
+  const firstUrl = urlList[0];
+  console.log('[API] 첫 번째 API URL 사용:', firstUrl);
+  return firstUrl;
+};
+
+// 성공한 API URL을 저장하는 함수
+export const saveSuccessfulApiUrl = (url: string) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, url);
+    console.log('[API] 성공한 API URL 저장:', url);
+  }
+};
+
+// 저장된 API URL을 초기화하는 함수 (필요시 사용)
+export const clearSavedApiUrl = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(STORAGE_KEY);
+    console.log('[API] 저장된 API URL 초기화');
+  }
+};
+
+// API URL 강제 재설정 함수 (디버깅용)
+export const resetApiUrl = () => {
+  if (typeof window !== 'undefined') {
+    clearSavedApiUrl();
+    console.log('[API] API URL 재설정 완료. 다음 요청부터 새로운 URL 사용');
+  }
 };
 
 // API 기본 설정
 const API_BASE_URL = getApiBaseUrl();
+const API_URL_LIST = getApiUrlList();
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -87,14 +136,81 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터 - 에러 처리
+// 응답 인터셉터 - 에러 처리 및 폴백 재시도
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  (response) => {
+    // 성공한 요청의 API URL을 저장
+    const baseURL = response.config.baseURL;
+    if (baseURL && typeof window !== 'undefined') {
+      saveSuccessfulApiUrl(baseURL);
+    }
+    return response;
+  },
+  async (error) => {
+    const originalConfig = error?.config || {};
+
+    // 인증 만료 처리
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
+      return Promise.reject(error);
     }
+
+    // 네트워크/CORS류 오류로 응답이 없는 경우, 다른 API URL로 재시도
+    const isNetworkOrCorsError = !error?.response;
+    const alreadyRetried = (originalConfig as any)._retriedWithFallback === true;
+
+    if (isNetworkOrCorsError && !alreadyRetried) {
+      const currentBaseURL = originalConfig.baseURL || API_BASE_URL;
+      const currentIndex = API_URL_LIST.findIndex(url => url === currentBaseURL);
+      
+      // 다음 API URL 찾기
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < API_URL_LIST.length) {
+        const nextApiUrl = API_URL_LIST[nextIndex];
+        
+        try {
+          (originalConfig as any)._retriedWithFallback = true;
+          console.warn(`[API] ${currentBaseURL} 실패, 다음 URL로 재시도: ${nextApiUrl}`);
+          
+          // 요청 경로 추출
+          const rawUrl = (originalConfig.url || '') as string;
+          const hasAbsoluteUrl = /^https?:\/\//.test(rawUrl);
+          let pathOnly = rawUrl;
+          if (hasAbsoluteUrl) {
+            try {
+              const u = new URL(rawUrl);
+              pathOnly = `${u.pathname}${u.search || ''}`;
+            } catch {}
+          }
+          
+          const retryUrl = `${nextApiUrl}${pathOnly.startsWith('/') ? '' : '/'}${pathOnly}`;
+          const method = (originalConfig.method || 'get').toLowerCase();
+          const headers = originalConfig.headers || {};
+          const data = originalConfig.data;
+
+          const retryResponse = await axios({
+            url: retryUrl,
+            method,
+            headers,
+            data,
+            withCredentials: originalConfig.withCredentials,
+            timeout: originalConfig.timeout,
+          });
+          
+          // 재시도 성공 시 해당 URL을 저장
+          if (typeof window !== 'undefined') {
+            saveSuccessfulApiUrl(nextApiUrl);
+            console.log(`[API] 재시도 성공, URL 저장: ${nextApiUrl}`);
+          }
+          return retryResponse;
+        } catch (retryError) {
+          console.error(`[API] ${nextApiUrl} 재시도도 실패:`, retryError);
+          return Promise.reject(retryError);
+        }
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -212,17 +328,41 @@ export interface LoginResponse {
 export const api = {
   // 로그인
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post('/login', data);
+    // API URL 목록을 순차적으로 시도
+    for (let i = 0; i < API_URL_LIST.length; i++) {
+      const apiUrl = API_URL_LIST[i];
+      try {
+        console.log(`[API] 로그인 시도 ${i + 1}/${API_URL_LIST.length}: ${apiUrl}`);
+        const response = await axios.post(`${apiUrl}/login`, data, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const backendResponse = response.data;
+        
+        // 성공한 API URL 저장
+        if (typeof window !== 'undefined') {
+          saveSuccessfulApiUrl(apiUrl);
+          console.log(`[API] 로그인 성공, URL 저장: ${apiUrl}`);
+        }
+        
+        return {
+          token: backendResponse.access_token,
+          user_type: backendResponse.user.user_type,
+          user_id: backendResponse.user.id,
+          company_name: backendResponse.user.company_name,
+          user_name: backendResponse.user.name,
+        };
+      } catch (error: any) {
+        console.warn(`[API] ${apiUrl} 로그인 실패:`, error.message);
+        
+        // 마지막 URL까지 실패한 경우
+        if (i === API_URL_LIST.length - 1) {
+          console.error('[API] 모든 API URL 로그인 실패');
+          throw error;
+        }
+      }
+    }
     
-    // 백엔드 응답 형식에 맞춰 변환
-    const backendResponse = response.data;
-    return {
-      token: backendResponse.access_token,
-      user_type: backendResponse.user.user_type,
-      user_id: backendResponse.user.id,
-      company_name: backendResponse.company_name,
-      user_name: backendResponse.user?.name,
-    };
+    throw new Error('로그인 실패: 사용 가능한 API 서버가 없습니다.');
   },
 
   // 지원자 관련 API
