@@ -117,6 +117,8 @@ const [extracting, setExtracting] = useState(false)
 const [extractStatus, setExtractStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 const [isEditing, setIsEditing] = useState(false)
 const [editForm, setEditForm] = useState<JobSeekerUpdatePayload>({})
+const [aiUpdating, setAiUpdating] = useState(false)
+const [aiUpdateStatus, setAiUpdateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
 // 최종학력 표기 변환 맵
 const EDUCATION_LABELS: Record<string, string> = {
@@ -439,6 +441,66 @@ const extractPersonalInfo = async () => {
     setExtractStatus('error')
   } finally {
     setExtracting(false)
+  }
+}
+
+// 지원자AI 업데이트 함수
+const updateApplicantAI = async () => {
+  try {
+    setAiUpdating(true)
+    setAiUpdateStatus('loading')
+    const userId = localStorage.getItem('userId')
+    
+    if (!userId) {
+      alert('사용자 ID를 찾을 수 없습니다.')
+      setAiUpdateStatus('error')
+      setAiUpdating(false)
+      return
+    }
+
+    // 1. 사용자 프로필에서 github_repositories 데이터 가져오기
+    const profileData = await api.applicant.getProfile(userId)
+    const githubData = (profileData as any)?.github_repositories
+    
+    if (!githubData || !githubData.repository || githubData.repository.length === 0) {
+      alert('GitHub 레포지토리 정보가 없습니다. 프로필에 GitHub 레포지토리를 추가해주세요.')
+      setAiUpdateStatus('error')
+      setAiUpdating(false)
+      return
+    }
+
+    // 2. 람다 함수에 보낼 데이터 형식으로 변환
+    const repositories = githubData.repository.map((repoUrl: string, index: number) => ({
+      repository_url: repoUrl,
+      github_username: githubData.username && githubData.username.length > 0 ? githubData.username[0] : 'unknown'
+    }))
+
+    // 3. Next.js API 라우트를 통해 람다 함수 호출
+    const lambdaResponse = await api.applicant.updateApplicantAI(repositories)
+    console.log('📡 람다 함수 응답 전체 (JSON 형태):', JSON.stringify(lambdaResponse, null, 2))
+
+      // 4. 람다 함수 응답 처리 (하드스킬 저장은 백엔드 엔드포인트가 없어서 임시 생략)
+      if (lambdaResponse.success && lambdaResponse.data) {
+        console.log('✅ 람다 함수 호출 성공!')
+        console.log('📊 람다 함수가 보내준 전체 데이터:', JSON.stringify(lambdaResponse.data, null, 2))
+        console.log('⚠️ 하드스킬 저장은 백엔드 엔드포인트가 구현되면 추가 예정')
+        // TODO: 백엔드에 /hardskill/save/{user_id} 엔드포인트 추가 후 활성화
+        // const backendResponse = await api.applicant.saveHardSkill(userId, lambdaResponse.data)
+        // console.log('백엔드 API 응답:', backendResponse)
+      } else {
+        console.log('❌ 람다 함수 호출 실패:', lambdaResponse.error)
+        throw new Error(lambdaResponse.error || '람다 함수 호출 실패')
+      }
+
+    alert('지원자AI가 성공적으로 업데이트되었습니다!')
+    setAiUpdateStatus('success')
+
+  } catch (err: unknown) {
+    console.error('지원자AI 업데이트 실패:', err)
+    alert('지원자AI 업데이트에 실패했습니다. 다시 시도해주세요.')
+    setAiUpdateStatus('error')
+  } finally {
+    setAiUpdating(false)
   }
 }
 
@@ -844,6 +906,34 @@ const handleSaveAnswer = async (questionId: string) => {
               onClearAnswer={(questionId) => setAnswers(prev => ({ ...prev, [questionId]: '' }))}
               onSimulateRequest={simulateRequest}
             />
+
+            {/* 지원자AI 업데이트 버튼 */}
+            <div className="flex justify-center mb-8 mt-12">
+              <div className="flex flex-col items-center gap-4">
+                <Button 
+                  onClick={updateApplicantAI} 
+                  variant="primary" 
+                  size="lg"
+                  disabled={aiUpdating}
+                >
+                  {aiUpdating ? 'AI 업데이트 중...' : '지원자AI 업데이트'}
+                </Button>
+                {(aiUpdateStatus === 'loading' || aiUpdateStatus === 'error') && (
+                  <div className="flex items-center gap-2">
+                    {aiUpdateStatus === 'loading' && (
+                      <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true"></span>
+                    )}
+                    <span className={`${aiUpdateStatus === 'loading' ? 'text-blue-600' : 'text-red-600'} text-sm font-medium`}>
+                      {aiUpdateStatus === 'loading' && 'AI 업데이트 중입니다. 페이지를 이동하거나 끄지 마세요!'}
+                      {aiUpdateStatus === 'error' && '업데이트에 실패했습니다. 다시 시도해 주세요.'}
+                    </span>
+                  </div>
+                )}
+                {aiUpdateStatus === 'success' && (
+                  <div className="text-green-600 text-sm font-medium">✅ 지원자AI가 성공적으로 업데이트되었습니다!</div>
+                )}
+              </div>
+            </div>
         </section>
         )}
       </main>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import FileUploadButton from './FileUploadButton'
 
 // S3 파일 정보 타입 정의
@@ -34,11 +35,11 @@ const FILE_TYPE_CONFIGS: Record<FileType, FileTypeConfig> = {
     buttonText: '파일 선택'
   },
   github: {
-    icon: '🔗',
+    icon: '📊',
     title: 'GitHub 링크',
-    description: 'GitHub 저장소 링크가 포함된 텍스트 파일을 업로드하세요',
+    description: 'GitHub 저장소 링크가 포함된 CSV 파일을 업로드하세요',
     documentType: 'github',
-    buttonText: 'GitHub 링크 파일 업로드'
+    buttonText: 'CSV 파일 업로드'
   },
   resume: {
     icon: '📋',
@@ -98,16 +99,28 @@ export default function FileCard({
   onUploadSuccess
 }: FileCardProps) {
   const config = FILE_TYPE_CONFIGS[fileType]
+  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const hasFiles = files && files.length > 0
   const emptyMessage = fileType === 'github' 
-    ? '업로드된 GitHub 링크 파일이 없습니다'
+    ? '업로드된 CSV 파일이 없습니다'
     : '업로드된 파일이 없습니다'
 
   return (
     <div className="bg-white rounded-lg p-4 border">
       <div className="text-2xl mb-2">{config.icon}</div>
-      <div className="font-semibold text-black mb-1">{config.title}</div>
+      <div className="flex items-center justify-between mb-1">
+        <div className="font-semibold text-black">{config.title}</div>
+        {fileType === 'github' && (
+          <button
+            onClick={() => setShowInfoModal(true)}
+            className="text-blue-500 hover:text-blue-700 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+            title="CSV 파일 형식 안내"
+          >
+            ℹ️ 정보
+          </button>
+        )}
+      </div>
       
       {config.description && (
         <div className="text-sm text-gray-600 mb-3">{config.description}</div>
@@ -154,6 +167,52 @@ export default function FileCard({
         onUploadSuccess={onUploadSuccess}
         buttonText={config.buttonText}
       />
+
+      {/* GitHub 정보 모달 */}
+      {fileType === 'github' && showInfoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">📊 CSV 파일 형식 안내</h3>
+              <button
+                onClick={() => setShowInfoModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4 text-sm text-gray-700">
+              <p className="font-medium">
+                repository 주소와 github username이 담긴 csv 파일을 업로드해 주세요.
+              </p>
+              
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="mb-2"><strong>1열:</strong> 해당 repository에서 사용한 username</p>
+                <p className="text-gray-600 mb-2">예시: kji123</p>
+                
+                <p className="mb-2"><strong>2열:</strong> repository의 주소</p>
+                <p className="text-gray-600">예시: https://github.com/kji123/testproject</p>
+              </div>
+              
+              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                <p className="text-yellow-800 font-medium">
+                  ⚠️ repository는 지원자 AI가 접근할 수 있도록 public이어야 합니다!
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowInfoModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

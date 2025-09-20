@@ -34,18 +34,42 @@ export default function FileUploadButton({
     }
 
     // 파일 타입 검증
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
-      'image/jpeg',
-      'image/png',
-      'image/gif'
-    ]
+    let allowedTypes: string[]
+    let errorMessage: string
 
-    if (!allowedTypes.includes(file.type)) {
-      setUploadError('지원하지 않는 파일 형식입니다. (PDF, DOC, DOCX, TXT, JPG, PNG, GIF만 허용)')
+    if (documentType === 'github') {
+      // GitHub 링크는 CSV 파일만 허용
+      allowedTypes = [
+        'text/csv',
+        'application/csv',
+        'text/plain' // 일부 시스템에서 CSV를 text/plain으로 인식
+      ]
+      errorMessage = 'CSV 파일만 업로드 가능합니다.'
+    } else {
+      // 다른 파일 타입들은 기존 허용 형식
+      allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+        'image/jpeg',
+        'image/png',
+        'image/gif'
+      ]
+      errorMessage = '지원하지 않는 파일 형식입니다. (PDF, DOC, DOCX, TXT, JPG, PNG, GIF만 허용)'
+    }
+
+    // 파일 확장자도 확인 (MIME 타입이 정확하지 않을 수 있음)
+    const fileExtension = file.name.toLowerCase().split('.').pop()
+    const isCsvFile = fileExtension === 'csv'
+    
+    if (documentType === 'github' && !isCsvFile) {
+      setUploadError('CSV 파일만 업로드 가능합니다.')
+      return
+    }
+
+    if (!allowedTypes.includes(file.type) && !(documentType === 'github' && isCsvFile)) {
+      setUploadError(errorMessage)
       return
     }
 
@@ -120,7 +144,7 @@ export default function FileUploadButton({
         ref={fileInputRef}
         type="file"
         onChange={handleFileSelect}
-        accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
+        accept={documentType === 'github' ? '.csv' : '.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif'}
         className="hidden"
       />
       
