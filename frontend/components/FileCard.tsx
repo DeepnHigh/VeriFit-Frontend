@@ -87,6 +87,7 @@ interface FileCardProps {
   onFileDownload: (documentType: string, fileName: string) => void
   onFileDelete: (documentType: string, fileName: string) => void
   onUploadSuccess: () => void
+  readOnly?: boolean // 읽기 전용 모드 추가
 }
 
 export default function FileCard({
@@ -95,7 +96,8 @@ export default function FileCard({
   userId,
   onFileDownload,
   onFileDelete,
-  onUploadSuccess
+  onUploadSuccess,
+  readOnly = false
 }: FileCardProps) {
   const config = FILE_TYPE_CONFIGS[fileType]
 
@@ -109,7 +111,7 @@ export default function FileCard({
       <div className="text-2xl mb-2">{config.icon}</div>
       <div className="font-semibold text-black mb-1">{config.title}</div>
       
-      {config.description && (
+      {config.description && !readOnly && (
         <div className="text-sm text-gray-600 mb-3">{config.description}</div>
       )}
       
@@ -131,13 +133,15 @@ export default function FileCard({
                     {(file.size / 1024).toFixed(1)}KB
                   </div>
                 </div>
-                <button
-                  onClick={() => onFileDelete(fileType, file.name)}
-                  className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                  title="파일 삭제"
-                >
-                  ×
-                </button>
+                {!readOnly && (
+                  <button
+                    onClick={() => onFileDelete(fileType, file.name)}
+                    className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                    title="파일 삭제"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -148,12 +152,14 @@ export default function FileCard({
         )}
       </div>
       
-      <FileUploadButton
-        userId={userId}
-        documentType={config.documentType as FileType}
-        onUploadSuccess={onUploadSuccess}
-        buttonText={config.buttonText}
-      />
+      {!readOnly && (
+        <FileUploadButton
+          userId={userId}
+          documentType={config.documentType as FileType}
+          onUploadSuccess={onUploadSuccess}
+          buttonText={config.buttonText}
+        />
+      )}
     </div>
   )
 }

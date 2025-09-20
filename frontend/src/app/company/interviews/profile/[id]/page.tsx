@@ -7,10 +7,8 @@ import { api } from "@/lib/api"
 import Header from "@/components/Header"
 import { logout } from "@/lib/auth"
 import Big5Result from "@/components/Big5Result"
-import { 
-  createBig5DataFromApi, 
-  createBig5ChartDataFromApi, 
-} from "../../../../../../data/big5Data"
+import FileCard from "@/components/FileCard"
+import BehaviorTestResultSection from "@/components/BehaviorTestResultSection"
 
 type ApplicantProfile = any
 
@@ -146,6 +144,50 @@ export default function ProfilePage() {
     }
   }, [profile])
 
+  // 문서 데이터 처리
+  const { documentsByType, hasDocuments } = useMemo(() => {
+    const documents = profile?.documents || []
+    const documentsByType: Record<string, any[]> = {}
+    
+    // 문서 타입별로 그룹화
+    documents.forEach((doc: any) => {
+      const type = doc.document_type
+      if (!documentsByType[type]) {
+        documentsByType[type] = []
+      }
+      documentsByType[type].push({
+        name: doc.file_name,
+        size: doc.file_size,
+        lastModified: doc.uploaded_at,
+        downloadUrl: doc.file_url
+      })
+    })
+    
+    return {
+      documentsByType,
+      hasDocuments: documents.length > 0
+    }
+  }, [profile])
+
+  // 파일 다운로드 핸들러 (읽기 전용)
+  const handleFileDownload = (documentType: string, fileName: string) => {
+    const documents = profile?.documents || []
+    const doc = documents.find((d: any) => d.document_type === documentType && d.file_name === fileName)
+    if (doc?.file_url) {
+      window.open(doc.file_url, '_blank')
+    }
+  }
+
+  // 파일 삭제 핸들러 (읽기 전용이므로 빈 함수)
+  const handleFileDelete = () => {
+    // 읽기 전용이므로 아무것도 하지 않음
+  }
+
+  // 업로드 성공 핸들러 (읽기 전용이므로 빈 함수)
+  const handleUploadSuccess = () => {
+    // 읽기 전용이므로 아무것도 하지 않음
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Header rightVariant="company" onLogout={handleLogout} />
@@ -254,15 +296,33 @@ export default function ProfilePage() {
             {/* 포트폴리오 및 자료 섹션 (읽기 전용) */}
             <div className="rounded-xl p-6 border mb-8 bg-white">
               <h3 className="text-black font-semibold mb-4">📁 포트폴리오 및 자료</h3>
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">📁</div>
-                <h4 className="text-xl font-semibold text-gray-700 mb-2">포트폴리오 정보</h4>
-                <p className="text-gray-500 mb-6">지원자가 업로드한 포트폴리오와 관련 자료를 확인할 수 있습니다.</p>
-                <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
-                  <div className="text-gray-500 text-lg font-medium">포트폴리오 데이터가 없습니다</div>
-                  <div className="text-gray-400 text-sm mt-2">백엔드에서 포트폴리오 정보를 제공하면 여기에 표시됩니다.</div>
+              {hasDocuments ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* 파일이 있는 문서 타입만 표시 */}
+                  {Object.entries(documentsByType).map(([documentType, files]) => (
+                    <FileCard
+                      key={documentType}
+                      fileType={documentType as any}
+                      files={files}
+                      userId={profile?.job_seeker_id || ''}
+                      onFileDownload={handleFileDownload}
+                      onFileDelete={handleFileDelete}
+                      onUploadSuccess={handleUploadSuccess}
+                      readOnly={true}
+                    />
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📁</div>
+                  <h4 className="text-xl font-semibold text-gray-700 mb-2">포트폴리오 정보</h4>
+                  <p className="text-gray-500 mb-6">지원자가 업로드한 포트폴리오와 관련 자료를 확인할 수 있습니다.</p>
+                  <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
+                    <div className="text-gray-500 text-lg font-medium">포트폴리오 데이터가 없습니다</div>
+                    <div className="text-gray-400 text-sm mt-2">백엔드에서 포트폴리오 정보를 제공하면 여기에 표시됩니다.</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Big5 성격검사 결과 (읽기 전용) */}
@@ -288,18 +348,10 @@ export default function ProfilePage() {
             </div>
 
             {/* 행동평가 결과 분석 섹션 (읽기 전용) */}
-            <div className="rounded-xl p-6 border mb-8 bg-white">
-              <h3 className="text-black font-semibold mb-4">🎯 행동평가 결과 분석</h3>
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🎯</div>
-                <h4 className="text-xl font-semibold text-gray-700 mb-2">행동평가 결과</h4>
-                <p className="text-gray-500 mb-6">지원자의 행동평가 결과를 확인할 수 있습니다.</p>
-                <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
-                  <div className="text-gray-500 text-lg font-medium">행동평가 결과가 없습니다</div>
-                  <div className="text-gray-400 text-sm mt-2">백엔드에서 행동평가 데이터를 제공하면 여기에 표시됩니다.</div>
-                </div>
-              </div>
-            </div>
+            <BehaviorTestResultSection 
+              behaviorTestResult={profile?.behavior_test_results?.behavior_text || null} 
+              readOnly={true} 
+            />
 
             {/* AI 학습 질문 섹션 (읽기 전용) */}
             <div className="rounded-xl p-6 border mb-8 bg-white">
