@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import FileUploadButton from './FileUploadButton'
 
 // S3 파일 정보 타입 정의
@@ -34,11 +35,11 @@ const FILE_TYPE_CONFIGS: Record<FileType, FileTypeConfig> = {
     buttonText: '파일 선택'
   },
   github: {
-    icon: '🔗',
+    icon: '📊',
     title: 'GitHub 링크',
-    description: 'GitHub 저장소 링크가 포함된 텍스트 파일을 업로드하세요',
+    description: 'GitHub 저장소 링크가 포함된 CSV 파일을 업로드하세요',
     documentType: 'github',
-    buttonText: 'GitHub 링크 파일 업로드'
+    buttonText: 'CSV 파일 업로드'
   },
   resume: {
     icon: '📋',
@@ -100,16 +101,28 @@ export default function FileCard({
   readOnly = false
 }: FileCardProps) {
   const config = FILE_TYPE_CONFIGS[fileType]
+  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const hasFiles = files && files.length > 0
   const emptyMessage = fileType === 'github' 
-    ? '업로드된 GitHub 링크 파일이 없습니다'
+    ? '업로드된 CSV 파일이 없습니다'
     : '업로드된 파일이 없습니다'
 
   return (
     <div className="bg-white rounded-lg p-4 border">
       <div className="text-2xl mb-2">{config.icon}</div>
-      <div className="font-semibold text-black mb-1">{config.title}</div>
+      <div className="flex items-center justify-between mb-1">
+        <div className="font-semibold text-black">{config.title}</div>
+        {fileType === 'github' && (
+          <button
+            onClick={() => setShowInfoModal(true)}
+            className="text-blue-500 hover:text-blue-700 text-xs bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors"
+            title="CSV 파일 형식 안내"
+          >
+            ℹ️ 정보
+          </button>
+        )}
+      </div>
       
       {config.description && !readOnly && (
         <div className="text-sm text-gray-600 mb-3">{config.description}</div>
@@ -152,14 +165,12 @@ export default function FileCard({
         )}
       </div>
       
-      {!readOnly && (
-        <FileUploadButton
-          userId={userId}
-          documentType={config.documentType as FileType}
-          onUploadSuccess={onUploadSuccess}
-          buttonText={config.buttonText}
-        />
-      )}
+      <FileUploadButton
+        userId={userId}
+        documentType={config.documentType as FileType}
+        onUploadSuccess={onUploadSuccess}
+        buttonText={config.buttonText}
+      />
     </div>
   )
 }

@@ -460,6 +460,29 @@ export const api = {
       const response = await apiClient.post(`/behavior/save/${user_id}`, { behavior_text });
       return response.data;
     },
+
+    // 하드스킬 저장 (AI 업데이트 결과)
+    saveHardSkill: async (user_id: string, hard_skill_data: any) => {
+      const response = await apiClient.post(`/hardskill/save/${user_id}`, hard_skill_data);
+      return response.data;
+    },
+
+    // 지원자AI 업데이트 (람다 함수 호출)
+    updateApplicantAI: async (repositories: any[]) => {
+      const response = await fetch('/applicant/ai-update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ repositories })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API 호출 실패: ${response.status}`);
+      }
+      
+      return response.json();
+    },
   },
 
   // 문서 관련 API
