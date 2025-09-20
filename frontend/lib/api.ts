@@ -526,21 +526,21 @@ export const api = {
       return response.data;
     },
 
-    // 개별리포트 조회
+    // 개별리포트 조회 (applications_id)
     getIndividualReport: async (applications_id: string) => {
-      const response = await apiClient.get(`/interviews/${applications_id}`);
+      const response = await apiClient.get(`/company/interviews/report/${applications_id}`);
       return response.data;
     },
 
-    // AI 면접 대화 전체 조회
+    // AI 면접 대화 전체 조회 (applications_id)
     getConversation: async (applications_id: string) => {
-      const response = await apiClient.get(`/interviews/conversations/${applications_id}`);
+      const response = await apiClient.get(`/company/interviews/conversations/${applications_id}`);
       return response.data;
     },
 
-    // 지원자 프로필 조회
+    // 지원자 프로필 조회 (applications_id)
     getApplicantProfile: async (applications_id: string) => {
-      const response = await apiClient.get(`/interviews/profiles/${applications_id}`);
+      const response = await apiClient.get(`/company/interviews/profiles/${applications_id}`);
       return response.data;
     },
   },

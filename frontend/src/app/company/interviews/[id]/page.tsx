@@ -216,7 +216,7 @@ export default function InterviewStatusPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.applied_at ? new Date(app.applied_at).toLocaleString() : '-'}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                           <div className="flex items-center gap-2 justify-end">
-                            <Link href={`/company/interviews/${app.applications_id || app.id}/report`} className="px-3 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700">개별 리포트</Link>
+                            <Link href={`/company/interviews/report/${app.applications_id}`} className="px-3 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700">개별 리포트</Link>
                             <Link href={`/company/interviews/conversations/${app.applications_id || app.id}`} className="px-3 py-2 rounded bg-gray-200 text-gray-900 text-sm hover:bg-gray-300">대화 보기</Link>
                           </div>
                         </td>
