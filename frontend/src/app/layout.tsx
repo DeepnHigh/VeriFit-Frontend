@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VeriFit - AI 기반 채용 플랫폼",
   description: "AI 면접과 적성검사를 통한 스마트한 채용 솔루션",
+  icons: {
+    icon: [
+      { url: '/logo.png', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({

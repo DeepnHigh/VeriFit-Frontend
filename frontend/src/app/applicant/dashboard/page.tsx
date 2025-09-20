@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
 import { logout } from '@/lib/auth'
@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import PortfolioSection from '@/components/PortfolioSection'
 import Big5Section from '@/components/Big5Section'
 import QuestionsSection from '@/components/QuestionsSection'
+import BehaviorTestResultSection from '@/components/BehaviorTestResultSection'
 import { api, getApiBaseUrl } from '@/lib/api'
 import { useSimulateRequest } from '../../../../hooks/useSimulateRequest'
 import { useAptitudeData } from '../../../../hooks/useAptitudeData'
@@ -70,6 +71,7 @@ type JobSeekerUpdatePayload = {
   is_profile_public?: boolean | null
 }
 
+
 export default function ApplicantDashboard() {
 
 const { big5Data: localStorageBig5Data, hasCompletedTest: localStorageHasCompletedTest } = useAptitudeData()
@@ -119,6 +121,7 @@ const [isEditing, setIsEditing] = useState(false)
 const [editForm, setEditForm] = useState<JobSeekerUpdatePayload>({})
 const [aiUpdating, setAiUpdating] = useState(false)
 const [aiUpdateStatus, setAiUpdateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+const [behaviorTestResult, setBehaviorTestResult] = useState<any>(null)
 
 // 최종학력 표기 변환 맵
 const EDUCATION_LABELS: Record<string, string> = {
@@ -133,6 +136,7 @@ const getEducationLabel = (value?: string | null) => {
   if (!value) return '-'
   return EDUCATION_LABELS[value] || value
 }
+
 
 const startEditProfile = () => {
   if (!userProfile) return
@@ -280,6 +284,16 @@ const fetchUserProfile = async () => {
       console.log('  - 마지막 업데이트:', profileData.last_profile_update)
       
       setUserProfile(profileData)
+      
+      // 행동평가 결과 설정
+      if ((profileData as any)?.behavior_text) {
+        setBehaviorTestResult((profileData as any).behavior_text)
+        console.log('✅ 행동평가 결과 설정 완료')
+      } else {
+        setBehaviorTestResult(null)
+        console.log('ℹ️ 행동평가 결과 없음')
+      }
+      
       console.log('✅ 상태 업데이트 완료')
       
     } catch (err: unknown) {
@@ -870,22 +884,7 @@ const handleSaveAnswer = async (questionId: string) => {
             />
 
             {/* 행동평가 결과 분석 섹션 */}
-            <section className="rounded-xl p-6 border mb-8 bg-white">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-black font-semibold">🎯 행동평가 결과 분석</h3>
-                <Link href="/applicant/behavior-test" className="px-3 py-2 rounded-md text-sm text-white bg-green-600 cursor-pointer hover:bg-green-700 transition-colors">
-                  행동검사 진행하기
-                </Link>
-              </div>
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🎯</div>
-                <h4 className="text-xl font-semibold text-gray-700 mb-2">행동검사를 시작해보세요!</h4>
-                <p className="text-gray-500 mb-6">행동평가를 통해 당신의 업무 스타일과 행동 패턴을 분석하고<br/>더 정확한 AI 프로필을 만들어보세요.</p>
-                <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
-                  <div className="text-gray-500 text-lg font-medium">행동검사 결과가 없습니다</div>
-                </div>
-              </div>
-            </section>
+            <BehaviorTestResultSection behaviorTestResult={behaviorTestResult} />
 
             {/* AI 학습 질문 섹션 요약 */}
             <QuestionsSection

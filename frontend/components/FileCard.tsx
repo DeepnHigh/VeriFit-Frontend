@@ -88,6 +88,7 @@ interface FileCardProps {
   onFileDownload: (documentType: string, fileName: string) => void
   onFileDelete: (documentType: string, fileName: string) => void
   onUploadSuccess: () => void
+  readOnly?: boolean // 읽기 전용 모드 추가
 }
 
 export default function FileCard({
@@ -96,7 +97,8 @@ export default function FileCard({
   userId,
   onFileDownload,
   onFileDelete,
-  onUploadSuccess
+  onUploadSuccess,
+  readOnly = false
 }: FileCardProps) {
   const config = FILE_TYPE_CONFIGS[fileType]
   const [showInfoModal, setShowInfoModal] = useState(false)
@@ -122,7 +124,7 @@ export default function FileCard({
         )}
       </div>
       
-      {config.description && (
+      {config.description && !readOnly && (
         <div className="text-sm text-gray-600 mb-3">{config.description}</div>
       )}
       
@@ -144,13 +146,15 @@ export default function FileCard({
                     {(file.size / 1024).toFixed(1)}KB
                   </div>
                 </div>
-                <button
-                  onClick={() => onFileDelete(fileType, file.name)}
-                  className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
-                  title="파일 삭제"
-                >
-                  ×
-                </button>
+                {!readOnly && (
+                  <button
+                    onClick={() => onFileDelete(fileType, file.name)}
+                    className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
+                    title="파일 삭제"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -167,52 +171,6 @@ export default function FileCard({
         onUploadSuccess={onUploadSuccess}
         buttonText={config.buttonText}
       />
-
-      {/* GitHub 정보 모달 */}
-      {fileType === 'github' && showInfoModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">📊 CSV 파일 형식 안내</h3>
-              <button
-                onClick={() => setShowInfoModal(false)}
-                className="text-gray-400 hover:text-gray-600 text-xl"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="space-y-4 text-sm text-gray-700">
-              <p className="font-medium">
-                repository 주소와 github username이 담긴 csv 파일을 업로드해 주세요.
-              </p>
-              
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="mb-2"><strong>1열:</strong> 해당 repository에서 사용한 username</p>
-                <p className="text-gray-600 mb-2">예시: kji123</p>
-                
-                <p className="mb-2"><strong>2열:</strong> repository의 주소</p>
-                <p className="text-gray-600">예시: https://github.com/kji123/testproject</p>
-              </div>
-              
-              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
-                <p className="text-yellow-800 font-medium">
-                  ⚠️ repository는 지원자 AI가 접근할 수 있도록 public이어야 합니다!
-                </p>
-              </div>
-            </div>
-            
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowInfoModal(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                확인
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
