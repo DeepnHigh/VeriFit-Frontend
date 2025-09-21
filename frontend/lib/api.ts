@@ -539,6 +539,12 @@ export const api = {
       return response.data;
     },
 
+    // AI 평가 시작
+    startEvaluation: async (job_postings_id: string) => {
+      const response = await apiClient.post(`/interviews/${job_postings_id}/start-evaluation`);
+      return response.data;
+    },
+
     // 개별리포트 조회 (applications_id)
     getIndividualReport: async (applications_id: string) => {
       const response = await apiClient.get(`/company/interviews/report/${applications_id}`);

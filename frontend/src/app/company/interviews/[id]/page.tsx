@@ -185,13 +185,31 @@ export default function InterviewStatusPage() {
         {/* 지원자 순위 */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-900">지원자 순위</h2>
+            <h2 className="text-lg font-semibold text-gray-900">지원자 목록</h2>
             {evalStatus === 'ready' ? (
               <button 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
-                onClick={() => {
-                  // TODO: AI 평가 시작 로직 구현
-                  console.log('AI 평가 시작')
+                onClick={async () => {
+                  const confirmed = window.confirm('평가를 시작하시겠습니까?')
+                  if (confirmed) {
+                    try {
+                      console.log('AI 평가 시작 요청:', routeId)
+                      const response = await api.company.startEvaluation(routeId)
+                      console.log('AI 평가 시작 응답:', response)
+                      
+                      // 백엔드에서 업데이트된 eval_status를 받아서 상태 업데이트
+                      if (response?.eval_status) {
+                        setEvalStatus(response.eval_status)
+                      } else {
+                        setEvalStatus('ing')
+                      }
+                      
+                      alert('평가가 시작되었습니다.')
+                    } catch (error) {
+                      console.error('평가 시작 실패:', error)
+                      alert('평가 시작에 실패했습니다.')
+                    }
+                  }
                 }}
               >
                 평가시작
