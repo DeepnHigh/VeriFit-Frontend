@@ -472,9 +472,14 @@ const updateApplicantAI = async () => {
       return
     }
 
-    // 1. 사용자 프로필에서 github_repositories 데이터 가져오기
-    const profileData = await api.applicant.getProfile(userId)
-    const githubData = (profileData as any)?.github_repositories
+        // 1. userProfile 상태에서 github_repositories 데이터 가져오기 (API 재호출 방지)
+    if (!userProfile) {
+      alert('사용자 프로필 정보가 아직 로드되지 않았습니다.')
+      setAiUpdateStatus('error')
+      setAiUpdating(false)
+      return
+    }
+    const githubData = (userProfile as any)?.github_repositories
     
     if (!githubData || !githubData.repository || githubData.repository.length === 0) {
       alert('GitHub 레포지토리 정보가 없습니다. 프로필에 GitHub 레포지토리를 추가해주세요.')
@@ -483,31 +488,26 @@ const updateApplicantAI = async () => {
       return
     }
 
-    // 2. 람다 함수에 보낼 데이터 형식으로 변환
+    // 2. API에 보낼 데이터 형식으로 변환
     const repositories = githubData.repository.map((repoUrl: string, index: number) => ({
       repository_url: repoUrl,
       github_username: githubData.username && githubData.username.length > 0 ? githubData.username[0] : 'unknown'
     }))
 
-    // 3. Next.js API 라우트를 통해 람다 함수 호출
-    const lambdaResponse = await api.applicant.updateApplicantAI(repositories)
-    console.log('📡 람다 함수 응답 전체 (JSON 형태):', JSON.stringify(lambdaResponse, null, 2))
+    // 3. 백엔드 API 호출
+    const response = await api.applicant.updateApplicantAI(userId, repositories)
+    console.log('📡 백엔드 API 응답 전체 (JSON 형태):', JSON.stringify(response, null, 2))
 
-      // 4. 람다 함수 응답 처리 (하드스킬 저장은 백엔드 엔드포인트가 없어서 임시 생략)
-      if (lambdaResponse.success && lambdaResponse.data) {
-        console.log('✅ 람다 함수 호출 성공!')
-        console.log('📊 람다 함수가 보내준 전체 데이터:', JSON.stringify(lambdaResponse.data, null, 2))
-        console.log('⚠️ 하드스킬 저장은 백엔드 엔드포인트가 구현되면 추가 예정')
-        // TODO: 백엔드에 /hardskill/save/{user_id} 엔드포인트 추가 후 활성화
-        // const backendResponse = await api.applicant.saveHardSkill(userId, lambdaResponse.data)
-        // console.log('백엔드 API 응답:', backendResponse)
-      } else {
-        console.log('❌ 람다 함수 호출 실패:', lambdaResponse.error)
-        throw new Error(lambdaResponse.error || '람다 함수 호출 실패')
-      }
-
-    alert('지원자AI가 성공적으로 업데이트되었습니다!')
-    setAiUpdateStatus('success')
+    // 4. 백엔드 응답 처리
+    if (response.success) {
+      console.log('✅ 백엔드 API 호출 성공!')
+      console.log('📊 백엔드가 보내준 전체 데이터:', JSON.stringify(response, null, 2))
+      alert('지원자AI가 성공적으로 업데이트되었습니다!')
+      setAiUpdateStatus('success')
+    } else {
+      console.log('❌ 백엔드 API 호출 실패:', response.message)
+      throw new Error(response.message || '지원자AI 업데이트 실패')
+    }
 
   } catch (err: unknown) {
     console.error('지원자AI 업데이트 실패:', err)
@@ -702,7 +702,8 @@ const handleSaveAnswer = async (questionId: string) => {
                 <div className="mt-4 rounded-lg p-4 bg-green-50">
                   <div className="font-semibold text-black mb-1">🤖 지원자AI 상태</div>
                   <div className="text-sm text-black">프로필 완성도: <b>{userProfile.profile_completion_percentage || 0}%</b></div>
-                  <div className="text-xs text-black mt-1">마지막 업데이트: {userProfile.last_profile_update ? new Date(userProfile.last_profile_update).toLocaleDateString() : '-'}</div>
+                  <div className="text-xs text-black mt-1">마지막 업데이트: {userProfile.last_profile_update ? new Date(userProfile.last_profile_update).toLocaleDateString() : '-'}
+</div>
                 </div>
               </div>
 
