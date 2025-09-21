@@ -467,21 +467,11 @@ export const api = {
       return response.data;
     },
 
-    // 지원자AI 업데이트 (람다 함수 호출)
-    updateApplicantAI: async (repositories: any[]) => {
-      const response = await fetch('/applicant/ai-update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ repositories })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API 호출 실패: ${response.status}`);
-      }
-      
-      return response.json();
+    // 지원자AI 업데이트 (백엔드 직접 호출)
+    updateApplicantAI: async (user_id: string, repositories: any[]) => {
+      // 람다 대신 백엔드 /hardskill/save/{user_id} 호출
+      const response = await apiClient.post(`/hardskill/save/${user_id}`, { repositories });
+      return response.data;
     },
   },
 
