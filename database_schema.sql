@@ -218,6 +218,7 @@ Table job_postings {
   preferred text
   application_deadline date
   is_active boolean [default: true]
+  eval_status enum('ready', 'ing', 'finish') [default: 'ready'] // AI 평가 상태
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
   
@@ -228,6 +229,7 @@ Table job_postings {
     employment_type
     is_active
     application_deadline
+    eval_status
   }
 }
 
