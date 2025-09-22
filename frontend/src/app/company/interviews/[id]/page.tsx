@@ -18,6 +18,7 @@ export default function InterviewStatusPage() {
   const [sortKey, setSortKey] = useState<'total_score' | 'hard_score' | 'soft_score' | 'applied_at'>('total_score')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [jobTitle, setJobTitle] = useState<string>('')
+  const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done'>('ready')
   const handleLogout = () => logout('/')
   const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done'>('ready')
   
@@ -36,11 +37,12 @@ export default function InterviewStatusPage() {
         const baseUrl = getApiBaseUrl()
         const tokenExists = !!localStorage.getItem('token')
 
-        // 공고 제목 조회 (표시용)
+        // 공고 제목 및 평가 상태 조회
         try {
           const detailResp = await api.company.getJobPosting(routeId)
           const detail = (detailResp as any)?.data ?? detailResp
           if (detail?.title) setJobTitle(detail.title)
+          if (detail?.eval_status) setEvalStatus(detail.eval_status)
         } catch (_) {}
 
         // UUID 라우트 파라미터를 그대로 사용
@@ -181,6 +183,7 @@ export default function InterviewStatusPage() {
           </div>
         )}
 
+        {/* 지원자 순위 */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">지원자 목록</h2>
@@ -239,37 +242,68 @@ export default function InterviewStatusPage() {
             <div className="px-6 py-12 text-center text-gray-600">지원 내역이 없습니다.</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 border-separate border-spacing-0" style={{ borderCollapse: 'separate' }}>
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원자</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('hard_score')}>하드점수</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('soft_score')}>소프트점수</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('total_score')}>총점</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('applied_at')}>지원일</th>
-                    <th className="px-6 py-3"/>
+                    <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16 border-r border-dashed border-gray-300">No.</th>
+                      <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24 border-r border-dashed border-gray-300">지원자</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-dashed border-gray-300">경력</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('hard_score')}>하드스킬</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('soft_score')}>소프트스킬</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('total_score')}>총점</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-80 border-r border-dashed border-gray-300">AI총평</th>
+                      <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">개별 리포트</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {sortedApps.map((app: any) => {
+                  {sortedApps.map((app: any, index: number) => {
                     const hard = app.hard_score ?? app.hard ?? null
                     const soft = app.soft_score ?? app.soft ?? null
                     const total = app.total_score ?? app.total ?? (typeof hard === 'number' && typeof soft === 'number' ? (hard + soft) / 2 : null)
+                    const rank = index + 1
+                    const getRankBadge = (rank: number) => {
+                      if (evalStatus === 'ready') {
+                        return <span className="text-sm text-gray-900">{rank}</span>
+                      }
+                      
+                      if (rank === 1) return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">🥇 {rank}</span>
+                      if (rank === 2) return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">🥈 {rank}</span>
+                      if (rank === 3) return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">🥉 {rank}</span>
+                      return <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{rank}</span>
+                    }
                     return (
-                      <tr key={app.applications_id || app.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{app.candidate_name || app.user_name || app.user_id}</div>
+                      <tr key={app.applications_id || app.id} className={rank <= 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""}>
+                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-dashed border-gray-300">
+                          {getRankBadge(rank)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{hard ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{soft ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{total ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{app.applied_at ? new Date(app.applied_at).toLocaleString() : '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                          <div className="flex items-center gap-2 justify-end">
-                            <Link href={`/company/interviews/report/${app.applications_id}`} className="px-3 py-2 rounded bg-blue-600 text-white text-sm hover:bg-blue-700">개별 리포트</Link>
-                            <Link href={`/company/interviews/conversations/${app.applications_id || app.id}`} className="px-3 py-2 rounded bg-gray-200 text-gray-900 text-sm hover:bg-gray-300">대화 보기</Link>
+                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-dashed border-gray-300">
+                           <div className="text-sm font-medium text-gray-900">{app.candidate_name || app.user_name || app.user_id}</div>
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">
+                          {app.experience_years ? `${app.experience_years}년` : '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">{hard ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">{soft ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-center border-r border-dashed border-gray-300">{total ?? '-'}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 text-left border-r border-dashed border-gray-300">
+                          <div className="break-words" title={app.ai_summary || app.summary || ''}>
+                            {app.ai_summary || app.summary || '-'}
                           </div>
                         </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-center">
+                          {app.evaluated_at ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                평가 완료
+                              </span>
+                              <Link href={`/company/interviews/report/${app.applications_id}`} className="px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700">개별 리포트</Link>
+                            </div>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                              평가 대기
+                            </span>
+                          )}
+                        </td>                        
                       </tr>
                     )
                   })}

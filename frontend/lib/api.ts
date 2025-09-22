@@ -344,11 +344,14 @@ export const api = {
           console.log(`[API] 로그인 성공, URL 저장: ${apiUrl}`);
         }
         
+        // 디버그: 백엔드 응답 구조 확인
+        console.log('🔍 로그인 응답 구조:', JSON.stringify(backendResponse, null, 2));
+        
         return {
           token: backendResponse.access_token,
           user_type: backendResponse.user.user_type,
           user_id: backendResponse.user.id,
-          company_name: backendResponse.user.company_name,
+          company_name: backendResponse.company_name || backendResponse.user.company_name || backendResponse.user?.company_name,
           user_name: backendResponse.user.name,
         };
       } catch (error: any) {
