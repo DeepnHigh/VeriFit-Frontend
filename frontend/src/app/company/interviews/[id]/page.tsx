@@ -181,8 +181,57 @@ export default function InterviewStatusPage() {
         )}
 
         <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">지원자 목록</h2>
+            {evalStatus === 'ready' ? (
+              <button 
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                onClick={async () => {
+                  const confirmed = window.confirm('평가를 시작하시겠습니까?')
+                  if (confirmed) {
+                    try {
+                      console.log('AI 평가 시작 요청:', routeId)
+                      const response = await api.company.startEvaluation(routeId)
+                      console.log('AI 평가 시작 응답:', response)
+                      
+                      // 백엔드에서 업데이트된 eval_status를 받아서 상태 업데이트
+                      if (response?.eval_status) {
+                        setEvalStatus(response.eval_status)
+                      } else {
+                        setEvalStatus('ing')
+                      }
+                      
+                      alert('평가가 시작되었습니다.')
+                    } catch (error) {
+                      console.error('평가 시작 실패:', error)
+                      alert('평가 시작에 실패했습니다.')
+                    }
+                  }
+                }}
+              >
+                평가시작
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <label htmlFor="sort-select" className="text-sm text-gray-600">정렬:</label>
+                <select
+                  id="sort-select"
+                  value={`${sortKey}-${sortDir}`}
+                  onChange={(e) => {
+                    const [key, dir] = e.target.value.split('-')
+                    setSortKey(key as 'total_score' | 'hard_score' | 'soft_score' | 'applied_at')
+                    setSortDir(dir as 'asc' | 'desc')
+                  }}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="total_score-desc">총점 높은순</option>
+                  <option value="hard_score-desc">하드스킬 점수 높은순</option>
+                  <option value="soft_score-desc">소프트스킬 점수 높은순</option>
+                  <option value="applied_at-desc">지원일 최신순</option>
+                  <option value="applied_at-asc">지원일 오래된순</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {sortedApps.length === 0 ? (
