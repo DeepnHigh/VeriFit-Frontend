@@ -56,6 +56,16 @@ export default function JobPostingDetail({ posting }: JobPostingDetailProps) {
     }
   }
 
+  const cultureText = posting?.culture || posting?.company_culture || posting?.corporate_culture
+  const benefitsText = posting?.benefits || posting?.welfare || posting?.perks
+
+  const displayOrHyphen = (value: any) => {
+    if (value === null || value === undefined) return '-'
+    if (Array.isArray(value)) return value.length > 0 ? value.join('\n') : '-'
+    const str = String(value).trim()
+    return str.length > 0 ? str : '-'
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -111,6 +121,16 @@ export default function JobPostingDetail({ posting }: JobPostingDetailProps) {
           <div className="text-gray-700 whitespace-pre-wrap">{posting.preferred}</div>
         </div>
       )}
+
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-2">기업 문화</h3>
+        <div className="text-gray-700 whitespace-pre-wrap">{displayOrHyphen(cultureText)}</div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-2">복리후생</h3>
+        <div className="text-gray-700 whitespace-pre-wrap">{displayOrHyphen(benefitsText)}</div>
+      </div>
 
       {(hardSkills.length > 0 || softSkills.length > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

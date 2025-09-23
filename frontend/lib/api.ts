@@ -299,6 +299,16 @@ export interface JobPosting {
   status: 'active' | 'closed';
   created_at: string;
   updated_at: string;
+  main_tasks?: string;
+  preferred?: string;
+  employment_type?: string;
+  position_level?: string;
+  salary_min?: number;
+  salary_max?: number;
+  application_deadline?: string;
+  location?: string;
+  culture?: string;
+  benefits?: string;
 }
 
 export interface Interview {
