@@ -19,6 +19,8 @@ export default function CreateJobPostingPage() {
   const [responsibilities, setResponsibilities] = useState('')
   const [qualifications, setQualifications] = useState('')
   const [preferences, setPreferences] = useState('')
+  const [culture, setCulture] = useState('')
+  const [benefits, setBenefits] = useState('')
   const [applicationDeadline, setApplicationDeadline] = useState<string>('')
   const [location, setLocation] = useState<string>('')
 
@@ -93,9 +95,48 @@ export default function CreateJobPostingPage() {
       alert('포지션명을 입력해주세요.')
       return
     }
-    // 연봉 유효성 검사
+    // 주요 업무 필수
+    if (!responsibilities.trim()) {
+      alert('주요 업무를 입력해주세요.')
+      return
+    }
+    // 기업 문화 필수
+    if (!culture.trim()) {
+      alert('기업 문화를 입력해주세요.')
+      return
+    }
+    // 복리후생 필수
+    if (!benefits.trim()) {
+      alert('복리후생을 입력해주세요.')
+      return
+    }
+    // 위치 필수
+    if (!location.trim()) {
+      alert('근무지를 입력해주세요.')
+      return
+    }
+    // 자격 요건 필수
+    if (!qualifications.trim()) {
+      alert('자격 요건을 입력해주세요.')
+      return
+    }
+    // 우대사항 필수
+    if (!preferences.trim()) {
+      alert('우대사항을 입력해주세요.')
+      return
+    }
+    // 마감일 필수
+    if (!applicationDeadline.trim()) {
+      alert('공고 마감일을 선택해주세요.')
+      return
+    }
+    // 연봉 유효성 검사 (둘 다 필수)
     const hasMin = salaryMin.trim() !== ''
     const hasMax = salaryMax.trim() !== ''
+    if (!(hasMin && hasMax)) {
+      alert('최소/최대 연봉을 모두 입력해주세요.')
+      return
+    }
     if (hasMin && hasMax) {
       const minVal = parseInt(salaryMin, 10)
       const maxVal = parseInt(salaryMax, 10)
@@ -128,6 +169,19 @@ export default function CreateJobPostingPage() {
         .split('\n')
         .map((s) => s.trim())
         .filter(Boolean)
+      if (requirementsArray.length === 0) {
+        alert('자격 요건을 한 줄 이상 입력해주세요.')
+        return
+      }
+      // 스킬 기준 (jsonb NOT NULL)
+      if (selectedHardSkills.length === 0) {
+        alert('하드 스킬을 한 개 이상 선택해주세요.')
+        return
+      }
+      if (selectedSoftSkills.length === 0) {
+        alert('소프트 스킬을 한 개 이상 선택해주세요.')
+        return
+      }
 
       // 고용형태 매핑 (백엔드 enum)
       const employmentTypeMap: Record<string, 'full_time' | 'part_time' | 'contract' | 'internship'> = {
@@ -150,6 +204,10 @@ export default function CreateJobPostingPage() {
         main_tasks: responsibilities.trim() ? responsibilities.trim() : '',
         requirements: requirementsArray,
         preferred: preferences.trim() ? preferences.trim() : '',
+        culture: culture.trim(),
+        benefits: benefits.trim(),
+        hard_skills: selectedHardSkills,
+        soft_skills: selectedSoftSkills,
         ai_criteria: aiCriteria,
         status: 'active',
       }
@@ -285,6 +343,14 @@ export default function CreateJobPostingPage() {
             <div className="flex flex-col md:col-span-2">
               <label className="text-sm font-medium text-black mb-1">우대사항</label>
               <textarea value={preferences} onChange={(e) => setPreferences(e.target.value)} placeholder="우대사항을 입력하세요" className="border rounded px-3 py-2 min-h-28 text-black placeholder-gray-500" />
+            </div>
+            <div className="flex flex-col md:col-span-2">
+              <label className="text-sm font-medium text-black mb-1">기업 문화</label>
+              <textarea value={culture} onChange={(e) => setCulture(e.target.value)} placeholder="기업 문화를 입력하세요 (예: 수평적 문화, 유연근무 등)" className="border rounded px-3 py-2 min-h-28 text-black placeholder-gray-500" />
+            </div>
+            <div className="flex flex-col md:col-span-2">
+              <label className="text-sm font-medium text-black mb-1">복리후생</label>
+              <textarea value={benefits} onChange={(e) => setBenefits(e.target.value)} placeholder="복리후생을 입력하세요 (예: 식대지원, 건강검진 등)" className="border rounded px-3 py-2 min-h-28 text-black placeholder-gray-500" />
             </div>
           </div>
         </div>
