@@ -273,17 +273,17 @@ export default function InterviewStatusPage() {
               <table className="min-w-full divide-y divide-gray-200 border-separate border-spacing-0" style={{ borderCollapse: 'separate' }}>
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16 border-r border-dashed border-gray-300">No.</th>
-                      <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24 border-r border-dashed border-gray-300">지원자</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-dashed border-gray-300">경력</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('hard_score')}>하드스킬</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('soft_score')}>소프트스킬</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-dashed border-gray-300" onClick={() => handleSort('total_score')}>총점</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-80 border-r border-dashed border-gray-300">AI총평</th>
+                    <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>No.</th>
+                      <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>지원자</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>경력</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('hard_score')}>하드스킬</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('soft_score')}>소프트스킬</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('total_score')}>총점</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-80 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>AI총평</th>
                       <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">개별 리포트</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white [&>tr:not(:first-child)>td]:border-t [&>tr:not(:first-child)>td]:border-gray-300">
                   {sortedApps.map((app: any, index: number) => {
                     const hard = app.hard_score ?? app.hard ?? null
                     const soft = app.soft_score ?? app.soft ?? null
@@ -301,19 +301,19 @@ export default function InterviewStatusPage() {
                     }
                     return (
                       <tr key={app.applications_id || app.id} className={rank <= 3 ? "bg-gradient-to-r from-yellow-50 to-orange-50" : ""}>
-                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-dashed border-gray-300">
+                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                           {getRankBadge(rank)}
                         </td>
-                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-dashed border-gray-300">
+                        <td className="px-3 py-4 whitespace-nowrap text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                            <div className="text-sm font-medium text-gray-900">{app.candidate_name || app.user_name || app.user_id}</div>
                          </td>
-                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                           {app.experience_years ? `${app.experience_years}년` : '-'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">{hard ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-dashed border-gray-300">{soft ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-center border-r border-dashed border-gray-300">{total ?? '-'}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600 text-left border-r border-dashed border-gray-300">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{hard ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{soft ?? '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{total ?? '-'}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 text-left border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                           <div className="break-words" title={app.ai_summary || app.summary || ''}>
                             {app.ai_summary || app.summary || '-'}
                           </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Header from "@/components/Header";
+import VeriFitIntro from "@/components/VeriFitIntro";
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
               href="/signup/applicant"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg"
             >
-              구직자로 시작하기
+              지원자로 시작하기
             </Link>
             <Link
               href="/signup/company"
@@ -31,31 +32,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-20 grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-3xl mb-4">🤖</div>
-            <h3 className="text-xl font-semibold mb-2">AI 면접</h3>
-            <p className="text-gray-600">
-              AI 면접관과의 실시간 대화를 통해 지원자의 역량을 종합적으로 평가합니다.
-            </p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-3xl mb-4">📊</div>
-            <h3 className="text-xl font-semibold mb-2">적성검사</h3>
-            <p className="text-gray-600">
-              과학적 검증된 적성검사를 통해 지원자의 잠재력을 객관적으로 측정합니다.
-            </p>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="text-3xl mb-4">📈</div>
-            <h3 className="text-xl font-semibold mb-2">종합 리포트</h3>
-            <p className="text-gray-600">
-              AI 분석을 통한 상세한 평가 리포트로 최적의 인재 선별을 지원합니다.
-            </p>
-          </div>
-        </div>
+        <VeriFitIntro />
       </div>
     </div>
   );

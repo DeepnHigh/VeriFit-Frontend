@@ -29,7 +29,9 @@ export default function Header({ rightVariant = 'applicant', displayName = '', o
         setDerivedName(companyName || userId)
       } else {
         // 지원자: 이름 우선, 없으면 userId
-        const cachedName = localStorage.getItem('applicantName') || ''
+        // 사용자별로 캐시 키를 분리하여 계정 전환 시 잘못된 이름이 표시되지 않도록 처리
+        const cacheKey = userId ? `applicantName:${userId}` : 'applicantName'
+        const cachedName = localStorage.getItem(cacheKey) || ''
         if (cachedName) {
           setDerivedName(cachedName)
         } else if (userId) {
@@ -38,7 +40,11 @@ export default function Header({ rightVariant = 'applicant', displayName = '', o
             .then((profile: any) => {
               const name = profile?.name || profile?.full_name || ''
               if (name) {
-                try { localStorage.setItem('applicantName', name) } catch (_) {}
+                try {
+                  // 기존 전역 키는 제거하여 혼선 방지
+                  try { localStorage.removeItem('applicantName') } catch (_) {}
+                  localStorage.setItem(cacheKey, name)
+                } catch (_) {}
                 setDerivedName(name)
               } else {
                 setDerivedName(userId)

@@ -60,17 +60,17 @@ export default function IndividualReportPage() {
 
   const hard = useMemo(() => {
     const r: any = report
-    return r?.hard_score ?? r?.hard ?? null
+    return r?.hard_score ?? r?.ai_evaluation?.hard_score ?? r?.hard ?? null
   }, [report])
 
   const soft = useMemo(() => {
     const r: any = report
-    return r?.soft_score ?? r?.soft ?? null
+    return r?.soft_score ?? r?.ai_evaluation?.soft_score ?? r?.soft ?? null
   }, [report])
 
   const total = useMemo(() => {
     const r: any = report
-    return r?.ai_overall_report?.total_score ?? r?.total_score ?? r?.total ?? (typeof hard === 'number' && typeof soft === 'number' ? (hard + soft) / 2 : null)
+    return r?.ai_overall_report?.total_score ?? r?.total_score ?? r?.ai_evaluation?.total_score ?? r?.total ?? (typeof hard === 'number' && typeof soft === 'number' ? (hard + soft) / 2 : null)
   }, [report, hard, soft])
 
   const candidateName = useMemo(() => {
@@ -78,6 +78,11 @@ export default function IndividualReportPage() {
     const fromReport = (report as any)?.candidate_name || (report as any)?.user_name || (report as any)?.full_name || (report as any)?.name
     return fromReport || p?.full_name || p?.name || p?.user_name || p?.applicant_name || "지원자"
   }, [profile, report])
+
+  const aiSummary = useMemo(() => {
+    const r: any = report
+    return r?.ai_summary ?? r?.ai_evaluation?.ai_summary ?? ''
+  }, [report])
 
   return (
     <div className="min-h-screen bg-white">
@@ -150,6 +155,14 @@ export default function IndividualReportPage() {
                   {renderSkillsTable((report as any)?.soft_skills, (report as any)?.soft_detail_scores)}
                 </div>
               </div>
+
+              {/* AI 요약 */}
+              {aiSummary && (
+                <div className="mt-6 rounded-lg border p-4 bg-green-50">
+                  <h4 className="font-semibold mb-2 text-green-700">📝 AI 요약</h4>
+                  <p className="text-black text-sm whitespace-pre-wrap break-words">{aiSummary}</p>
+                </div>
+              )}
             </div>
 
 
@@ -167,7 +180,7 @@ export default function IndividualReportPage() {
               {/* AI면접관 최종 의견 */}
               <div className="mt-6 rounded-lg border p-4 bg-purple-50">
                 <h4 className="font-semibold mb-2 text-purple-700">🤖 AI면접관 최종 의견</h4>
-                <p className="text-black text-sm whitespace-pre-wrap break-words">{(report as any)?.final_opinion || '최종 의견 데이터가 준비되면 여기에 표시됩니다.'}</p>
+                <p className="text-black text-sm whitespace-pre-wrap break-words">{(report as any)?.final_opinion || (report as any)?.ai_evaluation?.final_opinion || '최종 의견 데이터가 준비되면 여기에 표시됩니다.'}</p>
               </div>
             </div>
 
@@ -252,23 +265,23 @@ function renderSummaryTable(report: any) {
     {
       key: 'strengths',
       label: '강점',
-      content: report?.strengths_content,
-      opinion: report?.strengths_opinion,
-      evidence: report?.strengths_evidence,
+      content: report?.strengths_content ?? report?.ai_evaluation?.strengths_content,
+      opinion: report?.strengths_opinion ?? report?.ai_evaluation?.strengths_opinion,
+      evidence: report?.strengths_evidence ?? report?.ai_evaluation?.strengths_evidence,
     },
     {
       key: 'concerns',
       label: '우려사항',
-      content: report?.concerns_content,
-      opinion: report?.concerns_opinion,
-      evidence: report?.concerns_evidence,
+      content: report?.concerns_content ?? report?.ai_evaluation?.concerns_content,
+      opinion: report?.concerns_opinion ?? report?.ai_evaluation?.concerns_opinion,
+      evidence: report?.concerns_evidence ?? report?.ai_evaluation?.concerns_evidence,
     },
     {
       key: 'followup',
       label: '후속검증 제안',
-      content: report?.followup_content,
-      opinion: report?.followup_opinion,
-      evidence: report?.followup_evidence,
+      content: report?.followup_content ?? report?.ai_evaluation?.followup_content,
+      opinion: report?.followup_opinion ?? report?.ai_evaluation?.followup_opinion,
+      evidence: report?.followup_evidence ?? report?.ai_evaluation?.followup_evidence,
     },
   ]
 

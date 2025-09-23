@@ -26,8 +26,8 @@ interface BehaviorTestResultSectionProps {
 // 행동평가 결과 파싱 함수
 const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | null => {
   try {
-    // 행동평가 결과 텍스트를 파싱
-    const lines = behaviorText.split('\n').map(line => line.trim()).filter(line => line)
+    // 행동평가 결과 텍스트를 파싱 (개행 보존)
+    const lines = behaviorText.split('\n')
     
     let situation = ''
     let choice = ''
@@ -37,40 +37,41 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
     let currentSection = ''
     
     for (const line of lines) {
-      if (line.includes('<상황>')) {
+      const trimmed = line.trim()
+      if (trimmed.includes('<상황>')) {
         currentSection = 'situation'
         continue
-      } else if (line.includes('<선택>')) {
+      } else if (trimmed.includes('<선택>')) {
         currentSection = 'choice'
         continue
-      } else if (line.includes('<행동>')) {
+      } else if (trimmed.includes('<행동>')) {
         currentSection = 'action'
         continue
-      } else if (line.includes('<평가>')) {
+      } else if (trimmed.includes('<평가>')) {
         currentSection = 'evaluation'
         continue
       }
       
       switch (currentSection) {
         case 'situation':
-          if (line && !line.includes('[') && !line.includes(']')) {
-            situation += line + '\n'
+          // 헤더([행동평가 결과]) 라인은 제외하고 개행 포함 그대로 보존
+          if (trimmed !== '' || situation.endsWith('\n')) {
+            if (!trimmed.includes('[') && !trimmed.includes(']')) {
+              situation += line + '\n'
+            }
           }
           break
         case 'choice':
-          if (line && line.length === 1) {
-            choice = line
+          if (trimmed && trimmed.length === 1) {
+            choice = trimmed
           }
           break
         case 'action':
-          if (line) {
-            action += line + '\n'
-          }
+          // 행동 텍스트도 개행 보존
+          action += line + '\n'
           break
         case 'evaluation':
-          if (line) {
-            evaluationText += line + '\n'
-          }
+          evaluationText += line + '\n'
           break
       }
     }
@@ -122,6 +123,12 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
 
 // 행동평가 결과 표시 컴포넌트
 const BehaviorTestResultDisplay = ({ result }: { result: BehaviorTestResult }) => {
+  // 시나리오 본문에서 A/B/C 선택지 설명 줄 제거
+  const cleanedSituation = result.situation
+    .split('\n')
+    .filter(line => !/^[\ \t]*[ABC]:/.test(line))
+    .join('\n')
+
   const evaluationItems = [
     { key: 'communication', label: '의사소통 능력', icon: '💬', color: 'blue' },
     { key: 'attitude', label: '태도', icon: '😊', color: 'green' },
@@ -147,23 +154,9 @@ const BehaviorTestResultDisplay = ({ result }: { result: BehaviorTestResult }) =
     <div className="space-y-6">
       {/* 상황 설명 */}
       <div className="bg-gray-50 rounded-xl p-6 border mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">📋 시나리오: NEX-T 서비스 프로젝트 위기</h2>
-        <div className="prose max-w-none">
-          <p className="text-gray-700 mb-4">
-            당신은 'NEX-T' 서비스의 프로젝트 매니저(PM)로 팀장을 맡고 있습니다. 지난 3개월간 팀원들과 야심차게 준비해 온 '알파' 기능의 출시가 바로 다음 주로 예정되어 있습니다.
-          </p>
-          <p className="text-gray-700 mb-4">
-            그런데 오늘 아침, 해외 출장에서 복귀한 CEO로부터 메시지가 도착했습니다. CEO는 시장 변화에 대한 인사이트를 바탕으로 '알파' 기능 출시를 무기한 보류하고, 대신 신규 프로젝트인 '제타'를 1개월 내에 프로토타입으로 완성하라고 지시했습니다.
-          </p>
-          <p className="text-gray-700 mb-4">
-            팀은 이 메시지로 인해 3개월간의 노력이 물거품이 될 위기이며, 특히 핵심 개발자인 박민준 님은 다음 주부터 2주간의 장기 휴가가 예정되어 있었습니다.
-          </p>
-          <p className="text-gray-700 font-medium">
-            이 갑작스럽고 스트레스가 극심한 상황에서, 당신은 PM으로서 누구와 가장 먼저 대화하시겠습니까?
-          </p>
-          <p className="text-gray-700 font-medium">
-            (A, B, C 중 하나를 선택하여 대화하세요. 대화 시작 후에는 대화 상대를 변경할 수 없습니다.)
-          </p>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">📋 시나리오</h2>
+        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+          {cleanedSituation}
         </div>
       </div>
 
