@@ -20,7 +20,6 @@ export default function InterviewStatusPage() {
   const [jobTitle, setJobTitle] = useState<string>('')
   const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done'>('ready')
   const handleLogout = () => logout('/')
-  const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done'>('ready')
   
   useEffect(() => {
     const userType = typeof window !== 'undefined' ? localStorage.getItem('userType') : null
