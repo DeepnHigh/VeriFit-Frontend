@@ -17,13 +17,13 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
-              href="/login"
+              href="/signup/applicant"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors duration-200 shadow-lg"
             >
-              지원자 로그인
+              구직자로 시작하기
             </Link>
             <Link
-              href="/company"
+              href="/signup/company"
               className="bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-8 rounded-lg border-2 border-blue-600 transition-colors duration-200 shadow-lg"
             >
               기업으로 시작하기

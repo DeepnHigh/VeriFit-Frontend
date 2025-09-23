@@ -378,6 +378,41 @@ export const api = {
     throw new Error('로그인 실패: 사용 가능한 API 서버가 없습니다.');
   },
 
+  // 인증/회원가입
+  auth: {
+    signupApplicant: async (data: { email: string; password: string; name: string }) => {
+      for (let i = 0; i < API_URL_LIST.length; i++) {
+        const apiUrl = API_URL_LIST[i];
+        try {
+          const response = await axios.post(`${apiUrl}/signup/applicant`, data, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (typeof window !== 'undefined') saveSuccessfulApiUrl(apiUrl);
+          return response.data;
+        } catch (error: any) {
+          if (i === API_URL_LIST.length - 1) throw error;
+        }
+      }
+      throw new Error('회원가입 실패: 사용 가능한 API 서버가 없습니다.');
+    },
+
+    signupCompany: async (data: { companyName: string; email: string; password: string; businessNumber: string }) => {
+      for (let i = 0; i < API_URL_LIST.length; i++) {
+        const apiUrl = API_URL_LIST[i];
+        try {
+          const response = await axios.post(`${apiUrl}/signup/company`, data, {
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (typeof window !== 'undefined') saveSuccessfulApiUrl(apiUrl);
+          return response.data;
+        } catch (error: any) {
+          if (i === API_URL_LIST.length - 1) throw error;
+        }
+      }
+      throw new Error('회원가입 실패: 사용 가능한 API 서버가 없습니다.');
+    },
+  },
+
   // 지원자 관련 API
   applicant: {
     // 지원자 마이페이지
