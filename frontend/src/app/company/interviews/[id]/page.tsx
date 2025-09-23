@@ -18,7 +18,7 @@ export default function InterviewStatusPage() {
   const [sortKey, setSortKey] = useState<'total_score' | 'hard_score' | 'soft_score' | 'applied_at'>('total_score')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [jobTitle, setJobTitle] = useState<string>('')
-  const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done'>('ready')
+  const [evalStatus, setEvalStatus] = useState<'ready' | 'ing' | 'done' | 'finish'>('ready')
   const handleLogout = () => logout('/')
   
   useEffect(() => {
@@ -82,7 +82,37 @@ export default function InterviewStatusPage() {
       }
     }
     fetchStatus()
-  }, [routeId, router])
+
+    // eval_status가 'ing'인 동안 폴링하여 진행상태/목록 자동 갱신
+    let interval: any
+    const startPolling = () => {
+      if (interval) return
+      interval = setInterval(async () => {
+        try {
+          const resp = await api.company.getInterviewStatus(routeId)
+          const normalized = resp?.data ?? resp
+          setData(normalized)
+          const latestEval = (normalized?.job_posting?.eval_status) || (normalized?.eval_status)
+          if (latestEval) {
+            setEvalStatus(latestEval)
+          }
+          // 완료되면 폴링 중단
+          if (latestEval === 'finish' || latestEval === 'done') {
+            clearInterval(interval)
+            interval = null
+          }
+        } catch (_) {}
+      }, 5000)
+    }
+
+    if (evalStatus === 'ing') {
+      startPolling()
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [routeId, router, evalStatus])
 
   if (loading) {
     return (
@@ -194,17 +224,16 @@ export default function InterviewStatusPage() {
                   if (confirmed) {
                     try {
                       console.log('AI 평가 시작 요청:', routeId)
+                      // 낙관적 업데이트: 즉시 상태 전환 및 알림
+                      setEvalStatus('ing')
+                      alert('평가를 시작했습니다.')
+                      // 비동기 요청은 백그라운드로 진행
                       const response = await api.company.startEvaluation(routeId)
                       console.log('AI 평가 시작 응답:', response)
-                      
-                      // 백엔드에서 업데이트된 eval_status를 받아서 상태 업데이트
+                      // 응답에 상태가 포함되면 반영 (finish/done 등)
                       if (response?.eval_status) {
                         setEvalStatus(response.eval_status)
-                      } else {
-                        setEvalStatus('ing')
                       }
-                      
-                      alert('평가가 시작되었습니다.')
                     } catch (error) {
                       console.error('평가 시작 실패:', error)
                       alert('평가 시작에 실패했습니다.')
@@ -298,8 +327,8 @@ export default function InterviewStatusPage() {
                               <Link href={`/company/interviews/report/${app.applications_id}`} className="px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700">개별 리포트</Link>
                             </div>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              평가 대기
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${evalStatus === 'ing' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                              {evalStatus === 'ing' ? '평가 중' : '평가 대기'}
                             </span>
                           )}
                         </td>                        
