@@ -614,7 +614,8 @@ const handleSaveAnswer = async (questionId: string) => {
 
         {/* 로딩 상태 */}
         {loading && (
-          <div className="flex justify-center items-center py-12">
+          <div className="flex flex-col justify-center items-center py-12 gap-3">
+            <span className="inline-block w-12 h-12 border-4 border-gray-200 rounded-full border-t-blue-600 animate-spin" aria-hidden="true"></span>
             <div className="text-lg text-gray-600">프로필 정보를 불러오는 중...</div>
           </div>
         )}
