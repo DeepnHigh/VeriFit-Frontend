@@ -84,6 +84,21 @@ export default function IndividualReportPage() {
     return r?.ai_summary ?? r?.ai_evaluation?.ai_summary ?? ''
   }, [report])
 
+  const interviewHighlights = useMemo(() => {
+    const r: any = report
+    // backend may return highlight text in several places
+    const h = r?.interview_highlights ?? r?.ai_evaluation?.highlight ?? r?.highlight ?? null
+    if (!h) return null
+    // normalize arrays -> string
+    if (Array.isArray(h)) return h.join('\n---\n')
+    return String(h)
+  }, [report])
+
+  const highlightReason = useMemo(() => {
+    const r: any = report
+    return r?.ai_evaluation?.highlight_reason ?? r?.highlight_reason ?? null
+  }, [report])
+
   return (
     <div className="min-h-screen bg-white">
       <Header rightVariant="company" onLogout={handleLogout} />
@@ -146,13 +161,19 @@ export default function IndividualReportPage() {
                 {/* 하드 스킬 상세 분석 */}
                 <div className="rounded-lg border p-4 bg-gray-50">
                   <h3 className="text-lg font-semibold mb-4 text-black">💻 하드 스킬 상세 분석</h3>
-                  {renderSkillsTable((report as any)?.hard_skills, (report as any)?.hard_detail_scores)}
+                  {renderSkillsTable(
+                    (report as any)?.hard_skills,
+                    (report as any)?.ai_evaluation?.hard_detail_scores ?? (report as any)?.hard_detail_scores
+                  )}
                 </div>
 
                 {/* 소프트 스킬 상세 분석 */}
                 <div className="rounded-lg border p-4 bg-gray-50">
                   <h3 className="text-lg font-semibold mb-4 text-black">🎭 소프트 스킬 상세 분석</h3>
-                  {renderSkillsTable((report as any)?.soft_skills, (report as any)?.soft_detail_scores)}
+                  {renderSkillsTable(
+                    (report as any)?.soft_skills,
+                    (report as any)?.ai_evaluation?.soft_detail_scores ?? (report as any)?.soft_detail_scores
+                  )}
                 </div>
               </div>
 
@@ -166,10 +187,22 @@ export default function IndividualReportPage() {
             </div>
 
 
-            {/* AI 면접 대화 하이라이트 (임시 비어 있음) */}
+            {/* AI 면접 대화 하이라이트 */}
             <div className="bg-white rounded-xl border shadow-sm p-6">
               <h3 className="text-lg font-semibold mb-2 text-black">🤖 AI 면접 대화 하이라이트</h3>
-              <p className="text-sm text-gray-500">백엔드 데이터 준비 중입니다. 하이라이트가 등록되면 자동으로 표시됩니다.</p>
+              {interviewHighlights ? (
+                <div>
+                  <div className="mt-2">
+                    <div className="text-sm text-gray-700 font-medium mb-1">하이라이트</div>
+                    <div className="whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm">{interviewHighlights}</div>
+                  </div>
+                  {highlightReason && (
+                    <p className="text-sm text-gray-500 mt-3">선정 이유: {highlightReason}</p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">백엔드 데이터 준비 중입니다. 하이라이트가 등록되면 자동으로 표시됩니다.</p>
+              )}
             </div>
 
             {/* 종합 리포트 (틀만 구성) */}
@@ -240,17 +273,43 @@ function renderSkillsTable(skills: string[], detailScores?: any) {
   if (!Array.isArray(skills) || skills.length === 0) {
     return <div className="text-sm text-gray-500">스킬 데이터가 없습니다.</div>
   }
+  // normalize detailScores into a key->value map with lowercased keys
+  const map: Record<string, any> = {}
+  if (detailScores) {
+    if (Array.isArray(detailScores)) {
+      // array of {label, value} or {name, score}
+      detailScores.forEach((it: any) => {
+        const k = (it?.label ?? it?.name ?? it?.key ?? '').toString().trim().toLowerCase()
+        if (k) map[k] = it?.value ?? it?.score ?? it?.val ?? it?.score_value ?? null
+      })
+    } else if (typeof detailScores === 'object') {
+      Object.entries(detailScores).forEach(([k, v]) => {
+        map[k.toString().trim().toLowerCase()] = v
+      })
+    }
+  }
+
+  const formatValue = (raw: any) => {
+    if (raw === null || raw === undefined || raw === '') return '-'
+    if (typeof raw === 'number') return `${raw}점`
+    // sometimes numeric strings
+    const num = Number(String(raw).replace(/[^0-9\.\-]/g, ''))
+    if (!isNaN(num)) return `${num}점`
+    return String(raw)
+  }
 
   return (
     <div className="overflow-hidden rounded-lg border bg-white">
       <table className="min-w-full divide-y">
         <tbody className="divide-y">
           {skills.map((skill, idx) => {
-            const score = detailScores && detailScores[skill] ? detailScores[skill] : '-'
+            const key = skill.toString().trim().toLowerCase()
+            const raw = map[key] ?? map[skill] ?? map[skill.toLowerCase()] ?? null
+            const scoreText = formatValue(raw)
             return (
               <tr key={idx}>
                 <td className="px-4 py-2 text-black text-sm">{skill}</td>
-                <td className="px-4 py-2 text-black text-sm">{score}</td>
+                <td className="px-4 py-2 text-black text-sm">{scoreText}</td>
               </tr>
             )
           })}
