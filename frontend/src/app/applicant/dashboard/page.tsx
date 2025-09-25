@@ -396,10 +396,17 @@ const handleFileDelete = async (fileType: string, fileName: string) => {
     }
   }
 
-// 파일 업로드 성공 후 파일 목록 새로고침
-const handleUploadSuccess = () => {
-    console.log('🔄 파일 업로드 성공 - 파일 목록 새로고침')
-    fetchUserFiles()
+// 파일 업로드 성공 후 파일 목록 새로고침 + GitHub 업로드면 AI 업데이트 자동 실행
+const handleUploadSuccess = async (documentType?: 'award' | 'certificate' | 'cover_letter' | 'other' | 'paper' | 'portfolio' | 'qualification' | 'resume' | 'github') => {
+    console.log('🔄 파일 업로드 성공 - 파일 목록 새로고침', documentType)
+    await fetchUserFiles()
+    if (documentType === 'github') {
+      try {
+        await updateApplicantAI()
+      } catch (e) {
+        console.error('업로드 후 AI 업데이트 자동 실행 실패:', e)
+      }
+    }
   }
 
 // 개인정보 추출 함수
@@ -672,7 +679,11 @@ const handleSaveAnswer = async (questionId: string) => {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.application_count ?? ((userProfile as any)?.application_ids?.length ?? 0)}</div>
+                    <a href="/applicant/applications" className="block">
+                      <div className="text-black font-bold text-lg text-center underline underline-offset-4 hover:text-blue-600">
+                        {(userProfile as any)?.application_count ?? ((userProfile as any)?.application_ids?.length ?? 0)}
+                      </div>
+                    </a>
                     <div className="text-xs text-black text-center">지원 공고</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border">
@@ -876,6 +887,7 @@ const handleSaveAnswer = async (questionId: string) => {
               onFileDownload={handleFileDownload}
               onFileDelete={handleFileDelete}
               onUploadSuccess={handleUploadSuccess}
+              aiUpdateStatus={aiUpdateStatus}
             />
 
             {/* Big5 성격검사 결과 */}
@@ -908,33 +920,7 @@ const handleSaveAnswer = async (questionId: string) => {
               onSimulateRequest={simulateRequest}
             />
 
-            {/* 지원자AI 업데이트 버튼 */}
-            <div className="flex justify-center mb-8 mt-12">
-              <div className="flex flex-col items-center gap-4">
-                <Button 
-                  onClick={updateApplicantAI} 
-                  variant="primary" 
-                  size="lg"
-                  disabled={aiUpdating}
-                >
-                  {aiUpdating ? 'AI 업데이트 중...' : '지원자AI 업데이트'}
-                </Button>
-                {(aiUpdateStatus === 'loading' || aiUpdateStatus === 'error') && (
-                  <div className="flex items-center gap-2">
-                    {aiUpdateStatus === 'loading' && (
-                      <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true"></span>
-                    )}
-                    <span className={`${aiUpdateStatus === 'loading' ? 'text-blue-600' : 'text-red-600'} text-sm font-medium`}>
-                      {aiUpdateStatus === 'loading' && 'AI 업데이트 중입니다. 페이지를 이동하거나 끄지 마세요!'}
-                      {aiUpdateStatus === 'error' && '업데이트에 실패했습니다. 다시 시도해 주세요.'}
-                    </span>
-                  </div>
-                )}
-                {aiUpdateStatus === 'success' && (
-                  <div className="text-green-600 text-sm font-medium">✅ 지원자AI가 성공적으로 업데이트되었습니다!</div>
-                )}
-              </div>
-            </div>
+            {/* 지원자AI 수동 업데이트 버튼 제거됨 (업로드 완료 시 자동 실행) */}
         </section>
         )}
       </main>

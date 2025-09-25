@@ -20,6 +20,7 @@ export default function IndividualReportPage() {
 
   const [profile, setProfile] = useState<ApplicantProfile | null>(null)
   const [report, setReport] = useState<IndividualReport | null>(null)
+  const [showHighlightsModal, setShowHighlightsModal] = useState<boolean>(false)
 
   const handleLogout = () => logout('/')
 
@@ -99,6 +100,25 @@ export default function IndividualReportPage() {
     return r?.ai_evaluation?.highlight_reason ?? r?.highlight_reason ?? null
   }, [report])
 
+  const jobPostingsId = useMemo(() => {
+    const r: any = report
+    return (
+      r?.job_posting?.id ||
+      r?.job_posting?.job_postings_id ||
+      r?.job_postings_id ||
+      r?.job_posting_id ||
+      null
+    )
+  }, [report])
+
+  const isLongHighlights = useMemo(() => {
+    if (!interviewHighlights) return false
+    // 길이 기준 또는 줄 수 기준으로 긴 텍스트 판별
+    const lengthLong = interviewHighlights.length > 300
+    const lineLong = interviewHighlights.split('\n').length > 8
+    return lengthLong || lineLong
+  }, [interviewHighlights])
+
   return (
     <div className="min-h-screen bg-white">
       <Header rightVariant="company" onLogout={handleLogout} />
@@ -108,6 +128,12 @@ export default function IndividualReportPage() {
             <h1 className="text-2xl font-bold text-black">🤖 개별 지원자 평가 리포트</h1>
             <p className="text-black text-sm">{candidateName}의 상세 평가 결과</p>
           </div>
+          <Link 
+            href={jobPostingsId ? `/company/interviews/${jobPostingsId}` : '/company/dashboard'}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm"
+          >
+            ← 채용현황
+          </Link>
         </div>
 
         {loading && (
@@ -194,7 +220,20 @@ export default function IndividualReportPage() {
                 <div>
                   <div className="mt-2">
                     <div className="text-sm text-gray-700 font-medium mb-1">하이라이트</div>
-                    <div className="whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm">{interviewHighlights}</div>
+                    <div className={`whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm ${isLongHighlights ? 'max-h-48 overflow-hidden' : ''}`}>
+                      {interviewHighlights}
+                    </div>
+                    {isLongHighlights && (
+                      <div className="mt-2 flex justify-end">
+                        <button
+                          type="button"
+                          className="text-sm text-blue-600 hover:text-blue-700 underline underline-offset-2"
+                          onClick={() => setShowHighlightsModal(true)}
+                        >
+                          전체보기
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {highlightReason && (
                     <p className="text-sm text-gray-500 mt-3">선정 이유: {highlightReason}</p>
@@ -204,6 +243,34 @@ export default function IndividualReportPage() {
                 <p className="text-sm text-gray-500">백엔드 데이터 준비 중입니다. 하이라이트가 등록되면 자동으로 표시됩니다.</p>
               )}
             </div>
+
+            {/* 하이라이트 전체보기 모달 */}
+            {showHighlightsModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/50" onClick={() => setShowHighlightsModal(false)} />
+                <div className="relative bg-white w-full max-w-3xl max-h-[80vh] rounded-lg shadow-lg border mx-4">
+                  <div className="flex items-center justify-between px-4 py-3 border-b">
+                    <h4 className="text-base font-semibold text-black">🤖 AI 면접 대화 하이라이트</h4>
+                    <button
+                      type="button"
+                      className="text-sm text-gray-600 hover:text-gray-800"
+                      onClick={() => setShowHighlightsModal(false)}
+                    >
+                      닫기
+                    </button>
+                  </div>
+                  <div className="p-4 overflow-auto">
+                    <div className="text-sm text-gray-700 font-medium mb-2">하이라이트</div>
+                    <div className="whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm">
+                      {interviewHighlights}
+                    </div>
+                    {highlightReason && (
+                      <p className="text-sm text-gray-500 mt-3">선정 이유: {highlightReason}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* 종합 리포트 (틀만 구성) */}
             <div className="bg-white rounded-xl border shadow-sm p-6">

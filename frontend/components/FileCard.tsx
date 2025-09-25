@@ -87,8 +87,9 @@ interface FileCardProps {
   userId: string
   onFileDownload: (documentType: string, fileName: string) => void
   onFileDelete: (documentType: string, fileName: string) => void
-  onUploadSuccess: () => void
+  onUploadSuccess: (documentType?: FileType) => void
   readOnly?: boolean // 읽기 전용 모드 추가
+  aiUpdateStatus?: 'idle' | 'loading' | 'success' | 'error'
 }
 
 export default function FileCard({
@@ -98,7 +99,8 @@ export default function FileCard({
   onFileDownload,
   onFileDelete,
   onUploadSuccess,
-  readOnly = false
+  readOnly = false,
+  aiUpdateStatus = 'idle'
 }: FileCardProps) {
   const config = FILE_TYPE_CONFIGS[fileType]
   const [showInfoModal, setShowInfoModal] = useState(false)
@@ -121,6 +123,19 @@ export default function FileCard({
           >
             ℹ️ 정보
           </button>
+        )}
+        {fileType === 'github' && aiUpdateStatus !== 'idle' && (
+          <div className="text-xs ml-2">
+            {aiUpdateStatus === 'loading' && (
+              <span className="inline-flex items-center gap-1 text-blue-600"><span className="inline-block w-3 h-3 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" aria-hidden="true"></span>분석 중</span>
+            )}
+            {aiUpdateStatus === 'success' && (
+              <span className="inline-flex items-center gap-1 text-green-600">✅ 완료</span>
+            )}
+            {aiUpdateStatus === 'error' && (
+              <span className="inline-flex items-center gap-1 text-red-600">⚠️ 실패</span>
+            )}
+          </div>
         )}
       </div>
       
@@ -165,12 +180,49 @@ export default function FileCard({
         )}
       </div>
       
+      {!readOnly && (
       <FileUploadButton
-        userId={userId}
-        documentType={config.documentType as FileType}
+          userId={userId}
+          documentType={config.documentType as FileType}
         onUploadSuccess={onUploadSuccess}
-        buttonText={config.buttonText}
-      />
+          buttonText={config.buttonText}
+        />
+      )}
+
+      {/* GitHub CSV 형식 안내 모달 */}
+      {fileType === 'github' && showInfoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowInfoModal(false)} />
+          <div className="relative bg-white w-full max-w-lg max-h-[80vh] rounded-lg shadow-lg border mx-4">
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <h4 className="text-base font-semibold text-black">GitHub CSV 업로드 안내</h4>
+              <button
+                type="button"
+                className="text-sm text-gray-600 hover:text-gray-800"
+                onClick={() => setShowInfoModal(false)}
+              >
+                닫기
+              </button>
+            </div>
+            <div className="p-4 overflow-auto">
+              <p className="text-sm text-gray-700 mb-3">CSV에는 각 레포지토리의 URL과 GitHub 사용자명이 포함되어야 합니다.</p>
+              <div className="bg-gray-50 p-3 rounded border text-xs text-black mb-3">
+                repository_url,github_username
+                <br />
+                https://github.com/owner/repo1,octocat
+                <br />
+                https://github.com/owner/repo2,octocat
+              </div>
+              <ul className="list-disc pl-5 text-xs text-gray-700 space-y-1">
+                <li>파일 확장자: .csv</li>
+                <li>헤더 행 포함 권장: repository_url, github_username</li>
+                <li>URL은 공개 저장소만 가능</li>
+                <li>업로드에는 시간이 소요될 수 있습니다. 완료시까지 페이지를 이동하지 마세요.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
