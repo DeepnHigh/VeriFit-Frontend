@@ -2,9 +2,8 @@
 
 export function logout(redirectPath: string = '/') {
   try {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userType')
-    localStorage.removeItem('userId')
+    // 모든 로컬 스토리지 항목 삭제 (계정 전환 시 데이터 혼동 방지)
+    localStorage.clear()
   } catch (_) {
     // noop
   }

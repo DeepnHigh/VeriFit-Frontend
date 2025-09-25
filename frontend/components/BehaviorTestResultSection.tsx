@@ -1,21 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 
-// 행동평가 결과 타입 정의
+// 행동검사 결과 타입 정의 (평가 제거)
 interface BehaviorTestResult {
   situation: string
   choice: string
   action: string
-  evaluation: {
-    communication: string
-    attitude: string
-    problemSolving: string
-    teamwork: string
-    stressManagement: string
-    adaptability: string
-  }
 }
 
 interface BehaviorTestResultSectionProps {
@@ -23,7 +15,7 @@ interface BehaviorTestResultSectionProps {
   readOnly?: boolean
 }
 
-// 행동평가 결과 파싱 함수
+// 행동검사 결과 파싱 함수 (평가 제거)
 const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | null => {
   try {
     // 행동평가 결과 텍스트를 파싱 (개행 보존)
@@ -32,7 +24,6 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
     let situation = ''
     let choice = ''
     let action = ''
-    let evaluationText = ''
     
     let currentSection = ''
     
@@ -40,15 +31,27 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
       const trimmed = line.trim()
       if (trimmed.includes('<상황>')) {
         currentSection = 'situation'
+        // 같은 줄에 내용이 포함된 경우 처리: "<상황> : ..."
+        const inlineSituation = trimmed.replace(/.*<상황>\s*:?\s*/,'')
+        if (inlineSituation && inlineSituation !== trimmed) {
+          situation += inlineSituation + '\n'
+        }
         continue
       } else if (trimmed.includes('<선택>')) {
         currentSection = 'choice'
+        // 같은 줄에 값이 있는 경우 처리: "<선택> : A"
+        const m = trimmed.match(/<선택>\s*:?\s*([ABC])/)
+        if (m && m[1]) {
+          choice = m[1]
+        }
         continue
-      } else if (trimmed.includes('<행동>')) {
+      } else if (trimmed.includes('<행동>') || trimmed.includes('<대화>')) {
         currentSection = 'action'
-        continue
-      } else if (trimmed.includes('<평가>')) {
-        currentSection = 'evaluation'
+        // 같은 줄에 내용이 포함된 경우 처리: "<행동> : ..." 또는 "<대화> : ..."
+        const inlineAction = trimmed.replace(/.*<(행동|대화)>\s*:?\s*/,'')
+        if (inlineAction && inlineAction !== trimmed) {
+          action += inlineAction + '\n'
+        }
         continue
       }
       
@@ -70,50 +73,13 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
           // 행동 텍스트도 개행 보존
           action += line + '\n'
           break
-        case 'evaluation':
-          evaluationText += line + '\n'
-          break
-      }
-    }
-    
-    // 평가 텍스트에서 각 항목 추출
-    const evaluation: BehaviorTestResult['evaluation'] = {
-      communication: '',
-      attitude: '',
-      problemSolving: '',
-      teamwork: '',
-      stressManagement: '',
-      adaptability: ''
-    }
-    
-    // 평가 텍스트를 ':' 기준으로 split하여 각 항목 추출
-    const evaluationParts = evaluationText.split(':')
-    
-    for (let i = 0; i < evaluationParts.length - 1; i++) {
-      const currentPart = evaluationParts[i].trim()
-      const nextPart = evaluationParts[i + 1].trim()
-      
-      // 각 평가 항목을 정확히 매칭
-      if (currentPart.includes('의사소통 능력')) {
-        evaluation.communication = nextPart.split(/태도|문제 해결력|팀워크|스트레스 관리|적응력/)[0].trim()
-      } else if (currentPart.includes('태도')) {
-        evaluation.attitude = nextPart.split(/문제 해결력|팀워크|스트레스 관리|적응력/)[0].trim()
-      } else if (currentPart.includes('문제 해결력')) {
-        evaluation.problemSolving = nextPart.split(/팀워크|스트레스 관리|적응력/)[0].trim()
-      } else if (currentPart.includes('팀워크')) {
-        evaluation.teamwork = nextPart.split(/스트레스 관리|적응력/)[0].trim()
-      } else if (currentPart.includes('스트레스 관리')) {
-        evaluation.stressManagement = nextPart.split(/적응력/)[0].trim()
-      } else if (currentPart.includes('적응력')) {
-        evaluation.adaptability = nextPart.trim()
       }
     }
     
     return {
       situation: situation.trim(),
       choice: choice.trim(),
-      action: action.trim(),
-      evaluation
+      action: action.trim()
     }
   } catch (error) {
     console.error('행동평가 결과 파싱 실패:', error)
@@ -121,34 +87,24 @@ const parseBehaviorTestResult = (behaviorText: string): BehaviorTestResult | nul
   }
 }
 
-// 행동평가 결과 표시 컴포넌트
+// 행동검사 결과 표시 컴포넌트 (평가 제거)
 const BehaviorTestResultDisplay = ({ result }: { result: BehaviorTestResult }) => {
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false)
+
   // 시나리오 본문에서 A/B/C 선택지 설명 줄 제거
   const cleanedSituation = result.situation
     .split('\n')
     .filter(line => !/^[\ \t]*[ABC]:/.test(line))
     .join('\n')
 
-  const evaluationItems = [
-    { key: 'communication', label: '의사소통 능력', icon: '💬', color: 'blue' },
-    { key: 'attitude', label: '태도', icon: '😊', color: 'green' },
-    { key: 'problemSolving', label: '문제 해결력', icon: '🧩', color: 'purple' },
-    { key: 'teamwork', label: '팀워크', icon: '🤝', color: 'orange' },
-    { key: 'stressManagement', label: '스트레스 관리', icon: '🧘', color: 'red' },
-    { key: 'adaptability', label: '적응력', icon: '🔄', color: 'indigo' }
-  ]
-
-  const getColorClasses = (color: string) => {
-    const colorMap = {
-      blue: 'bg-blue-50 border-blue-200 text-blue-800',
-      green: 'bg-green-50 border-green-200 text-green-800',
-      purple: 'bg-purple-50 border-purple-200 text-purple-800',
-      orange: 'bg-orange-50 border-orange-200 text-orange-800',
-      red: 'bg-red-50 border-red-200 text-red-800',
-      indigo: 'bg-indigo-50 border-indigo-200 text-indigo-800'
-    }
-    return colorMap[color as keyof typeof colorMap] || colorMap.blue
-  }
+  // 행동 텍스트에서 시간 스탬프([오전/오후 HH:MM]) 앞에 공백 줄 추가
+  const formattedAction = React.useMemo(() => {
+    let text = result.action || ''
+    // 줄바꿈 직후 시간 스탬프가 오는 경우, 점선 구분선을 삽입
+    // 예) "\n[오전 9:05]" → "\n································\n[오전 9:05]"
+    text = text.replace(/\n(?=\[(오전|오후)\s*\d{1,2}:\d{2}\])/g, '\n\n································································\n\n')
+    return text
+  }, [result.action])
 
   return (
     <div className="space-y-6">
@@ -228,40 +184,50 @@ const BehaviorTestResultDisplay = ({ result }: { result: BehaviorTestResult }) =
         ))}
       </div>
 
-      {/* 행동 */}
-      <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-200">
+      {/* 행동 (고정 높이 + 전체보기 모달) */}
+      <div className="relative bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="text-2xl">🎭</div>
           <h4 className="text-lg font-semibold text-gray-800">행동</h4>
         </div>
-        <div className="text-gray-700 leading-relaxed whitespace-pre-line">
-          {result.action}
+        <div className="text-gray-700 leading-relaxed whitespace-pre-line h-48 overflow-hidden">
+          {formattedAction}
+        </div>
+        <div className="absolute bottom-4 right-4">
+          <button
+            onClick={() => setIsActionModalOpen(true)}
+            className="px-3 py-1.5 text-sm rounded-md bg-gray-800 text-white hover:bg-gray-900"
+          >
+            전체보기
+          </button>
         </div>
       </div>
 
-      {/* 평가 결과 */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="text-2xl">📊</div>
-          <h4 className="text-lg font-semibold text-gray-800">평가 결과</h4>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {evaluationItems.map((item) => {
-            const value = result.evaluation[item.key as keyof typeof result.evaluation]
-            return (
-              <div key={item.key} className={`rounded-lg p-4 border ${getColorClasses(item.color)}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{item.icon}</span>
-                  <span className="font-medium text-sm">{item.label}</span>
-                </div>
-                <div className="text-sm leading-relaxed">
-                  {value || '평가할 수 없습니다.'}
-                </div>
+      {/* 모달 */}
+      {isActionModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsActionModalOpen(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[80vh] overflow-hidden border">
+            <div className="flex items-center justify-between px-5 py-3 border-b bg-gray-50">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🎭</span>
+                <h4 className="text-base font-semibold text-gray-900">행동 전체보기</h4>
               </div>
-            )
-          })}
+              <button
+                onClick={() => setIsActionModalOpen(false)}
+                className="px-2 py-1 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              >
+                닫기
+              </button>
+            </div>
+            <div className="p-5 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 56px)' }}>
+              <div className="text-gray-800 whitespace-pre-wrap leading-relaxed">
+                {formattedAction}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
