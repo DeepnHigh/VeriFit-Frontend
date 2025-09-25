@@ -6,7 +6,7 @@ import { api, FileUploadResponse } from '@/lib/api'
 interface FileUploadButtonProps {
   userId: string
   documentType: 'cover_letter' | 'portfolio' | 'resume' | 'award' | 'certificate' | 'qualification' | 'paper' | 'other' | 'github'
-  onUploadSuccess: () => void
+  onUploadSuccess: (documentType?: 'cover_letter' | 'portfolio' | 'resume' | 'award' | 'certificate' | 'qualification' | 'paper' | 'other' | 'github') => void
   buttonText?: string
   className?: string
 }
@@ -116,8 +116,8 @@ export default function FileUploadButton({
 
       console.log('✅ 파일 업로드 성공:', uploadResponse)
       
-      // 성공 시 파일 목록 새로고침
-      onUploadSuccess()
+      // 성공 시 파일 목록 새로고침 및 후속 동작 트리거를 위해 타입 전달
+      onUploadSuccess(documentType)
       
       // 파일 입력 초기화
       if (fileInputRef.current) {

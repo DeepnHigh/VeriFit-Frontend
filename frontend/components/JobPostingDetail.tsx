@@ -56,8 +56,21 @@ export default function JobPostingDetail({ posting }: JobPostingDetailProps) {
     }
   }
 
-  const cultureText = posting?.culture || posting?.company_culture || posting?.corporate_culture
-  const benefitsText = posting?.benefits || posting?.welfare || posting?.perks
+  // 추가 스키마 대응: 공고 객체에 직접 배열로 존재하는 경우
+  if (hardSkills.length === 0 && Array.isArray(posting?.hard_skills)) {
+    hardSkills = posting.hard_skills.map((name: any) => (
+      typeof name === 'string' ? { skill_name: name } : { skill_name: name?.skill_name || String(name) }
+    ))
+  }
+  if (softSkills.length === 0 && Array.isArray(posting?.soft_skills)) {
+    softSkills = posting.soft_skills.map((name: any) => (
+      typeof name === 'string' ? { skill_name: name } : { skill_name: name?.skill_name || String(name) }
+    ))
+  }
+
+  const cultureText = posting?.culture || posting?.company_culture || posting?.corporate_culture || posting?.company?.culture
+  const benefitsText = posting?.benefits || posting?.welfare || posting?.perks || posting?.benefits_text || posting?.benefits_list
+  const preferredText = posting?.preferred || posting?.preferred_qualifications || posting?.preferences || posting?.preferred_skills
 
   const displayOrHyphen = (value: any) => {
     if (value === null || value === undefined) return '-'
@@ -115,12 +128,10 @@ export default function JobPostingDetail({ posting }: JobPostingDetailProps) {
         </div>
       )}
 
-      {posting?.preferred && (
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-2">우대 사항</h3>
-          <div className="text-gray-700 whitespace-pre-wrap">{posting.preferred}</div>
-        </div>
-      )}
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-2">우대 사항</h3>
+        <div className="text-gray-700 whitespace-pre-wrap">{displayOrHyphen(preferredText)}</div>
+      </div>
 
       <div>
         <h3 className="font-semibold text-gray-900 mb-2">기업 문화</h3>
@@ -132,55 +143,53 @@ export default function JobPostingDetail({ posting }: JobPostingDetailProps) {
         <div className="text-gray-700 whitespace-pre-wrap">{displayOrHyphen(benefitsText)}</div>
       </div>
 
-      {(hardSkills.length > 0 || softSkills.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-3">하드스킬</h3>
-            {hardSkills.length === 0 ? (
-              <p className="text-sm text-gray-500">등록된 하드스킬 기준이 없습니다.</p>
-            ) : (
-              <ul className="space-y-3">
-                {hardSkills.map((s: any, idx: number) => (
-                  <li key={`hard-${idx}`} className="border border-gray-200 rounded-md p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">{s.skill_name || '-'}</span>
-                      {typeof s.percentage !== 'undefined' && (
-                        <span className="text-xs text-gray-600">{Number(s.percentage).toFixed(0)}%</span>
-                      )}
-                    </div>
-                    {s.skill_description && (
-                      <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">{s.skill_description}</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-3">하드스킬</h3>
+          {hardSkills.length === 0 ? (
+            <p className="text-sm text-gray-500">등록된 하드스킬 기준이 없습니다.</p>
+          ) : (
+            <ul className="space-y-3">
+              {hardSkills.map((s: any, idx: number) => (
+                <li key={`hard-${idx}`} className="border border-gray-200 rounded-md p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{s.skill_name || '-'}</span>
+                    {typeof s.percentage !== 'undefined' && (
+                      <span className="text-xs text-gray-600">{Number(s.percentage).toFixed(0)}%</span>
                     )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-3">소프트스킬</h3>
-            {softSkills.length === 0 ? (
-              <p className="text-sm text-gray-500">등록된 소프트스킬 기준이 없습니다.</p>
-            ) : (
-              <ul className="space-y-3">
-                {softSkills.map((s: any, idx: number) => (
-                  <li key={`soft-${idx}`} className="border border-gray-200 rounded-md p-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">{s.skill_name || '-'}</span>
-                      {typeof s.percentage !== 'undefined' && (
-                        <span className="text-xs text-gray-600">{Number(s.percentage).toFixed(0)}%</span>
-                      )}
-                    </div>
-                    {s.skill_description && (
-                      <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">{s.skill_description}</p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                  </div>
+                  {s.skill_description && (
+                    <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">{s.skill_description}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
+
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-3">소프트스킬</h3>
+          {softSkills.length === 0 ? (
+            <p className="text-sm text-gray-500">등록된 소프트스킬 기준이 없습니다.</p>
+          ) : (
+            <ul className="space-y-3">
+              {softSkills.map((s: any, idx: number) => (
+                <li key={`soft-${idx}`} className="border border-gray-200 rounded-md p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-900">{s.skill_name || '-'}</span>
+                    {typeof s.percentage !== 'undefined' && (
+                      <span className="text-xs text-gray-600">{Number(s.percentage).toFixed(0)}%</span>
+                    )}
+                  </div>
+                  {s.skill_description && (
+                    <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">{s.skill_description}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
