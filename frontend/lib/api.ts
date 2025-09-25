@@ -361,8 +361,8 @@ export const api = {
           token: backendResponse.access_token,
           user_type: backendResponse.user.user_type,
           user_id: backendResponse.user.id,
-          company_name: backendResponse.company_name || backendResponse.user.company_name || backendResponse.user?.company_name,
-          user_name: backendResponse.user.name,
+          company_name: backendResponse.company_name,
+          user_name: backendResponse.user_name,
         };
       } catch (error: any) {
         console.warn(`[API] ${apiUrl} 로그인 실패:`, error.message);

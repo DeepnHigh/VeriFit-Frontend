@@ -58,9 +58,8 @@ export default function BehaviorTestPage() {
   // 평가 결과 화면은 사용하지 않으므로 관련 상태 제거
   const [conversationStarted, setConversationStarted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isEvaluating, setIsEvaluating] = useState(false)
-  const [evaluationResult, setEvaluationResult] = useState<any>(null)
-  const [evaluationDone, setEvaluationDone] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submissionDone, setSubmissionDone] = useState(false)
 
   // 메시지 목록 컨테이너 참조 및 자동 스크롤
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
@@ -121,6 +120,9 @@ export default function BehaviorTestPage() {
     setMessages(updatedMessages)
     setCurrentMessage('')
     setConversationStarted(true)
+    
+    // 사용자 메시지 로깅
+    console.log('[User Message]', userMessage)
 
     // 람다 API 호출
     const aiResponse = await callLambdaAPI(updatedMessages)
@@ -142,8 +144,8 @@ export default function BehaviorTestPage() {
   }
 
   const handleCompleteTest = async () => {
-    // 결과 제출 시 행동 평가 요청 실행
-    await requestBehaviorEvaluation()
+    // 검사 제출
+    await submitBehaviorTest()
   }
 
   const getCharacterInfo = (characterName: string) => {
@@ -156,11 +158,10 @@ export default function BehaviorTestPage() {
     return idx >= 0 ? String.fromCharCode(65 + idx) : ''
   }
 
-  // 행동 평가 요청
-  const requestBehaviorEvaluation = async () => {
+  // 행동검사 제출
+  const submitBehaviorTest = async () => {
     try {
-      setIsEvaluating(true)
-
+      setIsSubmitting(true)
       const situationText = `당신은 팀장이며, 'NEX-T' 서비스의 프로젝트 매니저(PM)입니다. NEX-T 서비스는 특정 사람의 정보들을 입력해 놓으면 그 사람을 대신해 다른 사람들과 대화할 수 있는 서비스입니다. 이러한 서비스들은 현재 경쟁이 치열하며, 대표적인 경쟁사로는 '넷워치(NetWatch)' 가 있습니다.\n
 지난 3개월간 당신은 팀원들과 함께 '알파' 프로젝트에 매진해 왔습니다. 이 프로젝트는 AI Agent 기술을 이용해서 더욱 심도있게 대화를 끌어나갈 수 있도록 하는 NEX-T의 개선 프로젝트입니다. 팀원들과 야심차게 준비해 와서 내부적으로 기대가 큰 '알파' 프로젝트의 출시가 이제 바로 다음 주로 예정되어 있습니다.\n그런데 오늘 아침, 해외 출장에서 복귀한 CEO로부터 메시지가 도착했습니다. CEO는 시장 변화에 대한 인사이트를 바탕으로 '알파' 기능 출시를 무기한 보류하고, 대신 신규 프로젝트인 '제타'를 1개월 내에 프로토타입으로 완성하라고 지시했습니다.\n팀은 이 메시지로 인해 3개월간의 노력이 물거품이 될 위기이며, 특히 핵심 개발자인 박민준 님은 다음 주부터 2주간의 장기 휴가가 예정되어 있었습니다.\n이 갑작스럽고 스트레스가 극심한 상황에서, 당신은 PM으로서 누구와 가장 먼저 대화하시겠습니까?\n
       A: 김선희, 부팀장이며, 조직적, 팀워크 중시, 친근함, 존댓말, 여성, 팀 안정성 우선
@@ -168,63 +169,37 @@ export default function BehaviorTestPage() {
       C: 박민준, 알파프로젝트를 주도한 핵심 개발자이며, 기술적 전문성, 현실적, 직설적, 솔직함, 남성, 휴가 예정, 기술 리더
       `
 
-      // 프론트 대화 포맷 -> 평가 포맷으로 변환
+      // 프론트 대화 포맷 -> 저장 포맷으로 변환
       const formattedHistory = messages.map(m => ({
         role: m.isUser ? 'user' : 'assistant',
         content: m.content,
         timestamp: m.timestamp
       }))
 
-      const res = await fetch('/applicant/behavior-test/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          situation: { context: situationText },
-          conversation_history: formattedHistory,
-          selected: getSelectedChoiceLetter()
-        })
-      })
-
-      const data = await res.json()
-      setEvaluationResult(data)
-      console.log('[Behavior Evaluation Result]', data)
-
-      // 평가 결과 저장 텍스트 구성
-      const situation = situationText
-      const selected = getSelectedChoiceLetter()
-      const action = (data && (data.action || data.result?.action || data.summary?.action)) || ''
-      const evaluation = (data && (data.evaluation || data.result?.evaluation || data.summary?.evaluation || data.content)) || ''
-
-      const behaviorText = [
-        '[행동평가 결과]',
-        '<상황>',
-        situation,
-        '<선택>',
-        selected,
-        '<행동>',
-        action || '-',
-        '<평가>',
-        evaluation || '-'
-      ].join('\n')
-
       // 사용자 ID 조회 및 저장 API 호출
       const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null
       if (userId) {
         try {
-          await api.applicant.saveBehaviorText(userId, behaviorText)
+          // 새로운 API로 대화 데이터 저장 (FormData)
+          const form = new FormData()
+          form.append('situation_text', situationText)
+          form.append('selected_character', getSelectedChoiceLetter())
+          form.append('conversation_history', JSON.stringify(formattedHistory))
+
+          await api.applicant.submitBehaviorTest(userId, form)
         } catch (saveErr) {
-          console.error('행동평가 결과 저장 중 오류', saveErr)
+          console.error('행동검사 결과 저장 중 오류', saveErr)
         }
       } else {
-        console.warn('userId가 없어 행동평가 결과를 저장하지 못했습니다.')
+        console.warn('userId가 없어 행동검사 결과를 저장하지 못했습니다.')
       }
 
-      setEvaluationDone(true)
+      setSubmissionDone(true)
     } catch (e) {
-      console.error('행동 평가 요청 실패', e)
-      alert('행동 평가 요청에 실패했습니다. 나중에 다시 시도해주세요.')
+      console.error('행동검사 제출 실패', e)
+      alert('행동검사 제출에 실패했습니다. 나중에 다시 시도해주세요.')
     } finally {
-      setIsEvaluating(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -378,7 +353,7 @@ export default function BehaviorTestPage() {
                 onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSendMessage()}
                 placeholder={`${selectedCharacter}에게 메시지 보내기...`}
                 disabled={isLoading}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed text-black"
               />
               <button
                 onClick={handleSendMessage}
@@ -396,17 +371,17 @@ export default function BehaviorTestPage() {
                 </div>
               </div>
             )}
-            {isEvaluating && (
+            {isSubmitting && !submissionDone && (
               <div className="mt-2 text-center">
                 <div className="inline-flex items-center text-sm text-gray-500">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></div>
-                  평가 생성 중입니다...
+                  검사를 제출하고 있습니다...
                 </div>
               </div>
             )}
-            {evaluationDone && (
+            {submissionDone && (
               <div className="mt-2 text-center text-green-600 text-sm font-medium">
-                결과 제출 및 평가가 완료되었습니다.
+                검사를 제출하였습니다.
               </div>
             )}
           </div>
@@ -415,12 +390,12 @@ export default function BehaviorTestPage() {
 
         <div className="text-center">
           <div className="flex items-center justify-center gap-3">
-            <button
+              <button
               onClick={handleCompleteTest}
-              disabled={isEvaluating || evaluationDone || messages.length === 0}
+              disabled={isSubmitting || submissionDone || messages.length === 0}
               className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isEvaluating ? '평가 생성 중...' : (evaluationDone ? '제출 완료' : '결과 제출')}
+              {submissionDone ? '제출 완료' : (isSubmitting ? '제출 중...' : '검사 제출')}
             </button>
             <Link
               href="/applicant/dashboard"
@@ -429,9 +404,6 @@ export default function BehaviorTestPage() {
               지원 페이지로 돌아가기
             </Link>
           </div>
-          {evaluationDone && (
-            <div className="mt-3 text-green-600 text-sm font-medium">결과 제출 및 평가가 완료되었습니다.</div>
-          )}
         </div>
       </main>
     </div>

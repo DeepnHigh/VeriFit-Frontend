@@ -130,7 +130,29 @@ Table big5_test_results {
   }
 }
 
-// 행동검사 결과 테이블도 추가해야함
+// 행동검사 결과 테이블
+Table behavior_test_results {
+  id uuid [primary key, default: `uuid_generate_v4()`]
+  job_seeker_id uuid [ref: > job_seekers.id, not null]
+  test_date timestamp [default: `now()`]
+  
+  // 시나리오 및 선택 정보
+  situation_text text [not null] // 시나리오 설명
+  selected_character varchar(1) [not null] // 선택한 캐릭터 (A, B, C)
+  
+  // 대화 기록 (JSON 형태로 저장)
+  conversation_history jsonb [not null] // 전체 대화 기록
+  
+  // 저장된 텍스트 (기존 시스템과의 호환성)
+  behavior_text text // 포맷팅된 전체 결과 텍스트
+  
+  // 인덱스
+  indexes {
+    job_seeker_id
+    test_date
+    selected_character
+  }
+}
 
 // AI 학습용 질문 템플릿 테이블
 Table ai_learning_questions {
