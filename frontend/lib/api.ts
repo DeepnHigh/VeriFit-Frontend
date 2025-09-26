@@ -55,21 +55,27 @@ const STORAGE_KEY = 'verifit_api_url';
 // 환경변수에서 API URL 목록 가져오기
 const getApiUrlList = (): string[] => {
   const urls: string[] = [];
-  
-  // 환경변수에서 API URL들을 순서대로 가져오기
+
+  // 1) 환경변수 정의된 순서대로 수집 (NEXT_PUBLIC_API_URL_1,2,...)
   let i = 1;
   while (process.env[`NEXT_PUBLIC_API_URL_${i}`]) {
     urls.push(process.env[`NEXT_PUBLIC_API_URL_${i}`]!);
     i++;
   }
-  
-  // 환경변수가 없으면 기본값들 사용
+
+  // 2) 환경변수 전혀 없으면 기본값 (공인 IP 먼저)
   if (urls.length === 0) {
-    urls.push('http://192.168.0.21:8000');
-    urls.push('http://14.39.95.228:8000');
+    urls.push('http://14.39.95.228:8000'); // Public 우선
+    urls.push('http://192.168.0.21:8000'); // Local fallback
   }
-  
-  return urls;
+
+  // 3) 우선순위 재정렬: Public → Private(내부망) 순으로 정렬
+  const isPrivate = (u: string) => /https?:\/\/(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(u);
+  const publicUrls = urls.filter(u => !isPrivate(u));
+  const privateUrls = urls.filter(isPrivate);
+  const prioritized = [...publicUrls, ...privateUrls];
+
+  return prioritized;
 };
 
 // API URL 동적 선택 함수

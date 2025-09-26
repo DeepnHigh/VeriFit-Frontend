@@ -153,7 +153,6 @@ export default function InterviewStatusPage() {
   const jobPosting = (data as any)?.job_posting || null
   const hardSkills: any[] = Array.isArray(jobPosting?.hard_skills) ? jobPosting.hard_skills : []
   const softSkills: any[] = Array.isArray(jobPosting?.soft_skills) ? jobPosting.soft_skills : []
-  const overallReview: string = (overall?.overall_review ?? '') as string
 
   const sortedApps = [...applications].sort((a, b) => {
     const getNum = (v: any, key: string) => {
@@ -189,7 +188,30 @@ export default function InterviewStatusPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">채용현황</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-3xl font-bold text-gray-900">채용현황</h1>
+              {evalStatus === 'ing' && (
+                <button
+                  type="button"
+                  disabled
+                  className="px-3 py-1 rounded-md text-sm font-medium bg-blue-600 text-white animate-pulse shadow-sm flex items-center gap-1"
+                  title="현재 모든 지원자에 대한 AI 평가를 수행 중입니다."
+                >
+                  <span className="inline-block w-2 h-2 rounded-full bg-white animate-ping" />
+                  AI 평가 중입니다
+                </button>
+              )}
+              {(evalStatus === 'finish' || evalStatus === 'done') && (
+                <button
+                  type="button"
+                  disabled
+                  className="px-3 py-1 rounded-md text-sm font-medium bg-green-600 text-white shadow-sm flex items-center gap-1"
+                  title="모든 지원자 평가가 완료되었습니다."
+                >
+                  ✅ 평가가 완료되었습니다
+                </button>
+              )}
+            </div>
             <p className="text-gray-600 mt-1">공고: {jobTitle || '제목 불러오는 중...'}</p>
           </div>
           <Link href="/company/dashboard" className="px-4 py-2 rounded bg-gray-200 text-gray-900 hover:bg-gray-300">← 대시보드</Link>
@@ -388,14 +410,7 @@ export default function InterviewStatusPage() {
           </div>
         )}
 
-        <div className="mt-10">
-          <div className="ai-overview-section bg-green-50 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-green-800 mb-3 flex items-center gap-2">🤖 AI면접관 총평</h3>
-            <p className="text-gray-800 leading-7" style={{ textAlign: 'left', wordBreak: 'keep-all', whiteSpace: 'normal' }}>
-              {overallReview && overallReview.trim().length > 0 ? overallReview : '아직 평가 전입니다.'}
-            </p>
-          </div>
-        </div>
+        {/* AI면접관 총평 섹션 제거됨 */}
       </div>
     </div>
   )
