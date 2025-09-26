@@ -236,7 +236,22 @@ export default function InterviewStatusPage() {
                       }
                     } catch (error) {
                       console.error('평가 시작 실패:', error)
-                      alert('평가 시작에 실패했습니다.')
+                      console.error('에러 상세 정보:', {
+                        message: error instanceof Error ? error.message : '알 수 없는 에러',
+                        stack: error instanceof Error ? error.stack : undefined,
+                        response: (error as any)?.response,
+                        status: (error as any)?.response?.status,
+                        data: (error as any)?.response?.data
+                      })
+                      
+                      // 상태 되돌리기
+                      setEvalStatus('ready')
+                      
+                      let errorMessage = '평가 시작에 실패했습니다.'
+                      if ((error as any)?.response?.data?.message) {
+                        errorMessage += `\n오류: ${(error as any).response.data.message}`
+                      }
+                      alert(errorMessage)
                     }
                   }
                 }}

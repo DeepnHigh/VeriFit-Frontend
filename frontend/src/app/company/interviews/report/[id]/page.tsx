@@ -336,31 +336,34 @@ function hasDetailScores(detail: any) {
   return false
 }
 
-function renderSkillsTable(skills: string[], detailScores?: any) {
-  if (!Array.isArray(skills) || skills.length === 0) {
-    return <div className="text-sm text-gray-500">스킬 데이터가 없습니다.</div>
-  }
-  // normalize detailScores into a key->value map with lowercased keys
-  const map: Record<string, any> = {}
-  if (detailScores) {
-    if (Array.isArray(detailScores)) {
-      // array of {label, value} or {name, score}
-      detailScores.forEach((it: any) => {
-        const k = (it?.label ?? it?.name ?? it?.key ?? '').toString().trim().toLowerCase()
-        if (k) map[k] = it?.value ?? it?.score ?? it?.val ?? it?.score_value ?? null
-      })
-    } else if (typeof detailScores === 'object') {
-      Object.entries(detailScores).forEach(([k, v]) => {
-        map[k.toString().trim().toLowerCase()] = v
-      })
+function renderSkillsTable(skills: string[] | undefined, detailScores?: any) {
+  // detailScores가 문자열(JSON)로 오는 경우 파싱 시도
+  let parsedDetail = detailScores
+  if (typeof parsedDetail === 'string') {
+    try {
+      const j = JSON.parse(parsedDetail)
+      parsedDetail = j
+    } catch {
+      // noop
     }
+  }
+
+  // skills 배열이 없으면 detailScores의 키를 사용
+  let skillList: string[] = Array.isArray(skills) ? skills.filter(Boolean) : []
+  if (!skillList || skillList.length === 0) {
+    if (parsedDetail && typeof parsedDetail === 'object') {
+      skillList = Object.keys(parsedDetail)
+    }
+  }
+
+  if (!skillList || skillList.length === 0) {
+    return <div className="text-sm text-gray-500">상세 점수 데이터가 없습니다.</div>
   }
 
   const formatValue = (raw: any) => {
     if (raw === null || raw === undefined || raw === '') return '-'
     if (typeof raw === 'number') return `${raw}점`
-    // sometimes numeric strings
-    const num = Number(String(raw).replace(/[^0-9\.\-]/g, ''))
+    const num = Number(String(raw).replace(/[^0-9\.-]/g, ''))
     if (!isNaN(num)) return `${num}점`
     return String(raw)
   }
@@ -369,9 +372,9 @@ function renderSkillsTable(skills: string[], detailScores?: any) {
     <div className="overflow-hidden rounded-lg border bg-white">
       <table className="min-w-full divide-y">
         <tbody className="divide-y">
-          {skills.map((skill, idx) => {
-            const key = skill.toString().trim().toLowerCase()
-            const raw = map[key] ?? map[skill] ?? map[skill.toLowerCase()] ?? null
+          {skillList.map((skill, idx) => {
+            // skill 이름 그대로 detailScores에서 값 조회
+            const raw = parsedDetail ? parsedDetail[skill] : null
             const scoreText = formatValue(raw)
             return (
               <tr key={idx}>
