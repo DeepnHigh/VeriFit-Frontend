@@ -134,7 +134,7 @@ export default function InterviewStatusPage() {
             <h1 className="text-2xl font-bold text-gray-900">채용현황</h1>
             <p className="mt-2 text-red-600">{error}</p>
             <div className="mt-6 flex gap-3">
-              <Link href="/company/dashboard" className="px-4 py-2 rounded bg-gray-200 text-gray-900 hover:bg-gray-300">← 대시보드로</Link>
+              <Link href="/company/dashboard" className="px-4 py-2 rounded bg-gray-200 text-gray-900 hover:bg-gray-300">← 대시보드</Link>
               <button onClick={() => router.refresh()} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">다시 시도</button>
             </div>
           </div>

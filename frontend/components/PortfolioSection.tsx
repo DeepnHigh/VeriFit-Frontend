@@ -29,6 +29,7 @@ interface PortfolioSectionProps {
   onFileDownload: (documentType: string, fileName: string) => void
   onFileDelete: (documentType: string, fileName: string) => void
   onUploadSuccess: () => void
+  aiUpdateStatus?: 'idle' | 'loading' | 'success' | 'error'
 }
 
 type FileType = 'award' | 'certificate' | 'cover_letter' | 'other' | 'paper' | 'portfolio' | 'qualification' | 'resume' | 'github'
@@ -52,7 +53,8 @@ export default function PortfolioSection({
   userId,
   onFileDownload,
   onFileDelete,
-  onUploadSuccess
+  onUploadSuccess,
+  aiUpdateStatus = 'idle'
 }: PortfolioSectionProps) {
   return (
     <section className="bg-gray-50 rounded-xl p-6 border mb-8">
@@ -73,6 +75,7 @@ export default function PortfolioSection({
             onFileDownload={onFileDownload}
             onFileDelete={onFileDelete}
             onUploadSuccess={onUploadSuccess}
+            aiUpdateStatus={aiUpdateStatus}
           />
         ))}
       </div>
