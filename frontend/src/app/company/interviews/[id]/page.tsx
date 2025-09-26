@@ -196,7 +196,7 @@ export default function InterviewStatusPage() {
         </div>
 
         {overall && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm text-gray-600">총 지원자 수</div>
               <div className="mt-2 text-2xl font-bold text-gray-900">{overall.total_applications ?? '-'}</div>
@@ -204,10 +204,6 @@ export default function InterviewStatusPage() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm text-gray-600">AI 평가 완료</div>
               <div className="mt-2 text-2xl font-bold text-gray-900">{overall.ai_evaluated_count ?? '-'}</div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="text-sm text-gray-600">AI 추천 수</div>
-              <div className="mt-2 text-2xl font-bold text-gray-900">{overall.ai_recommended_count ?? '-'}</div>
             </div>
           </div>
         )}
