@@ -153,7 +153,6 @@ export default function InterviewStatusPage() {
   const jobPosting = (data as any)?.job_posting || null
   const hardSkills: any[] = Array.isArray(jobPosting?.hard_skills) ? jobPosting.hard_skills : []
   const softSkills: any[] = Array.isArray(jobPosting?.soft_skills) ? jobPosting.soft_skills : []
-  const overallReview: string = (overall?.overall_review ?? '') as string
 
   const sortedApps = [...applications].sort((a, b) => {
     const getNum = (v: any, key: string) => {
@@ -392,14 +391,7 @@ export default function InterviewStatusPage() {
           </div>
         )}
 
-        <div className="mt-10">
-          <div className="ai-overview-section bg-green-50 rounded-xl p-6">
-            <h3 className="text-xl font-bold text-green-800 mb-3 flex items-center gap-2">🤖 AI면접관 총평</h3>
-            <p className="text-gray-800 leading-7" style={{ textAlign: 'left', wordBreak: 'keep-all', whiteSpace: 'normal' }}>
-              {overallReview && overallReview.trim().length > 0 ? overallReview : '아직 평가 전입니다.'}
-            </p>
-          </div>
-        </div>
+        {/* AI면접관 총평 섹션 제거됨 */}
       </div>
     </div>
   )
