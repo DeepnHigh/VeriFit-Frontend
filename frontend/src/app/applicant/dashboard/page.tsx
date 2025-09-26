@@ -479,33 +479,53 @@ const updateApplicantAI = async () => {
       return
     }
 
-        // 1. userProfile 상태에서 github_repositories 데이터 가져오기 (API 재호출 방지)
-    if (!userProfile) {
-      alert('사용자 프로필 정보가 아직 로드되지 않았습니다.')
-      setAiUpdateStatus('error')
-      setAiUpdating(false)
-      return
+    // 1. 먼저 userProfile에서 github_repositories 데이터 확인
+    let githubData = null
+    if (userProfile) {
+      githubData = (userProfile as any)?.github_repositories
     }
-    const githubData = (userProfile as any)?.github_repositories
     
+    // 2. userProfile에 GitHub 데이터가 없으면 업로드된 GitHub CSV 파일에서 처리
     if (!githubData || !githubData.repository || githubData.repository.length === 0) {
-      alert('GitHub 레포지토리 정보가 없습니다. 프로필에 GitHub 레포지토리를 추가해주세요.')
-      setAiUpdateStatus('error')
-      setAiUpdating(false)
+      console.log('📁 userProfile에 GitHub 데이터가 없음. 업로드된 GitHub CSV 파일 확인 중...')
+      
+      // 업로드된 GitHub 파일이 있는지 확인
+      if (!userFiles.github || userFiles.github.length === 0) {
+        alert('GitHub 레포지토리 정보가 없습니다. GitHub CSV 파일을 업로드하거나 프로필에 GitHub 레포지토리를 추가해주세요.')
+        setAiUpdateStatus('error')
+        setAiUpdating(false)
+        return
+      }
+      
+      console.log('✅ 업로드된 GitHub CSV 파일 발견:', userFiles.github)
+      // GitHub CSV 파일이 업로드되어 있으면 백엔드에서 자동으로 처리하도록 빈 배열로 호출
+      // 백엔드에서 업로드된 CSV 파일을 자동으로 읽어서 처리할 것으로 예상
+      const response = await api.applicant.updateApplicantAI(userId, [])
+      console.log('📡 백엔드 API 응답 (CSV 파일 자동 처리):', JSON.stringify(response, null, 2))
+      
+      if (response.success) {
+        console.log('✅ GitHub CSV 파일 기반 AI 업데이트 성공!')
+        alert('GitHub CSV 파일을 기반으로 지원자AI가 성공적으로 업데이트되었습니다!')
+        setAiUpdateStatus('success')
+      } else {
+        console.log('❌ GitHub CSV 파일 기반 AI 업데이트 실패:', response.message)
+        throw new Error(response.message || 'GitHub CSV 파일 기반 지원자AI 업데이트 실패')
+      }
       return
     }
 
-    // 2. API에 보낼 데이터 형식으로 변환
+    // 3. userProfile에 GitHub 데이터가 있는 경우 기존 로직 사용
+    console.log('📊 userProfile의 GitHub 데이터 사용:', githubData)
     const repositories = githubData.repository.map((repoUrl: string, index: number) => ({
       repository_url: repoUrl,
       github_username: githubData.username && githubData.username.length > 0 ? githubData.username[0] : 'unknown'
     }))
 
-    // 3. 백엔드 API 호출
+    // 4. 백엔드 API 호출
     const response = await api.applicant.updateApplicantAI(userId, repositories)
     console.log('📡 백엔드 API 응답 전체 (JSON 형태):', JSON.stringify(response, null, 2))
 
-    // 4. 백엔드 응답 처리
+    // 5. 백엔드 응답 처리
     if (response.success) {
       console.log('✅ 백엔드 API 호출 성공!')
       console.log('📊 백엔드가 보내준 전체 데이터:', JSON.stringify(response, null, 2))
@@ -709,13 +729,6 @@ const handleSaveAnswer = async (questionId: string) => {
                       placeholder="자기소개"
                     />
                   )}
-                </div>
-                
-                <div className="mt-4 rounded-lg p-4 bg-green-50">
-                  <div className="font-semibold text-black mb-1">🤖 지원자AI 상태</div>
-                  <div className="text-sm text-black">프로필 완성도: <b>{userProfile.profile_completion_percentage || 0}%</b></div>
-                  <div className="text-xs text-black mt-1">마지막 업데이트: {userProfile.last_profile_update ? new Date(userProfile.last_profile_update).toLocaleDateString() : '-'}
-</div>
                 </div>
               </div>
 
