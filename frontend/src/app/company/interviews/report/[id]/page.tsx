@@ -187,12 +187,15 @@ export default function IndividualReportPage() {
                 {/* 하드 스킬 상세 분석 */}
                 <div className="rounded-lg border p-4 bg-gray-50">
                   <h3 className="text-lg font-semibold mb-4 text-black">💻 하드 스킬 상세 분석</h3>
-                  {renderSkillsTable(
-                    (report as any)?.hard_skills,
-                    (report as any)?.ai_evaluation?.hard_detail_scores ?? (report as any)?.hard_detail_scores
-                  )}
+                  {(() => {
+                    const hardSkills = (report as any)?.hard_skills;
+                    const hardDetailScores = (report as any)?.ai_evaluation?.hard_detail_scores;
+                    console.log('🔎 하드 스킬:', hardSkills);
+                    console.log('🔎 하드 스킬 상세 점수:', hardDetailScores);
+                    return renderSkillsTable(hardSkills, hardDetailScores);
+                  })()}
                 </div>
-
+                
                 {/* 소프트 스킬 상세 분석 */}
                 <div className="rounded-lg border p-4 bg-gray-50">
                   <h3 className="text-lg font-semibold mb-4 text-black">🎭 소프트 스킬 상세 분석</h3>
@@ -211,7 +214,7 @@ export default function IndividualReportPage() {
                 </div>
               )}
             </div>
-
+            
 
             {/* AI 면접 대화 하이라이트 */}
             <div className="bg-white rounded-xl border shadow-sm p-6">
