@@ -188,10 +188,10 @@ const saveEditedProfile = async () => {
       location: (editForm.location ?? '').toString(),
     }
 
-    // 빈 문자열은 null로 변환하여 불필요한 덮어쓰기를 방지
+    // 빈 문자열은 null로 변환하여 불필요한 덮어쓰기를 방지 (단, bio는 제외)
     Object.keys(payload).forEach((k) => {
       const key = k as keyof JobSeekerUpdatePayload
-      if (typeof payload[key] === 'string' && (payload[key] as unknown as string).trim() === '') {
+      if (key !== 'bio' && typeof payload[key] === 'string' && (payload[key] as unknown as string).trim() === '') {
         payload[key] = null
       }
     })
@@ -713,13 +713,11 @@ const handleSaveAnswer = async (questionId: string) => {
                 </div>
                 
                 {/* 자기소개 (bio) 섹션 추가 */}
-                <div className="mt-4 rounded-lg p-4">
+                <div className="mt-4 rounded-lg p-4 border border-gray-200 bg-gray-50">
                   {!isEditing ? (
-                    userProfile.bio ? (
-                      <div className="text-sm text-black leading-relaxed" style={{ wordBreak: 'keep-all', whiteSpace: 'pre-wrap' }}>
-                        {userProfile.bio}
-                      </div>
-                    ) : null
+                    <div className="text-sm text-black leading-relaxed min-h-[80px]" style={{ wordBreak: 'keep-all', whiteSpace: 'pre-wrap' }}>
+                      {userProfile.bio || '자기소개를 입력해주세요.'}
+                    </div>
                   ) : (
                     <textarea
                       value={typeof editForm.bio === 'string' ? editForm.bio : ''}
