@@ -225,15 +225,6 @@ export default function CreateJobPostingPage() {
       if (location.trim() !== '') payload.location = location.trim()
       if (preferences.trim() !== '') payload.preferred = preferences.trim()
 
-      // 디버그 로그
-      try {
-        console.log('🛰️ JobPosting 생성 요청')
-        console.log('  - API Base URL:', (window as any)?.location?.hostname ? `http://${window.location.hostname}:8001` : 'unknown')
-        console.log('  - Endpoint: /job-postings')
-        console.log('  - Authorization:', token ? 'Bearer <token>' : '없음')
-        console.log('  - Payload:', JSON.parse(JSON.stringify(payload)))
-      } catch (_) {}
-
       const resp = await api.company.createJobPosting(payload)
 
       // 응답 검증: 생성된 식별자(id) 존재 여부 확인
