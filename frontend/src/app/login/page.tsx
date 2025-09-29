@@ -64,7 +64,7 @@ export default function LoginPage() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             계정이 없으신가요?{' '}
-            <Link href="/register" prefetch={false} onClick={(e) => { e.preventDefault(); alert('회원가입 페이지가 아직 준비되지 않았습니다.'); }} className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">
               회원가입
             </Link>
           </p>
