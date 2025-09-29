@@ -85,6 +85,12 @@ export default function IndividualReportPage() {
     return r?.ai_summary ?? r?.ai_evaluation?.ai_summary ?? ''
   }, [report])
 
+  const conversations = useMemo(() => {
+    const r: any = report
+    const conv = r?.conversations || r?.ai_evaluation?.conversations
+    return Array.isArray(conv) ? conv : null
+  }, [report])
+
   const interviewHighlights = useMemo(() => {
     const r: any = report
     // backend may return highlight text in several places
@@ -217,29 +223,32 @@ export default function IndividualReportPage() {
             
 
             {/* AI 면접 대화 하이라이트 */}
-            <div className="bg-white rounded-xl border shadow-sm p-6">
+            <div className="bg-white rounded-xl border shadow-sm p-6 relative">
               <h3 className="text-lg font-semibold mb-2 text-black">🤖 AI 면접 대화 하이라이트</h3>
+              {interviewHighlights && (
+                <button
+                  type="button"
+                  className="absolute top-4 right-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/80 border border-gray-200 text-blue-700 shadow-sm hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                  onClick={() => setShowHighlightsModal(true)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.478 0-8.268-2.943-9.542-7zm14.292 0a4.75 4.75 0 11-9.5 0 4.75 4.75 0 019.5 0z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm font-medium">전체보기</span>
+                </button>
+              )}
               {interviewHighlights ? (
                 <div>
                   <div className="mt-2">
-                    <div className="text-sm text-gray-700 font-medium mb-1">하이라이트</div>
+                    <div className="text-sm text-black font-semibold mb-1">하이라이트</div>
                     <div className={`whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm ${isLongHighlights ? 'max-h-48 overflow-hidden' : ''}`}>
                       {interviewHighlights}
                     </div>
-                    {isLongHighlights && (
-                      <div className="mt-2 flex justify-end">
-                        <button
-                          type="button"
-                          className="text-sm text-blue-600 hover:text-blue-700 underline underline-offset-2"
-                          onClick={() => setShowHighlightsModal(true)}
-                        >
-                          전체보기
-                        </button>
-                      </div>
-                    )}
+                    
                   </div>
                   {highlightReason && (
-                    <p className="text-sm text-gray-500 mt-3">선정 이유: {highlightReason}</p>
+                    <p className="text-sm text-black mt-3">선정 이유: {highlightReason}</p>
                   )}
                 </div>
               ) : (
@@ -247,13 +256,13 @@ export default function IndividualReportPage() {
               )}
             </div>
 
-            {/* 하이라이트 전체보기 모달 */}
+            {/* 전체보기 모달 (대화 전체 표시) */}
             {showHighlightsModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center">
                 <div className="absolute inset-0 bg-black/50" onClick={() => setShowHighlightsModal(false)} />
-                <div className="relative bg-white w-full max-w-3xl max-h-[80vh] rounded-lg shadow-lg border mx-4">
-                  <div className="flex items-center justify-between px-4 py-3 border-b">
-                    <h4 className="text-base font-semibold text-black">🤖 AI 면접 대화 하이라이트</h4>
+                <div className="relative bg-white w-full max-w-4xl max-h-[85vh] rounded-lg shadow-lg border mx-4 flex flex-col">
+                  <div className="flex items-center justify-between px-4 py-3 border-b flex-shrink-0">
+                    <h4 className="text-base font-semibold text-black">💬 AI 면접 대화 전체</h4>
                     <button
                       type="button"
                       className="text-sm text-gray-600 hover:text-gray-800"
@@ -262,13 +271,38 @@ export default function IndividualReportPage() {
                       닫기
                     </button>
                   </div>
-                  <div className="p-4 overflow-auto">
-                    <div className="text-sm text-gray-700 font-medium mb-2">하이라이트</div>
-                    <div className="whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm">
-                      {interviewHighlights}
-                    </div>
-                    {highlightReason && (
-                      <p className="text-sm text-gray-500 mt-3">선정 이유: {highlightReason}</p>
+                  <div className="p-4 overflow-y-auto flex-1">
+                    {conversations && conversations.length > 0 ? (
+                      <div className="space-y-3">
+                        {conversations
+                          .sort((a: any, b: any) => (a?.turn_number || 0) - (b?.turn_number || 0))
+                          .map((c: any, idx: number) => {
+                            const sender = String(c?.sender || '').toLowerCase()
+                            const isInterviewer = sender.includes('interviewer')
+                            const senderLabel = isInterviewer ? '면접관' : '지원자'
+                            return (
+                              <div key={c?.id || idx} className={`rounded-lg border p-3 ${isInterviewer ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'}`}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className={`text-xs font-semibold ${isInterviewer ? 'text-blue-700' : 'text-amber-700'}`}>{senderLabel}</span>
+                                  {typeof c?.turn_number === 'number' && (
+                                    <span className="text-[11px] text-gray-500">턴 #{c.turn_number}</span>
+                                  )}
+                                </div>
+                                <div className="text-sm text-black whitespace-pre-wrap break-words">{c?.content || '-'}</div>
+                              </div>
+                            )
+                          })}
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="text-sm text-black font-semibold mb-2">하이라이트</div>
+                        <div className="whitespace-pre-wrap break-words bg-gray-50 p-3 rounded text-black text-sm">
+                          {interviewHighlights || '대화 데이터가 없습니다.'}
+                        </div>
+                        {highlightReason && (
+                          <p className="text-sm text-black mt-3">선정 이유: {highlightReason}</p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

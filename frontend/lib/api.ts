@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 타입 정의
-interface FileUploadResponse {
+export interface FileUploadResponse {
   success: boolean;
   message: string;
   file_url?: string;
@@ -680,10 +680,11 @@ export const api = {
       return response.data;
     },
 
-    // 파일 다운로드 URL 생성
+    // 파일 다운로드 URL 생성 (스트리밍 엔드포인트 직접 열기용 URL 구성)
     getDownloadUrl: async (user_id: string, file_type: string, file_name: string) => {
-      const response = await apiClient.get(`/s3/download/${user_id}/${file_type}/${file_name}`);
-      return response.data;
+      const baseUrl = getApiBaseUrl();
+      const encodedName = encodeURIComponent(file_name);
+      return { downloadUrl: `${baseUrl}/s3/download/${user_id}/${file_type}/${encodedName}` };
     },
 
     // 파일 삭제
@@ -799,8 +800,9 @@ export const api = {
       return response.data;
     },
     getDownloadUrl: async (user_id: string, file_type: string, file_name: string) => {
-      const response = await apiClient.get(`/s3/download/${user_id}/${file_type}/${file_name}`);
-      return response.data;
+      const baseUrl = getApiBaseUrl();
+      const encodedName = encodeURIComponent(file_name);
+      return { downloadUrl: `${baseUrl}/s3/download/${user_id}/${file_type}/${encodedName}` };
     },
     deleteFile: async (user_id: string, file_type: string, file_name: string): Promise<{ success: boolean; message: string }> => {
       const response = await apiClient.delete(`/s3/delete/${user_id}/${file_type}/${file_name}`);
