@@ -138,6 +138,13 @@ const getEducationLabel = (value?: string | null) => {
   return EDUCATION_LABELS[value] || value
 }
 
+// 한글 라벨을 백엔드 enum 값으로 역매핑하기 위한 테이블
+const EDUCATION_ENUMS_FROM_LABELS: Record<string, string> = Object.entries(EDUCATION_LABELS)
+  .reduce((acc, [enumKey, label]) => {
+    acc[label] = enumKey
+    return acc
+  }, {} as Record<string, string>)
+
 
 const startEditProfile = () => {
   if (!userProfile) return
@@ -148,7 +155,12 @@ const startEditProfile = () => {
     bio: userProfile.bio || '',
     total_experience_years: userProfile.total_experience_years ?? null,
     company_name: userProfile.company_name || '',
-    education_level: userProfile.education_level || '',
+    // 한글 라벨이 저장되어 온 경우를 대비해 enum 값으로 정규화
+    education_level: ((): string => {
+      const raw = (userProfile.education_level || '').toString()
+      if (!raw) return ''
+      return EDUCATION_ENUMS_FROM_LABELS[raw] || raw
+    })(),
     university: userProfile.university || '',
     major: userProfile.major || '',
     graduation_year: userProfile.graduation_year ?? null,
@@ -182,7 +194,12 @@ const saveEditedProfile = async () => {
       bio: (editForm.bio ?? '').toString(),
       total_experience_years: editForm.total_experience_years ?? null,
       company_name: (editForm.company_name ?? '').toString(),
-      education_level: (editForm.education_level ?? '').toString(),
+      // 교육 수준은 한글 라벨이 들어올 수 있으므로 enum으로 정규화하여 전송
+      education_level: ((): string | null => {
+        const raw = (editForm.education_level ?? '').toString()
+        if (!raw) return ''
+        return EDUCATION_ENUMS_FROM_LABELS[raw] || raw
+      })() as any,
       university: (editForm.university ?? '').toString(),
       major: (editForm.major ?? '').toString(),
       graduation_year: editForm.graduation_year ?? null,
