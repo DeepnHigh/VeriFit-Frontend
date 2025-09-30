@@ -277,13 +277,24 @@ export default function IndividualReportPage() {
                         {conversations
                           .sort((a: any, b: any) => (a?.turn_number || 0) - (b?.turn_number || 0))
                           .map((c: any, idx: number) => {
-                            const sender = String(c?.sender || '').toLowerCase()
-                            const isInterviewer = sender.includes('interviewer')
-                            const senderLabel = isInterviewer ? '면접관' : '지원자'
+                            const rawSender = String(c?.sender || '').toLowerCase()
+                            const isInterviewer = rawSender === 'interviewer_ai'
+                            const isCandidate = rawSender === 'candidate_ai'
+                            const senderLabel = isInterviewer ? '면접관' : isCandidate ? '지원자' : '기타'
+                            const boxClass = isInterviewer
+                              ? 'bg-blue-50 border-blue-200'
+                              : isCandidate
+                                ? 'bg-amber-50 border-amber-200'
+                                : 'bg-gray-50 border-gray-200'
+                            const textClass = isInterviewer
+                              ? 'text-blue-700'
+                              : isCandidate
+                                ? 'text-amber-700'
+                                : 'text-gray-600'
                             return (
-                              <div key={c?.id || idx} className={`rounded-lg border p-3 ${isInterviewer ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'}`}>
+                              <div key={c?.id || idx} className={`rounded-lg border p-3 ${boxClass}`}>
                                 <div className="flex items-center justify-between mb-1">
-                                  <span className={`text-xs font-semibold ${isInterviewer ? 'text-blue-700' : 'text-amber-700'}`}>{senderLabel}</span>
+                                  <span className={`text-xs font-semibold ${textClass}`}>{senderLabel}</span>
                                   {typeof c?.turn_number === 'number' && (
                                     <span className="text-[11px] text-gray-500">턴 #{c.turn_number}</span>
                                   )}

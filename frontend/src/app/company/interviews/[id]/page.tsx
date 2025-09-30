@@ -29,9 +29,27 @@ export default function InterviewStatusPage() {
     }
     if (!routeId) return
 
+    // 1) 캐시된 데이터 즉시 시도 (새로고침 시 빈 화면 방지)
+    const cacheKey = `interview_status_cache_${routeId}`
+    if (typeof window !== 'undefined') {
+      try {
+        const cachedRaw = localStorage.getItem(cacheKey)
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw)
+            ; (parsed?.data ? setData(parsed.data) : setData(parsed))
+          // 캐시된 eval_status 반영
+          const cachedEval = parsed?.job_posting?.eval_status || parsed?.eval_status
+          if (cachedEval) setEvalStatus(cachedEval)
+          // 캐시가 있으면 초기 로딩 스피너 대신 즉시 화면을 보여주기 위해 loading false로 전환
+          setLoading(false)
+        }
+      } catch { }
+    }
+
     const fetchStatus = async () => {
       try {
-        setLoading(true)
+        // 캐시가 없을 때만 로딩 스피너 유지
+        if (!data) setLoading(true)
         setError('')
         const baseUrl = getApiBaseUrl()
         const tokenExists = !!localStorage.getItem('token')
@@ -57,7 +75,13 @@ export default function InterviewStatusPage() {
           },
         })
 
-        const resp = await api.company.getInterviewStatus(routeId)
+        // 2) 채용현황 요청에 타임아웃(8초) 래핑하여 무한 대기 방지
+        const timeoutMs = 8000
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs))
+        const resp: any = await Promise.race([
+          api.company.getInterviewStatus(routeId),
+          timeoutPromise
+        ])
         const normalized = resp?.data ?? resp
         console.log('✅ 채용현황 응답', {
           ok: true,
@@ -67,12 +91,23 @@ export default function InterviewStatusPage() {
           })(),
         })
         setData(normalized)
+        // 성공 시 캐시 저장
+        try {
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(cacheKey, JSON.stringify(normalized))
+          }
+        } catch { }
         // 초기 응답에서도 eval_status를 동기화 (폴링 시작 전 finish/done 상황 반영)
         const initLatestEval = (normalized as any)?.job_posting?.eval_status || (normalized as any)?.eval_status
         if (initLatestEval) {
           setEvalStatus(initLatestEval)
         }
       } catch (e: any) {
+        if (e?.message === 'timeout') {
+          console.warn('⚠️ 채용현황 요청 타임아웃 - 캐시 또는 부분 데이터로 표시합니다.')
+        } else {
+          console.error('❌ 채용현황 요청 실패', e)
+        }
         const status = e?.response?.status
         const respData = e?.response?.data
         const baseUrl = getApiBaseUrl()
@@ -83,7 +118,10 @@ export default function InterviewStatusPage() {
           response: respData,
           message: e?.message,
         })
-        setError(e?.response?.data?.message || `채용현황을 불러오지 못했습니다. (status: ${status ?? 'unknown'})`)
+        // 캐시가 있으면 에러를 사용자가 즉시 못 보게 하고, 없으면 에러 표시
+        if (!data) {
+          setError(e?.response?.data?.message || `채용현황을 불러오지 못했습니다. (status: ${status ?? 'unknown'})`)
+        }
       } finally {
         setLoading(false)
       }
@@ -306,24 +344,55 @@ export default function InterviewStatusPage() {
                 평가시작
               </button>
             ) : (
-              <div className="flex items-center gap-2">
-                <label htmlFor="sort-select" className="text-sm text-gray-600">정렬:</label>
-                <select
-                  id="sort-select"
-                  value={`${sortKey}-${sortDir}`}
-                  onChange={(e) => {
-                    const [key, dir] = e.target.value.split('-')
-                    setSortKey(key as 'total_score' | 'hard_score' | 'soft_score' | 'applied_at')
-                    setSortDir(dir as 'asc' | 'desc')
-                  }}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="total_score-desc">총점 높은순</option>
-                  <option value="hard_score-desc">하드스킬 점수 높은순</option>
-                  <option value="soft_score-desc">소프트스킬 점수 높은순</option>
-                  <option value="applied_at-desc">지원일 최신순</option>
-                  <option value="applied_at-asc">지원일 오래된순</option>
-                </select>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="sort-select" className="text-sm text-gray-600">정렬:</label>
+                  <select
+                    id="sort-select"
+                    value={`${sortKey}-${sortDir}`}
+                    onChange={(e) => {
+                      const [key, dir] = e.target.value.split('-')
+                      setSortKey(key as 'total_score' | 'hard_score' | 'soft_score' | 'applied_at')
+                      setSortDir(dir as 'asc' | 'desc')
+                    }}
+                    className="px-3 py-1 border border-gray-300 rounded-md text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="total_score-desc">총점 높은순</option>
+                    <option value="hard_score-desc">하드스킬 점수 높은순</option>
+                    <option value="soft_score-desc">소프트스킬 점수 높은순</option>
+                    <option value="applied_at-desc">지원일 최신순</option>
+                    <option value="applied_at-asc">지원일 오래된순</option>
+                  </select>
+                </div>
+                {(evalStatus === 'finish' || evalStatus === 'done' || evalStatus === 'ing') && (
+                  <button
+                    className="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 text-sm font-medium"
+                    onClick={async () => {
+                      const restarting = evalStatus === 'ing'
+                      const confirmed = window.confirm(
+                        restarting
+                          ? '평가가 진행 중입니다. 정말 다시 시작하시겠습니까? (중복 실행으로 부하가 증가할 수 있습니다)'
+                          : '재평가를 시작하시겠습니까? 기존 평가 점수가 덮어쓰기될 수 있습니다.'
+                      )
+                      if (!confirmed) return
+                      try {
+                        setEvalStatus('ing')
+                        alert('재평가를 시작했습니다.')
+                        const response = await api.company.startEvaluation(routeId)
+                        console.log('재평가 시작 응답:', response)
+                        if (response?.eval_status) {
+                          setEvalStatus(response.eval_status)
+                        }
+                      } catch (error) {
+                        console.error('재평가 시작 실패:', error)
+                        setEvalStatus('finish')
+                        alert('재평가 시작에 실패했습니다.')
+                      }
+                    }}
+                  >
+                    다시 평가하기
+                  </button>
+                )}
               </div>
             )}
           </div>
