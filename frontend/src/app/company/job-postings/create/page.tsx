@@ -26,7 +26,7 @@ export default function CreateJobPostingPage() {
 
   const hardSkillOptions = [
     'JavaScript/TypeScript',
-    'React/Vue.js',
+    'React/Next.js',
     'CSS/SCSS',
     'Git/GitHub',
     'API 설계',
@@ -34,6 +34,8 @@ export default function CreateJobPostingPage() {
     '보안/인증',
     '테스트/QA',
     'CI/CD',
+    'Docker',
+    'AWS',
   ]
   const softSkillOptions = [
     '의사소통 능력',
@@ -44,6 +46,10 @@ export default function CreateJobPostingPage() {
     '태도',
     '리더십',
     '자기 주도성',
+    '끈기/책임감',
+    '창의성',
+    '학습 의지',
+    '의사 결정력'
   ]
 
   const [selectedHardSkills, setSelectedHardSkills] = useState<string[]>([])
