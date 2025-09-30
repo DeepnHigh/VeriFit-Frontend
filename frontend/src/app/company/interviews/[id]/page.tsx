@@ -41,7 +41,9 @@ export default function InterviewStatusPage() {
           const detailResp = await api.company.getJobPosting(routeId)
           const detail = (detailResp as any)?.data ?? detailResp
           if (detail?.title) setJobTitle(detail.title)
-          if (detail?.eval_status) setEvalStatus(detail.eval_status)
+          // eval_status는 응답 최상위 또는 job_posting 하위에 있을 수 있음
+          const initialEval = (detail as any)?.job_posting?.eval_status || (detail as any)?.eval_status
+          if (initialEval) setEvalStatus(initialEval)
         } catch (_) {}
 
         // UUID 라우트 파라미터를 그대로 사용
@@ -65,6 +67,11 @@ export default function InterviewStatusPage() {
           })(),
         })
         setData(normalized)
+        // 초기 응답에서도 eval_status를 동기화 (폴링 시작 전 finish/done 상황 반영)
+        const initLatestEval = (normalized as any)?.job_posting?.eval_status || (normalized as any)?.eval_status
+        if (initLatestEval) {
+          setEvalStatus(initLatestEval)
+        }
       } catch (e: any) {
         const status = e?.response?.status
         const respData = e?.response?.data
@@ -153,23 +160,45 @@ export default function InterviewStatusPage() {
   const jobPosting = (data as any)?.job_posting || null
   const hardSkills: any[] = Array.isArray(jobPosting?.hard_skills) ? jobPosting.hard_skills : []
   const softSkills: any[] = Array.isArray(jobPosting?.soft_skills) ? jobPosting.soft_skills : []
+  const counts = (data as any)?.counts || null
 
   const sortedApps = [...applications].sort((a, b) => {
-    const getNum = (v: any, key: string) => {
-      const raw = v?.[key]
-      if (raw === null || raw === undefined) return Number.NaN
-      const n = typeof raw === 'number' ? raw : parseFloat(String(raw))
+    const resolveNumber = (value: any) => {
+      if (value === null || value === undefined) return Number.NaN
+      const n = typeof value === 'number' ? value : parseFloat(String(value))
       return Number.isNaN(n) ? Number.NaN : n
     }
+    const getHard = (v: any) => resolveNumber(v?.hard_score ?? v?.hard)
+    const getSoft = (v: any) => resolveNumber(v?.soft_score ?? v?.soft)
+    const getTotal = (v: any) => {
+      const total = v?.total_score ?? v?.total
+      const totalNum = resolveNumber(total)
+      if (!Number.isNaN(totalNum)) return totalNum
+      const hardNum = getHard(v)
+      const softNum = getSoft(v)
+      if (!Number.isNaN(hardNum) && !Number.isNaN(softNum)) {
+        return (hardNum + softNum) / 2
+      }
+      return Number.NaN
+    }
     const getTime = (v: any) => (v?.applied_at ? new Date(v.applied_at).getTime() : 0)
+
     let av = 0, bv = 0
     if (sortKey === 'applied_at') {
       av = getTime(a)
       bv = getTime(b)
+    } else if (sortKey === 'hard_score') {
+      av = getHard(a)
+      bv = getHard(b)
+    } else if (sortKey === 'soft_score') {
+      av = getSoft(a)
+      bv = getSoft(b)
     } else {
-      av = getNum(a, sortKey)
-      bv = getNum(b, sortKey)
+      // 'total_score' 등
+      av = getTotal(a)
+      bv = getTotal(b)
     }
+
     if (Number.isNaN(av) && Number.isNaN(bv)) return 0
     if (Number.isNaN(av)) return 1
     if (Number.isNaN(bv)) return -1
@@ -225,7 +254,7 @@ export default function InterviewStatusPage() {
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <div className="text-sm text-gray-600">AI 평가 완료</div>
-              <div className="mt-2 text-2xl font-bold text-gray-900">{overall.ai_evaluated_count ?? '-'}</div>
+              <div className="mt-2 text-2xl font-bold text-gray-900">{counts?.interviewed ?? '-'}</div>
             </div>
           </div>
         )}
@@ -308,11 +337,10 @@ export default function InterviewStatusPage() {
                   <tr>
                     <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>No.</th>
                       <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>지원자</th>
-                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>경력</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('hard_score')}>하드스킬</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('soft_score')}>소프트스킬</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('total_score')}>총점</th>
-                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-80 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>AI총평</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('hard_score')}>하드스킬</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('soft_score')}>소프트스킬</th>
+                      <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }} onClick={() => handleSort('total_score')}>총점</th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[28rem] border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>AI총평</th>
                       <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">개별 리포트</th>
                   </tr>
                 </thead>
@@ -340,13 +368,10 @@ export default function InterviewStatusPage() {
                         <td className="px-3 py-4 whitespace-nowrap text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                            <div className="text-sm font-medium text-gray-900">{app.candidate_name || app.user_name || app.user_id}</div>
                          </td>
-                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
-                          {app.experience_years ? `${app.experience_years}년` : '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{hard ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{soft ?? '-'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-center border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{total ?? '-'}</td>
-                        <td className="px-6 py-4 text-sm text-gray-600 text-left border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{hard ?? '-'}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{soft ?? '-'}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-center w-20 border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>{total ?? '-'}</td>
+                        <td className="px-6 py-4 text-sm text-gray-600 text-left w-[28rem] border-r border-gray-300" style={{ borderRightStyle: 'dashed' }}>
                           <div className="break-words" title={app.ai_summary || app.summary || ''}>
                             {app.ai_summary || app.summary || '-'}
                           </div>

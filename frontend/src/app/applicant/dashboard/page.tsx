@@ -122,6 +122,7 @@ const [editForm, setEditForm] = useState<JobSeekerUpdatePayload>({})
 const [aiUpdating, setAiUpdating] = useState(false)
 const [aiUpdateStatus, setAiUpdateStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 const [behaviorTestResult, setBehaviorTestResult] = useState<any>(null)
+const [aiEvaluatedCount, setAiEvaluatedCount] = useState<number>(0)
 
 // 최종학력 표기 변환 맵
 const EDUCATION_LABELS: Record<string, string> = {
@@ -327,8 +328,6 @@ const fetchUserFiles = async () => {
 
       console.log('📡 파일 목록 API 호출 중...')
       const filesData = await api.s3.getUserFiles(userId)
-      console.log('✅ 파일 목록 조회 성공:', filesData)
-      
       setUserFiles(filesData)
       
     } catch (err: unknown) {
@@ -350,6 +349,25 @@ const fetchUserFiles = async () => {
       setFilesLoading(false)
     }
   }
+
+// 지원 내역에서 ai_evaluated 건수 계산
+const fetchApplicationsAndCountAIEvaluated = async () => {
+    try {
+      const userId = localStorage.getItem('userId')
+      if (!userId) return
+      const resp = await api.applications.listByJobSeeker(userId)
+      const list = (resp as any)?.data ?? resp ?? []
+      const normalized = Array.isArray(list) ? list : []
+      const count = normalized.reduce((acc: number, it: any) => {
+        const status = (it?.status || it?.application_status || '').toString().toLowerCase()
+        return acc + (status === 'ai_evaluated' ? 1 : 0)
+      }, 0)
+      setAiEvaluatedCount(count)
+    } catch (err) {
+      console.error('ai_evaluated 카운트 계산 실패:', err)
+      setAiEvaluatedCount(0)
+    }
+}
 
 // 파일 다운로드 함수
 const handleFileDownload = async (fileType: string, fileName: string) => {
@@ -628,6 +646,7 @@ const handleSaveAnswer = async (questionId: string) => {
     // 컴포넌트 마운트 시 사용자 프로필 데이터와 파일 목록 가져오기
     fetchUserProfile()
     fetchUserFiles()
+    fetchApplicationsAndCountAIEvaluated()
   }, [])
 
   return (
@@ -685,7 +704,7 @@ const handleSaveAnswer = async (questionId: string) => {
                   </div>
                   <div className="text-black mb-4">
                     {!isEditing ? (
-                      userProfile.total_experience_years ? `${userProfile.total_experience_years}년 경력` : '경력 정보'
+                      userProfile.total_experience_years ? `${userProfile.total_experience_years}년 경력` : '신입'
                     ) : (
                       <input
                         type="number"
@@ -707,8 +726,8 @@ const handleSaveAnswer = async (questionId: string) => {
                     <div className="text-xs text-black text-center">지원 공고</div>
                   </div>
                   <div className="bg-white rounded-lg p-3 border">
-                    <div className="text-black font-bold text-lg text-center">{(userProfile as any)?.ai_interview_count ?? ((userProfile as any)?.ai_interview_ids?.length ?? 0)}</div>
-                    <div className="text-xs text-black text-center">AI 면접</div>
+                    <div className="text-black font-bold text-lg text-center">{aiEvaluatedCount}</div>
+                    <div className="text-xs text-black text-center">AI 평가 완료</div>
                   </div>
                 </div>
                 

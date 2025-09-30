@@ -5,7 +5,11 @@ import FileUploadButton from './FileUploadButton'
 
 // S3 파일 정보 타입 정의
 interface S3File {
+  // 서버에 저장된 유니크 파일명 (동작용)
   name: string
+  // 선택: 서버가 내려주는 분리된 필드들(표시/동작 분리용)
+  original_file_name?: string
+  stored_file_name?: string
   size: number
   lastModified: string
   downloadUrl: string
@@ -150,20 +154,26 @@ export default function FileCard({
             {files.map((file, index) => (
               <div key={index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
                 <div className="flex-1 min-w-0">
-                  <button
-                    onClick={() => onFileDownload(fileType, file.name)}
+                  {(() => {
+                    const displayName = file.original_file_name || file.name
+                    const storedName = file.stored_file_name || file.name
+                    return (
+                      <button
+                        onClick={() => onFileDownload(fileType, storedName)}
                     className="text-blue-600 hover:text-blue-800 underline cursor-pointer text-xs truncate block w-full text-left"
-                    title={file.name}
-                  >
-                    {file.name}
-                  </button>
+                        title={displayName}
+                      >
+                        {displayName}
+                      </button>
+                    )
+                  })()}
                   <div className="text-gray-500 text-xs">
                     {(file.size / 1024).toFixed(1)}KB
                   </div>
                 </div>
                 {!readOnly && (
                   <button
-                    onClick={() => onFileDelete(fileType, file.name)}
+                    onClick={() => onFileDelete(fileType, (file.stored_file_name || file.name))}
                     className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold"
                     title="파일 삭제"
                   >

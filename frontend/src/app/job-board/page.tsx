@@ -19,6 +19,7 @@ export default function JobBoardPage() {
   const [detailError, setDetailError] = useState('')
   const [isJobSeeker, setIsJobSeeker] = useState(false)
   const [jobSeekerId, setJobSeekerId] = useState<string>('')
+  const [appliedPostingIds, setAppliedPostingIds] = useState<Set<string>>(new Set())
   const router = useRouter()
 
   useEffect(() => {
@@ -56,6 +57,30 @@ export default function JobBoardPage() {
       setIsJobSeeker(false)
     }
   }, [])
+
+  // 현재 구직자의 지원 목록을 불러와 공고별 지원여부를 저장
+  useEffect(() => {
+    if (!jobSeekerId) return
+    ;(async () => {
+      try {
+        const resp = await api.applications.listByJobSeeker(jobSeekerId)
+        const list = Array.isArray(resp)
+          ? resp
+          : Array.isArray((resp as any)?.data)
+            ? (resp as any).data
+            : Array.isArray((resp as any)?.applications)
+              ? (resp as any).applications
+              : []
+        const ids = (list as any[])
+          .map((a: any) => a?.job_posting_id || a?.job_postings_id || a?.jobPostingId || a?.job_posting?.id)
+          .filter(Boolean)
+          .map((v: any) => String(v))
+        setAppliedPostingIds(new Set(ids))
+      } catch (_) {
+        setAppliedPostingIds(new Set())
+      }
+    })()
+  }, [jobSeekerId])
 
   const fetchJobPostings = async () => {
     try {
@@ -170,6 +195,12 @@ export default function JobBoardPage() {
     return true
   }
 
+  const hasApplied = (posting: any) => {
+    const id = posting?.id || posting?.job_postings_id
+    if (!id) return false
+    return appliedPostingIds.has(String(id))
+  }
+
   const handleApply = (posting: any) => {
     if (!isJobSeeker) return
     const confirmed = window.confirm('해당 공고에 지원하시겠습니까? Verifit 이력서로 지원 및 서류/1차면접이 이루어집니다.')
@@ -188,6 +219,11 @@ export default function JobBoardPage() {
         } catch (_) {}
         // 200 OK 가정
         alert('지원이 완료되었습니다.')
+        setAppliedPostingIds((prev) => {
+          const next = new Set(prev)
+          next.add(String(jobPostingId))
+          return next
+        })
         // 선택: 대시보드로 이동하거나 현재 페이지 유지
         // router.push('/applicant/dashboard')
       } catch (e) {
@@ -317,12 +353,21 @@ export default function JobBoardPage() {
                         상세보기
                       </button>
                     {isJobSeeker && isPostingActive(posting) && (
-                      <button
-                        onClick={() => handleApply(posting)}
-                        className="ml-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                      >
-                        지원하기
-                      </button>
+                      hasApplied(posting) ? (
+                        <button
+                          disabled
+                          className="ml-2 px-4 py-2 bg-gray-300 text-gray-600 text-sm font-medium rounded-md cursor-not-allowed"
+                        >
+                          지원완료
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleApply(posting)}
+                          className="ml-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                        >
+                          지원하기
+                        </button>
+                      )
                     )}
                     </div>
                   </div>
@@ -355,12 +400,21 @@ export default function JobBoardPage() {
               )}
               {!detailLoading && !detailError && isJobSeeker && selectedPosting && isPostingActive(selectedPosting) && (
                 <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => handleApply(selectedPosting)}
-                    className="px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                  >
-                    지원하기
-                  </button>
+                  {hasApplied(selectedPosting) ? (
+                    <button
+                      disabled
+                      className="px-5 py-2 bg-gray-300 text-gray-600 text-sm font-medium rounded-md cursor-not-allowed"
+                    >
+                      지원완료
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleApply(selectedPosting)}
+                      className="px-5 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                    >
+                      지원하기
+                    </button>
+                  )}
                 </div>
               )}
             </div>
